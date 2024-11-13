@@ -3,9 +3,10 @@ import { AppBar, Toolbar, IconButton, Typography, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
-import { Sling as Hamburger } from "hamburger-react";
 import { ColorModeContext } from "../../theme";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux"; // Import useDispatch
+import { logoutUser } from "../../redux/userSlice";
 
 const links = [
   { id: 1, title: "Home", url: "/" },
@@ -18,6 +19,7 @@ const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
+  const dispatch = useDispatch();
 
   // State to track if the page is scrolled
   const [isScrolled, setIsScrolled] = useState(false);
@@ -33,6 +35,11 @@ const Topbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  const handleLogout = () => {
+    dispatch(logoutUser()); // Dispatch the logout action
+    localStorage.removeItem("token"); // Optionally clear the token from localStorage
+  };
 
   return (
     <AppBar
@@ -58,6 +65,9 @@ const Topbar = () => {
         <IconButton onClick={colorMode.toggleColorMode} color="inherit">
           {theme.palette.mode === "dark" ? "🌙" : "☀️"}
         </IconButton>
+        <Button color="inherit" onClick={handleLogout}>
+          Logout
+        </Button>
       </Toolbar>
     </AppBar>
   );

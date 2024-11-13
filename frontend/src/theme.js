@@ -140,7 +140,7 @@ export const themeSettings = (mode) => {
               light: colors.black[100],
             },
             background: {
-              default: colors.buff[500],
+              default: colors.black[500],
             },
           }
         : {

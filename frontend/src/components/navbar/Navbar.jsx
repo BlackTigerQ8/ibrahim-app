@@ -4,6 +4,7 @@ import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
 import { tokens } from "../../theme";
 import { useTheme } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const links = [
   { id: 1, title: "Home", url: "/" },
@@ -16,6 +17,7 @@ const Navbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isOpen, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleToggle = () => {
     setOpen(!isOpen);
@@ -27,12 +29,17 @@ const Navbar = () => {
 
   // Apply blur effect to the body when the menu is open
   useEffect(() => {
+    const pageContent = document.getElementById("page-content");
     if (isOpen) {
-      document.body.style.filter = "blur(5px)";
+      if (pageContent) {
+        pageContent.style.filter = "blur(5px)";
+      }
       // Ensure the Navbar is not blurred
       document.getElementById("navbar").style.filter = "none";
     } else {
-      document.body.style.filter = "none";
+      if (pageContent) {
+        pageContent.style.filter = "none";
+      }
     }
 
     return () => {
@@ -40,8 +47,16 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
-  // Temporary
-  const user = false;
+  // Check if the user is logged in by checking for a token
+  const savedToken = localStorage.getItem("token");
+  const user = savedToken ? true : false;
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+    closeMobileMenu();
+    navigate("/login");
+  };
 
   return (
     <Container>
@@ -80,8 +95,11 @@ const Navbar = () => {
           ) : (
             <StyledLink
               color={colors.sunset[700]}
-              to="/logout"
-              onClick={closeMobileMenu}
+              to="#"
+              onClick={(e) => {
+                e.preventDefault();
+                logout();
+              }}
             >
               Logout
             </StyledLink>

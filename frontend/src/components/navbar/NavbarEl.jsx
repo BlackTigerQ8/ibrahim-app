@@ -11,6 +11,7 @@ export const Container = styled.div`
 export const StyledLink = styled(Link)`
   color: ${(props) => props.color};
   text-decoration: none;
+  font-weight: 600;
 
   &:hover {
     text-decoration: underline;
