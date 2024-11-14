@@ -1,56 +1,61 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
 import { useMode, ColorModeContext } from "./theme";
 import { useMediaQuery } from "@mui/material";
 import { tokens } from "./theme";
-import { cardio } from "ldrs";
-import { I18nextProvider, Trans, useTranslation } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 import { getUserRoleFromToken } from "./getUserRoleFromToken";
 import { setUser } from "./redux/userSlice";
 import Navbar from "./components/navbar/Navbar";
 import Topbar from "./components/topbar/Topbar";
 import Home from "./Pages/Home";
-import Family from "./Pages/Family";
 import Coach from "./Pages/Coach";
 import Athlete from "./Pages/Athlete";
 import Login from "./Pages/Login";
-
-const lngs = {
-  en: { nativeName: "English" },
-  de: { nativeName: "Arabic" },
-};
+import Schedules from "./Pages/Schedules";
+import { ToastContainer } from "react-toastify";
+import { cardio } from "ldrs";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [theme, colorMode] = useMode();
   const colors = tokens(theme.palette.mode);
   const [isLoading, setIsLoading] = useState(true);
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const currentUser = useSelector((state) => state.user.userInfo);
   const userRole =
     useSelector((state) => state.user.userRole) || getUserRoleFromToken();
-
   const savedToken = localStorage.getItem("token");
 
   useEffect(() => {
-    const lng = navigate.language;
-    i18n.changeLanguage(lng);
+    i18n.changeLanguage(navigator.language);
   }, []);
-
-  const lng = navigator.language;
 
   useEffect(() => {
     const checkUser = async () => {
+      // Allow access to "/" without checking the token
+      if (location.pathname === "/" || location.pathname === "/login") {
+        setIsLoading(false);
+        return;
+      }
+
+      // For other routes, require login
       if (savedToken) {
         const savedUser = JSON.parse(localStorage.getItem("userInfo"));
         if (savedUser) {
           dispatch(setUser(savedUser));
-          navigate("/");
         }
       } else {
         navigate("/login");
@@ -59,9 +64,8 @@ function App() {
     };
 
     checkUser();
-  }, [navigate, dispatch, savedToken]);
+  }, [navigate, dispatch, savedToken, location.pathname]);
 
-  cardio.register();
   if (isLoading) {
     return (
       <div
@@ -72,12 +76,7 @@ function App() {
           height: "100dvh",
         }}
       >
-        <l-cardio
-          size="50"
-          stroke="4"
-          speed="2"
-          color={colors.buff[500]}
-        ></l-cardio>
+        <l-cardio size="70" speed="1.75" color={colors.sunset[500]}></l-cardio>
       </div>
     );
   }
@@ -93,47 +92,58 @@ function App() {
     return children;
   };
 
-  return (
-    <>
-      <I18nextProvider i18n={i18n}>
-        <ColorModeContext.Provider value={colorMode}>
-          <ThemeProvider theme={theme}>
-            {isDesktop ? <Topbar /> : <Navbar />}
+  // PublicRoute component to allow access to public pages like "/home"
+  const PublicRoute = ({ children }) => {
+    return children;
+  };
 
-            <main id="page-content" style={{ filter: "none" }}>
-              <Routes>
-                <Route exact path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/family"
-                  element={
-                    <ProtectedRoute requiredRole="Family">
-                      <Family />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/coach"
-                  element={
-                    <ProtectedRoute requiredRole="Coach">
-                      <Coach />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/athlete"
-                  element={
-                    <ProtectedRoute requiredRole="Athlete">
-                      <Athlete />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </main>
-          </ThemeProvider>
-        </ColorModeContext.Provider>
-      </I18nextProvider>
-    </>
+  return (
+    <I18nextProvider i18n={i18n}>
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme}>
+          {isDesktop ? <Topbar /> : <Navbar />}
+
+          <main id="page-content" style={{ filter: "none" }}>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <PublicRoute>
+                    <Home />
+                  </PublicRoute>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/schedules"
+                element={
+                  <ProtectedRoute requiredRole="Schedules">
+                    <Schedules />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/coach"
+                element={
+                  <ProtectedRoute requiredRole="Coach">
+                    <Coach />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/athlete"
+                element={
+                  <ProtectedRoute requiredRole="Athlete">
+                    <Athlete />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+            <ToastContainer />
+          </main>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </I18nextProvider>
   );
 }
 

@@ -1,23 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Container, HamburgerContainer, Sidebar, StyledLink } from "./NavbarEl";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
 import { tokens } from "../../theme";
-import { useTheme } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-
-const links = [
-  { id: 1, title: "Home", url: "/" },
-  { id: 2, title: "Schedules", url: "/schedules" },
-  { id: 3, title: "About me", url: "/about" },
-  { id: 4, title: "Contact", url: "/" },
-];
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Tooltip,
+  useTheme,
+} from "@mui/material";
+import { logoutUser } from "../../redux/userSlice";
+import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { ColorModeContext } from "../../theme";
+import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 
 const Navbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
+  const colorMode = useContext(ColorModeContext);
   const [isOpen, setOpen] = useState(false);
-  const navigate = useNavigate();
+  const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleToggle = () => {
     setOpen(!isOpen);
@@ -51,15 +61,59 @@ const Navbar = () => {
   const savedToken = localStorage.getItem("token");
   const user = savedToken ? true : false;
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInfo");
-    closeMobileMenu();
-    navigate("/login");
+  const handleLanguageMenu = (event) => {
+    setLanguageAnchorEl(event.currentTarget);
   };
 
+  const handleCloseLanguageMenu = () => {
+    setLanguageAnchorEl(null);
+  };
+
+  const toggleLanguage = (language) => {
+    i18n.changeLanguage(language);
+    handleCloseLanguageMenu();
+  };
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  const links = [
+    { id: 1, title: t("home"), url: "/" },
+    { id: 2, title: t("schedules"), url: "/schedules" },
+    { id: 3, title: t("aboutMe"), url: "/about" },
+    { id: 4, title: t("contact"), url: "/contact" },
+  ];
+
+  // Add scroll event listener
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <Container>
+    <Container
+      style={{
+        background: isScrolled
+          ? theme.palette.mode === "light"
+            ? "rgba(255, 255, 255, 0.6)"
+            : "rgba(0, 0, 0, 0.6)"
+          : theme.palette.mode === "light"
+          ? "none"
+          : "none",
+        backdropFilter: isScrolled ? "blur(10px)" : "none",
+        transition: "background 0.3s, backdrop-filter 0.3s",
+        color: colors.black[100],
+      }}
+    >
       <HamburgerContainer>
         <Hamburger
           toggled={isOpen}
@@ -72,7 +126,7 @@ const Navbar = () => {
       {/* The Navbar itself should not be blurred */}
       <div id="navbar">
         <Sidebar isOpen={isOpen} backgroundColor={colors.black[400]}>
-          <img src={Logo} width={50} />
+          <img src={Logo} width={100} />
           {links.map((item) => (
             <StyledLink
               color={colors.sunset[700]}
@@ -90,20 +144,61 @@ const Navbar = () => {
               to="/login"
               onClick={closeMobileMenu}
             >
-              Login
+              {t("login")}
             </StyledLink>
           ) : (
             <StyledLink
               color={colors.sunset[700]}
               to="#"
-              onClick={(e) => {
-                e.preventDefault();
-                logout();
-              }}
+              onClick={handleLogout}
             >
-              Logout
+              {t("logout")}
             </StyledLink>
           )}
+
+          <Box display="flex" color={colors.buff[500]}>
+            <Tooltip
+              title={
+                theme.palette.mode === "dark" ? t("lightMode") : t("darkMode")
+              }
+            >
+              <IconButton onClick={colorMode.toggleColorMode}>
+                {theme.palette.mode === "dark" ? (
+                  <DarkModeOutlinedIcon
+                    onClick={closeMobileMenu}
+                    style={{ color: colors.sunset[700] }}
+                  />
+                ) : (
+                  <LightModeOutlinedIcon
+                    onClick={closeMobileMenu}
+                    style={{ color: colors.sunset[700] }}
+                  />
+                )}
+              </IconButton>
+            </Tooltip>
+
+            <Box display="flex" alignItems="center" justifyContent="center">
+              <Tooltip title={t("changeLanguage")}>
+                <IconButton onClick={handleLanguageMenu}>
+                  <TranslateOutlinedIcon
+                    style={{ color: colors.sunset[700] }}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                anchorEl={languageAnchorEl}
+                open={Boolean(languageAnchorEl)}
+                onClose={handleCloseLanguageMenu}
+              >
+                <MenuItem onClick={() => toggleLanguage("en")}>
+                  English
+                </MenuItem>
+                <MenuItem onClick={() => toggleLanguage("ar")}>
+                  العربية
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Box>
         </Sidebar>
       </div>
     </Container>

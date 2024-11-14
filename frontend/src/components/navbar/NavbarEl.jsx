@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  position: relative;
+  position: fixed;
   z-index: 1000;
+  width: 100%;
 `;
 
 export const StyledLink = styled(Link)`
@@ -19,8 +20,8 @@ export const StyledLink = styled(Link)`
 `;
 
 export const HamburgerContainer = styled.div`
-  position: absolute;
-  top: 1rem; // adjust positioning as needed
+  position: sticky;
+  top: 0;
   left: 1rem;
   z-index: 1000; // Ensure hamburger is on top of sidebar
 `;

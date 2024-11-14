@@ -28,14 +28,14 @@ const Explore = () => {
     <Container>
       <Header>
         <SectionHeader>EXPLORE OUR PROGRAM</SectionHeader>
-        <ExploreNav>
+        {/* <ExploreNav>
           <span>
             <FaArrowLeft />
           </span>
           <span>
             <FaArrowRight />
           </span>
-        </ExploreNav>
+        </ExploreNav> */}
       </Header>
       <ExploreGrid>
         {cardItems.map((item, index) => (

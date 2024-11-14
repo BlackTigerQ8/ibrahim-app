@@ -16,6 +16,10 @@ i18n
         translation: {
           welcome: "Welcome",
           pages: "Pages",
+          home: "Home",
+          schedules: "Schedules",
+          aboutMe: "About Me",
+          changeLanguage: "Change Language",
           dashboard: "Dashboard",
           DHASBOARD: "DASHBOARD",
           dashboardSubtitle: "Welcome to your dashboard",
@@ -103,6 +107,11 @@ i18n
         translation: {
           welcome: "مرحبًا",
           pages: "الصفحات",
+          home: "الرئيسية",
+          schedules: "الجدول",
+          aboutMe: "نبذة",
+          contact: "اتصل بنا",
+          changeLanguage: "غير اللغة",
           dashboard: "لوحة التحكم",
           DHASBOARD: "لوحة التحكم",
           dashboardSubtitle: "مرحبًا بك في لوحة التحكم الخاصة بك",

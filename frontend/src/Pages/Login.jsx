@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -17,11 +17,13 @@ import { cardio } from "ldrs";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTranslation } from "react-i18next";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
 
@@ -45,6 +47,13 @@ const Login = () => {
     };
     dispatch(loginUser(lowercaseCredentials));
   };
+
+  // Redirect to "/" when login is successful
+  useEffect(() => {
+    if (status === "succeeded") {
+      navigate("/"); // Redirect to the home route
+    }
+  }, [status, navigate]);
 
   const handleLanguageMenu = (event) => {
     setLanguageAnchorEl(event.currentTarget);
@@ -208,7 +217,7 @@ const Login = () => {
               mr: 2,
             }}
           >
-            Change Language
+            {t("changeLanguage")}
           </Typography>
           <Tooltip title={t("changeLanguage")}>
             <IconButton onClick={handleLanguageMenu}>
