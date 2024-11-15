@@ -81,8 +81,8 @@ const Topbar = () => {
       style={{
         background: isScrolled
           ? theme.palette.mode === "light"
-            ? "rgba(255, 255, 255, 0.6)"
-            : "rgba(0, 0, 0, 0.6)"
+            ? "rgba(255, 255, 255, 0.8)"
+            : "rgba(0, 0, 0, 0.8)"
           : theme.palette.mode === "light"
           ? "#ffffff"
           : colors.black[500],
@@ -130,15 +130,16 @@ const Topbar = () => {
         ))}
 
         {!user ? (
-          <Button
-            color={colors.sunset[700]}
-            to="/login"
-            // onClick={closeMobileMenu}
-          >
+          <Button color={colors.sunset[700]} component={Link} to="/login">
             {t("login")}
           </Button>
         ) : (
-          <Button color={colors.sunset[700]} to="#" onClick={handleLogout}>
+          <Button
+            color={colors.sunset[700]}
+            component={Link}
+            to="/"
+            onClick={handleLogout}
+          >
             {t("logout")}
           </Button>
         )}

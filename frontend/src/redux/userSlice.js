@@ -51,7 +51,6 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axios.post(`${API_URL}/users/login`, credentials);
       return response.data;
-      console.log(response);
     } catch (error) {
       if (error.response.status === 401) {
         // Clear local storage if unauthorized
@@ -83,19 +82,44 @@ export const profileImage = createAsyncThunk(
   }
 );
 
+// Thunk action for user update
+export const updateUser = createAsyncThunk(
+  "user/updateUser",
+  async (updatedData, { getState }) => {
+    const token = localStorage.getItem("token");
+    const { userInfo } = getState().user;
+
+    try {
+      const response = await axios.put(
+        `${API_URL}/users/${userInfo._id}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message || error.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: {
-      reducer: (state, action) => {
-        state.userInfo = action.payload;
-        state.userRole = action.payload.user.role;
-      },
+    setUser(state, action) {
+      state.userInfo = action.payload;
+      state.userRole = action.payload.user.role;
     },
     logoutUser(state) {
       state.userInfo = null;
       state.userRole = "";
+      state.token = "";
+      state.status = "";
     },
   },
   extraReducers(builder) {

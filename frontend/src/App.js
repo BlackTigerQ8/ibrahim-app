@@ -23,6 +23,7 @@ import Login from "./Pages/Login";
 import Schedules from "./Pages/Schedules";
 import { ToastContainer } from "react-toastify";
 import { cardio } from "ldrs";
+import Profile from "./Pages/Profile";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -66,6 +67,7 @@ function App() {
     checkUser();
   }, [navigate, dispatch, savedToken, location.pathname]);
 
+  cardio.register();
   if (isLoading) {
     return (
       <div
@@ -135,6 +137,14 @@ function App() {
                 element={
                   <ProtectedRoute requiredRole="Athlete">
                     <Athlete />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
                   </ProtectedRoute>
                 }
               />

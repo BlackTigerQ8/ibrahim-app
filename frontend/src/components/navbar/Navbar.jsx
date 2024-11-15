@@ -104,9 +104,9 @@ const Navbar = () => {
       style={{
         background: isScrolled
           ? theme.palette.mode === "light"
-            ? "rgba(255, 255, 255, 0.6)"
-            : "rgba(0, 0, 0, 0.6)"
-          : theme.palette.mode === "light"
+            ? "rgba(255, 255, 255, 0.8)"
+            : "rgba(0, 0, 0, 0.8)"
+          : theme.palette.mode === "dark"
           ? "none"
           : "none",
         backdropFilter: isScrolled ? "blur(10px)" : "none",

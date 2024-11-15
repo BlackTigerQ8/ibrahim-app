@@ -23,7 +23,8 @@ export const HamburgerContainer = styled.div`
   position: sticky;
   top: 0;
   left: 1rem;
-  z-index: 1000; // Ensure hamburger is on top of sidebar
+  z-index: 1000;
+  padding: 0.5rem;
 `;
 
 export const Sidebar = styled.div`
