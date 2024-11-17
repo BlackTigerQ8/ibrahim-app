@@ -17,7 +17,6 @@ export const SectionHeader = styled.h2`
   font-size: 2.25rem;
   font-weight: 600;
   text-align: center;
-  color: var(--white);
 `;
 
 export const PriceGrid = styled.div`
@@ -39,21 +38,14 @@ export const PriceCard = styled.div`
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
-  background-color: var(--primary-color-light);
   border: 2px solid transparent;
   border-radius: 10px;
   transition: 0.3s;
-
-  &:hover {
-    background-color: var(--primary-color-extra-light);
-    border-color: var(--secondary-color);
-  }
 
   & h4 {
     margin-bottom: 1rem;
     font-size: 1.2rem;
     font-weight: 500;
-    color: var(--white);
   }
 
   & h3 {
@@ -61,15 +53,12 @@ export const PriceCard = styled.div`
     margin-bottom: 2rem;
     font-size: 2rem;
     font-weight: 600;
-    color: var(--white);
-    border-bottom: 2px solid var(--white);
   }
 
   & p {
     display: flex;
     align-items: center;
     margin-bottom: 0.75rem;
-    color: var(--white);
   }
 
   & p > span {
@@ -77,29 +66,10 @@ export const PriceCard = styled.div`
     align-items: center;
     margin-right: 0.5rem;
     font-size: 1.2rem;
-    color: var(--secondary-color);
   }
 `;
 
 export const PriceCardContent = styled.div`
   flex: 1;
   margin-bottom: 2rem;
-`;
-
-export const Button = styled.button`
-  padding: 1rem 2rem;
-  outline: none;
-  border: none;
-  font-size: 1rem;
-  color: var(--secondary-color);
-  background-color: transparent;
-  border: 2px solid var(--secondary-color);
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    color: var(--white);
-    background-color: var(--secondary-color);
-  }
 `;

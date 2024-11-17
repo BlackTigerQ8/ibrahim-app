@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
 import { useMode, ColorModeContext } from "./theme";
-import { useMediaQuery } from "@mui/material";
+import { CssBaseline, useMediaQuery } from "@mui/material";
 import { tokens } from "./theme";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import { getUserRoleFromToken } from "./getUserRoleFromToken";
@@ -78,7 +78,11 @@ function App() {
           height: "100dvh",
         }}
       >
-        <l-cardio size="70" speed="1.75" color={colors.sunset[500]}></l-cardio>
+        <l-cardio
+          size="70"
+          speed="1.75"
+          color={colors.secondary.main}
+        ></l-cardio>
       </div>
     );
   }
@@ -103,6 +107,7 @@ function App() {
     <I18nextProvider i18n={i18n}>
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           {isDesktop ? <Topbar /> : <Navbar />}
 
           <main id="page-content" style={{ filter: "none" }}>
@@ -149,9 +154,9 @@ function App() {
                 }
               />
             </Routes>
-            <ToastContainer />
           </main>
         </ThemeProvider>
+        <ToastContainer />
       </ColorModeContext.Provider>
     </I18nextProvider>
   );

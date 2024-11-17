@@ -16,7 +16,6 @@ const Schedules = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100dvh",
-        color: colors.sunset[500],
       }}
     >
       Schedules

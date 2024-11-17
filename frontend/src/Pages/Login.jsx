@@ -10,11 +10,10 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { tokens } from "../theme";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/userSlice";
-import { tokens } from "../theme";
-import { cardio } from "ldrs";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { useMediaQuery } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import { useNavigate } from "react-router-dom";
@@ -22,13 +21,13 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
 
   const { status, error } = useSelector((state) => state.user);
-  const colors = tokens(theme.palette.mode);
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -48,7 +47,6 @@ const Login = () => {
     dispatch(loginUser(lowercaseCredentials));
   };
 
-  // Redirect to "/" when login is successful
   useEffect(() => {
     if (status === "succeeded") {
       navigate("/"); // Redirect to the home route
@@ -68,19 +66,19 @@ const Login = () => {
     handleCloseLanguageMenu();
   };
 
-  cardio.register();
   if (status === "loading") {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+        bgcolor={theme.palette.background.default}
       >
-        <l-cardio size="70" speed="1.75" color={colors.sunset[500]}></l-cardio>
-      </div>
+        <div>
+          <l-cardio size="70" speed="1.75" color={theme.palette.primary.main} />
+        </div>
+      </Box>
     );
   }
 
@@ -97,7 +95,10 @@ const Login = () => {
         variant="h4"
         gutterBottom
         sx={{
-          color: colors.sunset[100],
+          color:
+            theme.palette.mode === "dark"
+              ? colors.secondary.main
+              : colors.secondary.dark,
         }}
       >
         {t("login")}
@@ -126,19 +127,13 @@ const Login = () => {
           fullWidth
           inputProps={{ autoCapitalize: "none" }}
           sx={{
-            ".MuiTextField-root": {
-              marginBottom: 2,
-            },
-            ".MuiButton-root": {
-              marginTop: 2,
-            },
             ".MuiOutlinedInput-root": {
               "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.sunset[700],
+                borderColor: theme.palette.secondary.main,
               },
             },
             ".MuiInputLabel-root.Mui-focused": {
-              color: colors.sunset[100],
+              color: theme.palette.secondary.main,
             },
           }}
         />
@@ -152,68 +147,44 @@ const Login = () => {
           variant="outlined"
           fullWidth
           sx={{
-            ".MuiTextField-root": {
-              marginBottom: 2,
-            },
-            ".MuiButton-root": {
-              marginTop: 2,
-            },
             ".MuiOutlinedInput-root": {
               "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.sunset[700],
+                borderColor: theme.palette.secondary.main,
               },
             },
             ".MuiInputLabel-root.Mui-focused": {
-              color: colors.sunset[100],
+              color: theme.palette.secondary.main,
             },
           }}
         />
         <Box mt={2}>
-          {status === "loading" ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <l-cardio
-                size="50"
-                stroke="4"
-                speed="2"
-                color={colors.buff[500]}
-              ></l-cardio>
-            </div>
-          ) : (
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={status === "loading"}
-              fullWidth
-              sx={{
-                backgroundColor: "loading"
-                  ? colors.sunset[700]
-                  : colors.sunset[700],
-                "&:hover": {
-                  backgroundColor: "loading"
-                    ? colors.sunset[500]
-                    : colors.sunset[500],
-                },
-              }}
-            >
-              {t("login")}
-            </Button>
-          )}
-        </Box>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          {/* Language Menu */}
-          <Typography
-            variant="h4"
-            mt={2}
-            gutterBottom
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={status === "loading"}
             sx={{
-              color: colors.sunset[100],
+              backgroundColor: colors.secondary.dark,
+              "&:hover": {
+                backgroundColor: colors.secondary.dark,
+              },
+              color:
+                theme.palette.mode === "dark"
+                  ? colors.primary.dark
+                  : colors.primary.light,
+            }}
+          >
+            {t("login")}
+          </Button>
+        </Box>
+        <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
+          <Typography
+            variant="body1"
+            sx={{
+              color:
+                theme.palette.mode === "dark"
+                  ? colors.secondary.main
+                  : colors.secondary.dark,
               mr: 2,
             }}
           >
@@ -221,7 +192,15 @@ const Login = () => {
           </Typography>
           <Tooltip title={t("changeLanguage")}>
             <IconButton onClick={handleLanguageMenu}>
-              <TranslateOutlinedIcon />
+              <TranslateOutlinedIcon
+                color="primary"
+                sx={{
+                  color:
+                    theme.palette.mode === "dark"
+                      ? colors.secondary.main
+                      : colors.secondary.dark,
+                }}
+              />
             </IconButton>
           </Tooltip>
           <Menu

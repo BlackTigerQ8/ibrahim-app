@@ -18,7 +18,6 @@ export const SectionHeader = styled.h2`
   font-size: 2.25rem;
   font-weight: 600;
   text-align: center;
-  color: var(--white);
 `;
 
 export const JoinImage = styled.div`
@@ -27,12 +26,17 @@ export const JoinImage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%; // Ensure it takes full width
+  width: 100%;
 
   & > img {
     border-radius: 10px;
     max-width: 100%; // Image will scale with its container *********FIX IT*********
-    height: auto; // Maintain aspect ratio
+    height: auto;
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
   }
 `;
 
@@ -45,8 +49,14 @@ export const JoinGrid = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-  background-color: var(--primary-color-light);
   border-radius: 10px;
+
+  @media (max-width: 768px) {
+    position: relative;
+    width: 100%;
+    gap: 0;
+    bottom: -2rem;
+  }
 
   & span {
     display: flex;
@@ -56,8 +66,6 @@ export const JoinGrid = styled.div`
     height: 40px;
     padding: 5px 12px;
     font-size: 1.75rem;
-    color: var(--white);
-    background-color: var(--secondary-color-dark);
     border-radius: 5px;
   }
 `;
@@ -74,10 +82,5 @@ export const JoinCardContent = styled.div`
     margin-bottom: 0.5rem;
     font-size: 1.2rem;
     font-weight: 500;
-    color: var(--white);
-  }
-
-  & > p {
-    color: var(--text-light);
   }
 `;

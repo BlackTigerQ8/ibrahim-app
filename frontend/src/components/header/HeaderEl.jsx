@@ -15,8 +15,8 @@ export const Container = styled.div`
     font-size: 10rem;
     font-weight: 700;
     line-height: 7rem;
-    color: var(--white);
-    opacity: 0.05;
+    color: #d79447;
+    opacity: 0.1;
     z-index: -1;
   }
   max-width: var(--max-width);
@@ -47,19 +47,19 @@ export const HeaderContent = styled.div`
   margin-bottom: 1rem;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--secondary-color);
+  /* color: #f9ac54; */
 
   & > h1 {
     margin-bottom: 1rem;
     font-size: 5rem;
     font-weight: 700;
     line-height: 6rem;
-    color: var(--white);
+    /* color: var(--white); */
   }
 
   & > h1 span {
     -webkit-text-fill-color: transparent;
-    -webkit-text-stroke: 1px var(--white);
+    -webkit-text-stroke: 1px;
   }
 
   & > p {
@@ -83,13 +83,13 @@ export const HeaderContent = styled.div`
 
 export const BackgroundBlur = styled.span`
   position: absolute;
-  box-shadow: 0 0 1000px 50px var(--secondary-color);
+  box-shadow: 0 0 1000px 50px;
   z-index: -1;
 `;
 
 export const HeaderBlur = styled.span`
   position: absolute;
-  box-shadow: 0 0 1000px 50px var(--secondary-color);
+  box-shadow: 0 0 1000px 50px;
   z-index: -1;
   bottom: 5rem;
   right: 0;
@@ -101,13 +101,10 @@ export const Button = styled.button`
   border: none;
   font-size: 1rem;
   color: var(--white);
-  background-color: var(--secondary-color);
+
   border-radius: 5px;
   cursor: pointer;
   transition: 0.3s;
-  &:hover {
-    background-color: var(--secondary-color-dark);
-  }
 
   /* Media Queries for responsiveness */
   @media (max-width: 768px) {

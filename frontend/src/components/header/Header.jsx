@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   Container,
-  SectionSubheader,
   HeaderContent,
   BackgroundBlur,
   HeaderBlur,
@@ -19,18 +18,66 @@ const Header = () => {
   return (
     <Container>
       <HeaderContent>
-        <BackgroundBlur></BackgroundBlur>
-        <HeaderBlur></HeaderBlur>
-        <h4>BEST FITNESS IN THE TOWN</h4>
-        <h1>
-          <span>MAKE</span> YOUR BODY SHAPE
+        <BackgroundBlur
+          style={{
+            color:
+              theme.palette.mode === "dark"
+                ? colors.secondary.main
+                : colors.secondary.dark,
+          }}
+        ></BackgroundBlur>
+        <HeaderBlur
+          style={{
+            color:
+              theme.palette.mode === "dark"
+                ? colors.secondary.main
+                : colors.primary.main,
+          }}
+        ></HeaderBlur>
+        <h4
+          style={{
+            color:
+              theme.palette.mode === "dark"
+                ? colors.secondary.main
+                : colors.secondary.main,
+          }}
+        >
+          BEST FITNESS IN THE TOWN
+        </h4>
+        <h1
+          style={{
+            color: colors.secondary.main,
+          }}
+        >
+          <span
+            style={{
+              color: colors.neutral.light,
+            }}
+          >
+            MAKE
+          </span>{" "}
+          YOUR BODY SHAPE
         </h1>
-        <p>
+        <p
+          style={{
+            color: colors.neutral.light,
+          }}
+        >
           Unleash your potential and embark on a journey towards a stronger,
           fitter, and more confident you. Sign up for 'Make Your Body Shape' now
           and witness the incredible transformation your body is capable of!
         </p>
-        <Button color={colors.black[100]}>Get Started</Button>
+        <Button
+          style={{
+            backgroundColor: colors.secondary.main,
+            "&:hover": {
+              backgroundColor: colors.secondary.dark,
+            },
+            color: colors.primary.main,
+          }}
+        >
+          Get Started
+        </Button>
       </HeaderContent>
       <HeaderImage>
         <img src={HeaderImg} alt="" />

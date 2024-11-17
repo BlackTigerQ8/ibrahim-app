@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Container, HamburgerContainer, Sidebar, StyledLink } from "./NavbarEl";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
@@ -15,9 +15,16 @@ import { logoutUser } from "../../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { ColorModeContext } from "../../theme";
+// Icons
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import HomeIcon from "@mui/icons-material/Home";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import InfoIcon from "@mui/icons-material/Info";
+import ContactMailIcon from "@mui/icons-material/ContactMail";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import LoginIcon from "@mui/icons-material/Login";
 
 const Navbar = () => {
   const theme = useTheme();
@@ -29,45 +36,34 @@ const Navbar = () => {
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const handleToggle = () => {
-    setOpen(!isOpen);
-  };
+  const handleToggle = () => setOpen(!isOpen);
+  const closeMobileMenu = () => setOpen(false);
 
-  const closeMobileMenu = () => {
-    setOpen(false);
-  };
-
-  // Apply blur effect to the body when the menu is open
   useEffect(() => {
     const pageContent = document.getElementById("page-content");
     if (isOpen) {
-      if (pageContent) {
-        pageContent.style.filter = "blur(5px)";
-      }
-      // Ensure the Navbar is not blurred
+      if (pageContent) pageContent.style.filter = "blur(5px)";
       document.getElementById("navbar").style.filter = "none";
-    } else {
-      if (pageContent) {
-        pageContent.style.filter = "none";
-      }
+    } else if (pageContent) {
+      pageContent.style.filter = "none";
     }
 
     return () => {
-      document.body.style.filter = "none"; // Clean up the effect when component unmounts
+      if (pageContent) pageContent.style.filter = "none";
     };
   }, [isOpen]);
 
-  // Check if the user is logged in by checking for a token
-  const savedToken = localStorage.getItem("token");
-  const user = savedToken ? true : false;
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const handleLanguageMenu = (event) => {
+  const handleLanguageMenu = (event) =>
     setLanguageAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseLanguageMenu = () => {
-    setLanguageAnchorEl(null);
-  };
+  const handleCloseLanguageMenu = () => setLanguageAnchorEl(null);
 
   const toggleLanguage = (language) => {
     i18n.changeLanguage(language);
@@ -81,37 +77,22 @@ const Navbar = () => {
   };
 
   const links = [
-    { id: 1, title: t("home"), url: "/" },
-    { id: 2, title: t("schedules"), url: "/schedules" },
-    { id: 3, title: t("aboutMe"), url: "/about" },
-    { id: 4, title: t("contact"), url: "/contact" },
+    { id: 1, title: t("home"), url: "/", icon: <HomeIcon /> },
+    { id: 2, title: t("schedules"), url: "/schedules", icon: <ScheduleIcon /> },
+    { id: 3, title: t("aboutMe"), url: "/about", icon: <InfoIcon /> },
+    { id: 4, title: t("contact"), url: "/contact", icon: <ContactMailIcon /> },
   ];
 
-  // Add scroll event listener
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const savedToken = localStorage.getItem("token");
+  const user = savedToken ? true : false;
 
   return (
     <Container
       style={{
-        background: isScrolled
-          ? theme.palette.mode === "light"
-            ? "rgba(255, 255, 255, 0.8)"
-            : "rgba(0, 0, 0, 0.8)"
-          : theme.palette.mode === "dark"
-          ? "none"
-          : "none",
+        background: isScrolled ? colors.primary.light : "transparent",
         backdropFilter: isScrolled ? "blur(10px)" : "none",
         transition: "background 0.3s, backdrop-filter 0.3s",
-        color: colors.black[100],
+        color: colors.neutral.white,
       }}
     >
       <HamburgerContainer>
@@ -119,44 +100,80 @@ const Navbar = () => {
           toggled={isOpen}
           toggle={handleToggle}
           style={{ zIndex: 20 }}
-          color={colors.buff[500]}
+          color={
+            theme.palette.mode === "dark"
+              ? colors.secondary.main
+              : colors.secondary.dark
+          }
         />
       </HamburgerContainer>
 
-      {/* The Navbar itself should not be blurred */}
       <div id="navbar">
-        <Sidebar isOpen={isOpen} backgroundColor={colors.black[400]}>
-          <img src={Logo} width={100} />
+        <Sidebar
+          isOpen={isOpen}
+          style={{
+            backgroundColor: colors.background.default,
+            color:
+              theme.palette.mode === "dark"
+                ? colors.neutral.white
+                : colors.primary.dark,
+          }}
+        >
+          <img src={Logo} alt="Logo" width={100} />
           {links.map((item) => (
             <StyledLink
-              color={colors.sunset[700]}
+              style={{
+                color:
+                  theme.palette.mode === "dark"
+                    ? colors.secondary.main
+                    : colors.secondary.dark,
+              }}
               to={item.url}
               key={item.id}
               onClick={closeMobileMenu}
             >
-              {item.title}
+              <Box display="flex" alignItems="center">
+                {item.icon}
+                <span style={{ marginLeft: "8px" }}>{item.title}</span>
+              </Box>
             </StyledLink>
           ))}
 
           {!user ? (
             <StyledLink
-              color={colors.sunset[700]}
+              style={{
+                color:
+                  theme.palette.mode === "dark"
+                    ? colors.secondary.main
+                    : colors.secondary.dark,
+              }}
               to="/login"
               onClick={closeMobileMenu}
             >
-              {t("login")}
+              <Box display="flex" alignItems="center">
+                <LoginIcon style={{ marginRight: "8px" }} />
+                {t("login")}
+              </Box>
             </StyledLink>
           ) : (
             <StyledLink
-              color={colors.sunset[700]}
+              style={{
+                color:
+                  theme.palette.mode === "dark"
+                    ? colors.secondary.main
+                    : colors.secondary.dark,
+              }}
               to="#"
               onClick={handleLogout}
             >
-              {t("logout")}
+              <Box display="flex" alignItems="center">
+                <ExitToAppIcon style={{ marginRight: "8px" }} />
+                {t("logout")}
+              </Box>
             </StyledLink>
           )}
 
-          <Box display="flex" color={colors.buff[500]}>
+          <Box display="flex" color={colors.secondary.main}>
             <Tooltip
               title={
                 theme.palette.mode === "dark" ? t("lightMode") : t("darkMode")
@@ -164,14 +181,10 @@ const Navbar = () => {
             >
               <IconButton onClick={colorMode.toggleColorMode}>
                 {theme.palette.mode === "dark" ? (
-                  <DarkModeOutlinedIcon
-                    onClick={closeMobileMenu}
-                    style={{ color: colors.sunset[700] }}
-                  />
+                  <DarkModeOutlinedIcon sx={{ color: colors.secondary.main }} />
                 ) : (
                   <LightModeOutlinedIcon
-                    onClick={closeMobileMenu}
-                    style={{ color: colors.sunset[700] }}
+                    sx={{ color: colors.secondary.dark }}
                   />
                 )}
               </IconButton>
@@ -181,7 +194,12 @@ const Navbar = () => {
               <Tooltip title={t("changeLanguage")}>
                 <IconButton onClick={handleLanguageMenu}>
                   <TranslateOutlinedIcon
-                    style={{ color: colors.sunset[700] }}
+                    sx={{
+                      color:
+                        theme.palette.mode === "dark"
+                          ? colors.secondary.main
+                          : colors.secondary.dark,
+                    }}
                   />
                 </IconButton>
               </Tooltip>

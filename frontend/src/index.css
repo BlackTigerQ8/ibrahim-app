@@ -11,19 +11,19 @@ body,
 }
 
 :root {
-  --primary-color: #111317;
+  /* --primary-color: #111317;
   --primary-color-light: #1f2125;
   --primary-color-extra-light: #35373b;
   --secondary-color: #f9ac54;
   --secondary-color-dark: #d79447;
+  --white: #ffffff;*/
   --text-light: #d1d5db;
-  --white: #ffffff;
   --max-width: 1200px;
 }
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: var(--primary-color);
+  /* background-color: var(--primary-color); */
 }
 
 a {

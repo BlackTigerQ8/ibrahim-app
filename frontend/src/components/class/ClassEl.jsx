@@ -48,7 +48,6 @@ export const Image2 = styled.img`
 
 export const BackgroundBlur = styled.span`
   position: absolute;
-  box-shadow: 0 0 1000px 50px var(--secondary-color);
   z-index: -1;
 `;
 
@@ -70,33 +69,11 @@ export const SectionHeader = styled.h2`
   font-size: 2.25rem;
   font-weight: 600;
   text-align: left;
-  color: var(--white);
   max-width: 400px;
 
   @media (max-width: 768px) {
     font-size: 1.75rem;
     max-width: 100%;
     text-align: center;
-  }
-`;
-
-export const Button = styled.button`
-  padding: 1rem 2rem;
-  outline: none;
-  border: none;
-  font-size: 1rem;
-  color: var(--white);
-  background-color: var(--secondary-color);
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background-color: var(--secondary-color-dark);
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    font-size: 1.125rem;
   }
 `;

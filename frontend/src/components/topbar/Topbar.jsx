@@ -29,24 +29,14 @@ const Topbar = () => {
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
-
-  // Check if the user is logged in by checking for a token
   const savedToken = localStorage.getItem("token");
-  const user = savedToken ? true : false;
-
-  // State to track if the page is scrolled
+  const user = Boolean(savedToken);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Add scroll event listener
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleLogout = () => {
@@ -78,27 +68,31 @@ const Topbar = () => {
   return (
     <AppBar
       position="sticky"
-      style={{
-        background: isScrolled
-          ? theme.palette.mode === "light"
-            ? "rgba(255, 255, 255, 0.8)"
-            : "rgba(0, 0, 0, 0.8)"
-          : theme.palette.mode === "light"
-          ? "#ffffff"
-          : colors.black[500],
+      sx={{
+        background: isScrolled ? colors.primary.light : colors.primary.main,
+        color:
+          theme.palette.mode === "light"
+            ? colors.neutral.light
+            : colors.neutral.white,
+        transition: "background 0.3s, color 0.3s",
         backdropFilter: isScrolled ? "blur(10px)" : "none",
-        transition: "background 0.3s, backdrop-filter 0.3s",
-        color: colors.black[100],
       }}
     >
       <Toolbar>
         <img src={Logo} alt="Logo" width={40} style={{ marginRight: "1rem" }} />
-        <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 1, color: colors.secondary.main }}
+        >
           Ibrahim
         </Typography>
-        <Box display="flex" alignItems="center" justifyContent="center">
+        <Box display="flex" alignItems="center">
           <Tooltip title={t("changeLanguage")}>
-            <IconButton onClick={handleLanguageMenu}>
+            <IconButton
+              onClick={handleLanguageMenu}
+              sx={{ color: colors.secondary.main }}
+            >
               <TranslateOutlinedIcon />
             </IconButton>
           </Tooltip>
@@ -110,35 +104,59 @@ const Topbar = () => {
             <MenuItem onClick={() => toggleLanguage("en")}>English</MenuItem>
             <MenuItem onClick={() => toggleLanguage("ar")}>العربية</MenuItem>
           </Menu>
+          <Tooltip
+            title={
+              theme.palette.mode === "dark" ? t("lightMode") : t("darkMode")
+            }
+          >
+            <IconButton onClick={colorMode.toggleColorMode}>
+              {theme.palette.mode === "dark" ? (
+                <DarkModeOutlinedIcon sx={{ color: colors.secondary.main }} />
+              ) : (
+                <LightModeOutlinedIcon sx={{ color: colors.secondary.main }} />
+              )}
+            </IconButton>
+          </Tooltip>
         </Box>
-        {/* Dark/Light Mode Toggle */}
-        <Tooltip
-          title={theme.palette.mode === "dark" ? t("lightMode") : t("darkMode")}
-        >
-          <IconButton onClick={colorMode.toggleColorMode}>
-            {theme.palette.mode === "dark" ? (
-              <DarkModeOutlinedIcon />
-            ) : (
-              <LightModeOutlinedIcon />
-            )}
-          </IconButton>
-        </Tooltip>
         {links.map((item) => (
-          <Button key={item.id} color="inherit" component={Link} to={item.url}>
+          <Button
+            key={item.id}
+            component={Link}
+            to={item.url}
+            sx={{
+              color:
+                theme.palette.mode === "dark"
+                  ? colors.secondary.main
+                  : colors.secondary.dark,
+              textTransform: "capitalize",
+              mx: 1,
+            }}
+          >
             {item.title}
           </Button>
         ))}
-
         {!user ? (
-          <Button color={colors.sunset[700]} component={Link} to="/login">
+          <Button
+            component={Link}
+            to="/login"
+            sx={{
+              color: colors.secondary.main,
+              background: colors.primary.extraLight,
+              "&:hover": { background: colors.primary.light },
+            }}
+          >
             {t("login")}
           </Button>
         ) : (
           <Button
-            color={colors.sunset[700]}
             component={Link}
             to="/"
             onClick={handleLogout}
+            sx={{
+              color: colors.secondary.main,
+              background: colors.primary.extraLight,
+              "&:hover": { background: colors.primary.light },
+            }}
           >
             {t("logout")}
           </Button>

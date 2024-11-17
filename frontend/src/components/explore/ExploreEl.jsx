@@ -27,7 +27,6 @@ export const SectionHeader = styled.h2`
   font-size: 2.25rem;
   font-weight: 600;
   text-align: center;
-  color: var(--white);
 
   @media (max-width: 768px) {
     font-size: 1.75rem;
@@ -47,16 +46,10 @@ export const ExploreNav = styled.div`
     height: 40px;
     padding: 0;
     font-size: 1.5rem;
-    color: var(--white);
-    border: 2px solid var(--white);
+    border: 2px solid;
     border-radius: 50%;
     cursor: pointer;
     transition: 0.3s;
-  }
-
-  & > span:hover {
-    color: var(--secondary-color);
-    border-color: var(--secondary-color);
   }
 
   @media (max-width: 768px) {
@@ -86,15 +79,9 @@ export const ExploreGrid = styled.div`
 
 export const ExploreCard = styled.div`
   padding: 1rem;
-  background-color: var(--primary-color-light);
   border: 2px solid transparent;
   border-radius: 10px;
   transition: 0.3s;
-
-  &:hover {
-    background-color: var(--primary-color-extra-light);
-    border-color: var(--secondary-color);
-  }
 
   & > span {
     display: flex;
@@ -103,8 +90,6 @@ export const ExploreCard = styled.div`
     width: 40px;
     height: 40px;
     font-size: 1.75rem;
-    color: var(--white);
-    background-color: var(--secondary-color-dark);
     border-radius: 5px;
     margin-bottom: 1rem;
   }
@@ -112,7 +97,6 @@ export const ExploreCard = styled.div`
     margin-bottom: 0.5rem;
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--white);
 
     @media (max-width: 768px) {
       font-size: 1rem;
@@ -121,7 +105,6 @@ export const ExploreCard = styled.div`
 
   & > p {
     margin-bottom: 1rem;
-    color: var(--text-light);
   }
 
   & > a {
@@ -129,9 +112,5 @@ export const ExploreCard = styled.div`
     align-items: center;
     color: var(--white);
     transition: 0.3s;
-  }
-
-  & > a:hover {
-    color: var(--secondary-color);
   }
 `;
