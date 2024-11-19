@@ -22,6 +22,8 @@ import Athlete from "./Pages/Athlete";
 import Login from "./Pages/Login";
 import Schedules from "./Pages/Schedules";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import { cardio } from "ldrs";
 import Profile from "./Pages/Profile";
 
@@ -155,8 +157,8 @@ function App() {
               />
             </Routes>
           </main>
+          <ToastContainer />
         </ThemeProvider>
-        <ToastContainer />
       </ColorModeContext.Provider>
     </I18nextProvider>
   );

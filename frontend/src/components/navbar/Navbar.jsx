@@ -70,10 +70,17 @@ const Navbar = () => {
     handleCloseLanguageMenu();
   };
 
+  const hexToRgba = (hex, alpha = 1) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   const handleLogout = () => {
     dispatch(logoutUser());
     localStorage.clear();
-    window.location.reload();
+    // window.location.reload();
   };
 
   const links = [
@@ -89,7 +96,9 @@ const Navbar = () => {
   return (
     <Container
       style={{
-        background: isScrolled ? colors.primary.light : "transparent",
+        background: isScrolled
+          ? hexToRgba(colors.primary.light, 0.6)
+          : "transparent",
         backdropFilter: isScrolled ? "blur(10px)" : "none",
         transition: "background 0.3s, backdrop-filter 0.3s",
         color: colors.neutral.white,

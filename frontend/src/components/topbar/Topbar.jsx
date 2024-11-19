@@ -42,7 +42,6 @@ const Topbar = () => {
   const handleLogout = () => {
     dispatch(logoutUser());
     localStorage.clear();
-    window.location.reload();
   };
 
   const handleLanguageMenu = (event) => {
@@ -65,11 +64,20 @@ const Topbar = () => {
     { id: 4, title: t("contact"), url: "/contact" },
   ];
 
+  const hexToRgba = (hex, alpha = 1) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+
   return (
     <AppBar
       position="sticky"
       sx={{
-        background: isScrolled ? colors.primary.light : colors.primary.main,
+        background: isScrolled
+          ? hexToRgba(colors.primary.light, 0.6)
+          : hexToRgba(colors.primary.main, 0.6),
         color:
           theme.palette.mode === "light"
             ? colors.neutral.light

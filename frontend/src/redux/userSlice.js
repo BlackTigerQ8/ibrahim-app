@@ -118,6 +118,7 @@ const userSlice = createSlice({
       state.userRole = "";
       state.token = "";
       state.status = "";
+      dispatchToast(i18next.t("loggedOut"), "success");
     },
   },
   extraReducers(builder) {
@@ -132,10 +133,12 @@ const userSlice = createSlice({
         state.token = action.payload.token;
         state.userRole = user.role;
         localStorage.setItem("token", action.payload.token);
+        dispatchToast(i18next.t("loginUserFulfilled"), "success");
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
+        dispatchToast(i18next.t("loggingIn"), "success");
       })
 
       ///////////////////
