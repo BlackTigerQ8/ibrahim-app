@@ -15,7 +15,7 @@ import { tokens } from "../../theme";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { ColorModeContext } from "../../theme";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/userSlice";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,7 @@ const Topbar = () => {
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const savedToken = localStorage.getItem("token");
   const user = Boolean(savedToken);
+  const userRole = useSelector((state) => state.user.userRole);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -91,9 +92,13 @@ const Topbar = () => {
         <Typography
           variant="h6"
           component="div"
-          sx={{ flexGrow: 1, color: colors.secondary.main }}
+          sx={{
+            flexGrow: 1,
+            color: colors.secondary.main,
+            textTransform: "uppercase",
+          }}
         >
-          Ibrahim
+          {t(userRole)}
         </Typography>
         <Box display="flex" alignItems="center">
           <Tooltip title={t("changeLanguage")}>

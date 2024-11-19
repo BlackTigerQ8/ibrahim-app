@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Container, HamburgerContainer, Sidebar, StyledLink } from "./NavbarEl";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
@@ -9,10 +9,11 @@ import {
   Menu,
   MenuItem,
   Tooltip,
+  Typography,
   useTheme,
 } from "@mui/material";
 import { logoutUser } from "../../redux/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { ColorModeContext } from "../../theme";
 // Icons
@@ -35,6 +36,7 @@ const Navbar = () => {
   const [isOpen, setOpen] = useState(false);
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const userRole = useSelector((state) => state.user.userRole);
 
   const handleToggle = () => setOpen(!isOpen);
   const closeMobileMenu = () => setOpen(false);
@@ -106,9 +108,10 @@ const Navbar = () => {
     >
       <HamburgerContainer>
         <Hamburger
+          id="hamburger"
           toggled={isOpen}
           toggle={handleToggle}
-          style={{ zIndex: 20 }}
+          style={{ zIndex: 50 }}
           color={
             theme.palette.mode === "dark"
               ? colors.secondary.main
@@ -119,6 +122,7 @@ const Navbar = () => {
 
       <div id="navbar">
         <Sidebar
+          id="sidebar"
           isOpen={isOpen}
           style={{
             backgroundColor: colors.background.default,
@@ -129,6 +133,18 @@ const Navbar = () => {
           }}
         >
           <img src={Logo} alt="Logo" width={100} />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              color: colors.secondary.main,
+              textTransform: "uppercase",
+              fontWeight: 900,
+              fontSize: "18px",
+            }}
+          >
+            {t(userRole)}
+          </Typography>
           {links.map((item) => (
             <StyledLink
               style={{

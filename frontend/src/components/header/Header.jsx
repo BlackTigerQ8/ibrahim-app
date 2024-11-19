@@ -4,9 +4,9 @@ import {
   HeaderContent,
   BackgroundBlur,
   HeaderBlur,
-  Button,
   HeaderImage,
 } from "./HeaderEl";
+import { Button } from "@mui/material";
 import HeaderImg from "../../assets/iheader.png";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
@@ -68,12 +68,14 @@ const Header = () => {
           and witness the incredible transformation your body is capable of!
         </p>
         <Button
-          style={{
+          sx={{
             backgroundColor: colors.secondary.main,
             "&:hover": {
               backgroundColor: colors.secondary.dark,
             },
             color: colors.primary.main,
+            padding: "1rem 2rem",
+            fontSize: "1rem",
           }}
         >
           Get Started
