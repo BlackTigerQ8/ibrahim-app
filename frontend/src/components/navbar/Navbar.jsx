@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Container, HamburgerContainer, Sidebar, StyledLink } from "./NavbarEl";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
@@ -20,6 +20,7 @@ import { ColorModeContext } from "../../theme";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import InfoIcon from "@mui/icons-material/Info";
@@ -37,6 +38,9 @@ const Navbar = () => {
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const userRole = useSelector((state) => state.user.userRole);
+  const currentUser = useSelector((state) => state.user.userInfo);
+  const savedToken = localStorage.getItem("token");
+  const user = savedToken ? true : false;
 
   const handleToggle = () => setOpen(!isOpen);
   const closeMobileMenu = () => setOpen(false);
@@ -82,6 +86,7 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logoutUser());
     localStorage.clear();
+    closeMobileMenu();
     // window.location.reload();
   };
 
@@ -92,8 +97,15 @@ const Navbar = () => {
     { id: 4, title: t("contact"), url: "/contact", icon: <ContactMailIcon /> },
   ];
 
-  const savedToken = localStorage.getItem("token");
-  const user = savedToken ? true : false;
+  // Only add Profile link if the user is logged in
+  if (user) {
+    links.push({
+      id: 5,
+      title: t("profile"),
+      url: currentUser?._id ? `/profile/${currentUser._id}` : "/login",
+      icon: <AccountCircleIcon />,
+    });
+  }
 
   return (
     <Container

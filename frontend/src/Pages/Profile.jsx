@@ -11,15 +11,18 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { profileImage, updateUser } from "../redux/userSlice";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.user);
+  const { t, i18n } = useTranslation();
+  const currentUser = useSelector((state) => state.user.userInfo);
 
   // Local state for form inputs
   const [formData, setFormData] = useState({
-    firstName: userInfo?.firstName || "",
-    lastName: userInfo?.lastName || "",
+    firstName: t(userInfo?.firstName || ""),
+    lastName: t(userInfo?.lastName || ""),
     email: userInfo?.email || "",
     password: "",
   });
@@ -55,32 +58,47 @@ const Profile = () => {
       sx={{
         padding: 4,
         maxWidth: 600,
-        margin: "2rem auto",
+        margin: { xs: ".5rem", sm: "2rem auto" },
       }}
     >
-      <Typography variant="h4" gutterBottom textAlign="center">
-        Profile
-      </Typography>
-      <Grid container spacing={3} alignItems="center" justifyContent="center">
-        <Grid item>
-          <Avatar
-            src={selectedImage || userInfo?.profileImage || ""}
-            alt="Profile Image"
-            sx={{ width: 100, height: 100 }}
-          />
-        </Grid>
-        <Grid item>
-          <Button variant="contained" component="label">
-            Upload Image
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={handleImageChange}
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        gap={2}
+        sx={{ flexDirection: { xs: "column", sm: "row" } }}
+      >
+        <Grid spacing={3} alignItems="center">
+          <Grid item>
+            <Avatar
+              src={selectedImage || userInfo?.profileImage || ""}
+              alt="Profile Image"
+              sx={{ width: 100, height: 100 }}
             />
-          </Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" component="label">
+              {t("uploadImage")}
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
+        <Box display="flex" flexDirection="column">
+          <Typography variant="h2" gutterBottom textAlign="center">
+            {t(currentUser.role)}
+          </Typography>
+          <Box display="flex" justifyContent="center" gap={1}>
+            <Typography variant="h4">{t(currentUser.firstName)}</Typography>
+            <Typography variant="h4">{t(currentUser.lastName)}</Typography>
+          </Box>
+        </Box>
+      </Box>
+
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -90,21 +108,21 @@ const Profile = () => {
         gap={2}
       >
         <TextField
-          label="First Name"
+          label={t("firstName")}
           name="firstName"
           value={formData.firstName}
           onChange={handleInputChange}
           fullWidth
         />
         <TextField
-          label="Last Name"
+          label={t("lastName")}
           name="lastName"
           value={formData.lastName}
           onChange={handleInputChange}
           fullWidth
         />
         <TextField
-          label="Email"
+          label={t("email")}
           name="email"
           type="email"
           value={formData.email}
@@ -112,16 +130,16 @@ const Profile = () => {
           fullWidth
         />
         <TextField
-          label="Password"
+          label={t("password")}
           name="password"
           type="password"
           value={formData.password}
           onChange={handleInputChange}
           fullWidth
-          placeholder="Leave blank to keep the current password"
+          placeholder={t("leaveBlankPassword")}
         />
         <Button type="submit" variant="contained" color="primary">
-          Save Changes
+          {t("saveChanges")}
         </Button>
       </Box>
     </Paper>

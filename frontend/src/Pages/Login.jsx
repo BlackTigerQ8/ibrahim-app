@@ -76,7 +76,7 @@ const Login = () => {
         bgcolor={theme.palette.background.default}
       >
         <div>
-          <l-cardio size="70" speed="1.75" color={theme.palette.primary.main} />
+          <l-cardio size="70" speed="1.75" color={colors.secondary.main} />
         </div>
       </Box>
     );

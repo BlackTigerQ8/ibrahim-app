@@ -32,6 +32,7 @@ const Topbar = () => {
   const savedToken = localStorage.getItem("token");
   const user = Boolean(savedToken);
   const userRole = useSelector((state) => state.user.userRole);
+  const currentUser = useSelector((state) => state.user.userInfo);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -64,6 +65,15 @@ const Topbar = () => {
     { id: 3, title: t("aboutMe"), url: "/about" },
     { id: 4, title: t("contact"), url: "/contact" },
   ];
+
+  // Only add Profile link if the user is logged in
+  if (user) {
+    links.push({
+      id: 5,
+      title: t("profile"),
+      url: currentUser?._id ? `/profile/${currentUser._id}` : "/login",
+    });
+  }
 
   const hexToRgba = (hex, alpha = 1) => {
     const r = parseInt(hex.slice(1, 3), 16);

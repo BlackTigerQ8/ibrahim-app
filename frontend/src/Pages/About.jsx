@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { Box, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const Schedules = () => {
+const About = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -66,7 +66,7 @@ const Schedules = () => {
           color: colors.secondary.main,
         }}
       >
-        {t("schedules")}
+        {t("aboutMe")}
         <l-cardio
           size="70"
           speed="1.75"
@@ -77,4 +77,4 @@ const Schedules = () => {
   );
 };
 
-export default Schedules;
+export default About;

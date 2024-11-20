@@ -17,22 +17,22 @@ import { setUser } from "./redux/userSlice";
 import Navbar from "./components/navbar/Navbar";
 import Topbar from "./components/topbar/Topbar";
 import Home from "./Pages/Home";
-import Coach from "./Pages/Coach";
-import Athlete from "./Pages/Athlete";
 import Login from "./Pages/Login";
 import Schedules from "./Pages/Schedules";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { cardio } from "ldrs";
 import Profile from "./Pages/Profile";
+import Contact from "./Pages/Contact";
+import About from "./Pages/About";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [theme, colorMode] = useMode();
   const colors = tokens(theme.palette.mode);
   const [isLoading, setIsLoading] = useState(true);
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -92,6 +92,13 @@ function App() {
   // ProtectedRoute component to handle access control
   const ProtectedRoute = ({ children, requiredRole }) => {
     if (!savedToken) {
+      toast.warn(t("loginRequred"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
       return <Navigate to="/login" replace />;
     }
     if (userRole && requiredRole && userRole !== requiredRole) {
@@ -126,8 +133,24 @@ function App() {
               <Route
                 path="/schedules"
                 element={
-                  <ProtectedRoute requiredRole="Schedules">
+                  <ProtectedRoute>
                     <Schedules />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <ProtectedRoute>
+                    <About />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/contact"
+                element={
+                  <ProtectedRoute>
+                    <Contact />
                   </ProtectedRoute>
                 }
               />
@@ -135,7 +158,7 @@ function App() {
                 path="/coach"
                 element={
                   <ProtectedRoute requiredRole="Coach">
-                    <Coach />
+                    {/* <Coach /> */}
                   </ProtectedRoute>
                 }
               />
@@ -143,12 +166,12 @@ function App() {
                 path="/athlete"
                 element={
                   <ProtectedRoute requiredRole="Athlete">
-                    <Athlete />
+                    {/* <Athlete /> */}
                   </ProtectedRoute>
                 }
               />
               <Route
-                path="/profile"
+                path="/profile/:id"
                 element={
                   <ProtectedRoute>
                     <Profile />
