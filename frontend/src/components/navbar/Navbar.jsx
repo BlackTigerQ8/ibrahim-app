@@ -92,7 +92,12 @@ const Navbar = () => {
 
   const links = [
     { id: 1, title: t("home"), url: "/", icon: <HomeIcon /> },
-    { id: 2, title: t("schedules"), url: "/schedules", icon: <ScheduleIcon /> },
+    {
+      id: 2,
+      title: t("schedules"),
+      url: "/categories",
+      icon: <ScheduleIcon />,
+    },
     { id: 3, title: t("aboutMe"), url: "/about", icon: <InfoIcon /> },
     { id: 4, title: t("contact"), url: "/contact", icon: <ContactMailIcon /> },
   ];

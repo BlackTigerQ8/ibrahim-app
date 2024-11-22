@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { tokens } from "../theme";
+import { tokens } from "../../theme";
 import { cardio } from "ldrs";
-import { setUser } from "../redux/userSlice";
+import { setUser } from "../../redux/userSlice";
 import { useDispatch } from "react-redux";
-import { Box, Typography } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import Title from "../../components/Title";
+import Cards from "./Cards";
 
-const Schedules = () => {
+const Categories = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -54,27 +56,13 @@ const Schedules = () => {
   }
 
   return (
-    <Box>
-      <Typography
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100dvh",
-          fontSize: "24px",
-          color: colors.secondary.main,
-        }}
-      >
-        {t("schedules")}
-        <l-cardio
-          size="70"
-          speed="1.75"
-          color={colors.secondary.main}
-        ></l-cardio>
-      </Typography>
-    </Box>
+    <Container>
+      <Box>
+        <Title title={t("SCHEDULES")} subtitle={t("trainingCategories")} />
+        <Cards />
+      </Box>
+    </Container>
   );
 };
 
-export default Schedules;
+export default Categories;

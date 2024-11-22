@@ -18,7 +18,6 @@ import Navbar from "./components/navbar/Navbar";
 import Topbar from "./components/topbar/Topbar";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
-import Schedules from "./Pages/Schedules";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -26,6 +25,7 @@ import { cardio } from "ldrs";
 import Profile from "./Pages/Profile";
 import Contact from "./Pages/Contact";
 import About from "./Pages/About";
+import Categories from "./Pages/Categories/Categories";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -131,10 +131,10 @@ function App() {
               />
               <Route path="/login" element={<Login />} />
               <Route
-                path="/schedules"
+                path="/categories"
                 element={
                   <ProtectedRoute>
-                    <Schedules />
+                    <Categories />
                   </ProtectedRoute>
                 }
               />
