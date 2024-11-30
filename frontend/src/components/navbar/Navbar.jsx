@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Container, HamburgerContainer, Sidebar, StyledLink } from "./NavbarEl";
+import { Container, HamburgerContainer, Sidebar } from "./NavbarEl";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
 import { tokens } from "../../theme";
@@ -11,6 +11,13 @@ import {
   Tooltip,
   Typography,
   useTheme,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import { logoutUser } from "../../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +27,7 @@ import { ColorModeContext } from "../../theme";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import PostAddIcon from "@mui/icons-material/PostAdd";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import ScheduleIcon from "@mui/icons-material/Schedule";
@@ -27,11 +35,13 @@ import InfoIcon from "@mui/icons-material/Info";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import LoginIcon from "@mui/icons-material/Login";
+import { useNavigate, Link } from "react-router-dom";
 
 const Navbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const colorMode = useContext(ColorModeContext);
   const [isOpen, setOpen] = useState(false);
@@ -41,6 +51,7 @@ const Navbar = () => {
   const currentUser = useSelector((state) => state.user.userInfo);
   const savedToken = localStorage.getItem("token");
   const user = savedToken ? true : false;
+  const [openModal, setOpenModal] = useState(false);
 
   const handleToggle = () => setOpen(!isOpen);
   const closeMobileMenu = () => setOpen(false);
@@ -83,11 +94,25 @@ const Navbar = () => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 
+  useEffect(() => {
+    // Reset modal state if user logs back in
+    if (savedToken) {
+      setOpenModal(false); // Close the modal if the user is logged in
+    }
+  }, [savedToken]); // Depend on savedToken to trigger the effect when the login state changes
+
   const handleLogout = () => {
-    dispatch(logoutUser());
-    localStorage.clear();
-    closeMobileMenu();
-    // window.location.reload();
+    setOpenModal(true);
+  };
+
+  const handleModalClose = (confirm) => {
+    if (confirm) {
+      dispatch(logoutUser());
+      closeMobileMenu();
+      localStorage.clear();
+      navigate("/");
+    }
+    setOpenModal(false);
   };
 
   const links = [
@@ -95,7 +120,7 @@ const Navbar = () => {
     {
       id: 2,
       title: t("schedules"),
-      url: "/categories",
+      url: "/schedules",
       icon: <ScheduleIcon />,
     },
     { id: 3, title: t("aboutMe"), url: "/about", icon: <InfoIcon /> },
@@ -109,6 +134,16 @@ const Navbar = () => {
       title: t("profile"),
       url: currentUser?._id ? `/profile/${currentUser._id}` : "/login",
       icon: <AccountCircleIcon />,
+    });
+  }
+
+  // Only add CategoryForm link if the user is Admin
+  if (userRole === "Admin") {
+    links.push({
+      id: 6,
+      title: t("categoryForm"),
+      url: "/category-form",
+      icon: <PostAddIcon />,
     });
   }
 
@@ -142,6 +177,7 @@ const Navbar = () => {
           id="sidebar"
           isOpen={isOpen}
           style={{
+            zIndex: 49,
             backgroundColor: colors.background.default,
             color:
               theme.palette.mode === "dark"
@@ -162,58 +198,91 @@ const Navbar = () => {
           >
             {t(userRole)}
           </Typography>
-          {links.map((item) => (
-            <StyledLink
-              style={{
-                color:
-                  theme.palette.mode === "dark"
-                    ? colors.secondary.main
-                    : colors.secondary.dark,
-              }}
-              to={item.url}
-              key={item.id}
-              onClick={closeMobileMenu}
-            >
-              <Box display="flex" alignItems="center">
+          <List>
+            {links.map((item) => (
+              <ListItem
+                key={item.id}
+                component={Link}
+                to={item.url}
+                onClick={closeMobileMenu}
+                sx={{
+                  padding: "12px 16px",
+                  margin: "8px 0",
+                  borderRadius: "8px",
+                  width: "100%",
+                  color:
+                    theme.palette.mode === "dark"
+                      ? colors.secondary.main
+                      : colors.secondary.dark,
+                  "&:hover": {
+                    backgroundColor: colors.primary.extraLight,
+                    color: colors.secondary.hover,
+                  },
+                }}
+              >
                 {item.icon}
-                <span style={{ marginLeft: "8px" }}>{item.title}</span>
-              </Box>
-            </StyledLink>
-          ))}
+                <ListItemText
+                  primary={item.title}
+                  sx={{
+                    marginLeft: "8px",
+                    fontWeight: 500,
+                    fontSize: "14px",
+                  }}
+                />
+              </ListItem>
+            ))}
 
-          {!user ? (
-            <StyledLink
-              style={{
-                color:
-                  theme.palette.mode === "dark"
-                    ? colors.secondary.main
-                    : colors.secondary.dark,
-              }}
-              to="/login"
-              onClick={closeMobileMenu}
-            >
-              <Box display="flex" alignItems="center">
+            {!user ? (
+              <ListItem
+                component={Link}
+                to="/login"
+                onClick={closeMobileMenu}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "12px 16px",
+                  margin: "8px 0",
+                  borderRadius: "8px",
+                  color:
+                    theme.palette.mode === "dark"
+                      ? colors.secondary.main
+                      : colors.secondary.dark,
+                  "&:hover": {
+                    backgroundColor: colors.primary.extraLight,
+                    color: colors.secondary.hover,
+                  },
+                }}
+              >
                 <LoginIcon style={{ marginRight: "8px" }} />
                 {t("login")}
-              </Box>
-            </StyledLink>
-          ) : (
-            <StyledLink
-              style={{
-                color:
-                  theme.palette.mode === "dark"
-                    ? colors.secondary.main
-                    : colors.secondary.dark,
-              }}
-              to="#"
-              onClick={handleLogout}
-            >
-              <Box display="flex" alignItems="center">
+              </ListItem>
+            ) : (
+              <ListItem
+                component={Link}
+                onClick={handleLogout}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "12px 16px",
+                  margin: "8px 0",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  color:
+                    theme.palette.mode === "dark"
+                      ? colors.secondary.main
+                      : colors.secondary.dark,
+                  "&:hover": {
+                    backgroundColor: colors.primary.extraLight,
+                    color: colors.secondary.hover,
+                  },
+                  width: "100%", // Ensures it takes up the entire row
+                }}
+              >
                 <ExitToAppIcon style={{ marginRight: "8px" }} />
                 {t("logout")}
-              </Box>
-            </StyledLink>
-          )}
+              </ListItem>
+            )}
+          </List>
 
           <Box display="flex" color={colors.secondary.main}>
             <Tooltip
@@ -261,6 +330,26 @@ const Navbar = () => {
           </Box>
         </Sidebar>
       </div>
+      {/* Modal for Logout confirmation */}
+      <Dialog
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="confirm-logout"
+      >
+        <DialogTitle id="confirm-logout">{t("areYouSureLogout")}</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => handleModalClose(false)} color="inhert">
+            {t("cancel")}
+          </Button>
+          <Button
+            onClick={() => handleModalClose(true)}
+            color="secondary"
+            autoFocus
+          >
+            {t("confirm")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

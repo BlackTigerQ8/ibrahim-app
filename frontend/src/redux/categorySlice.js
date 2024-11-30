@@ -5,6 +5,13 @@ import i18next from "i18next";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+const axiosInstance = axios.create({
+  baseURL: `${API_URL}/schedules`,
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+});
+
 const initialState = {
   categories: [],
   status: "idle",
@@ -24,19 +31,13 @@ const dispatchToast = (message, type) => {
 
 // Thunk action for fetching all categories
 export const fetchCategories = createAsyncThunk(
-  "categories/fetchCategories",
+  "schedules/fetchCategories",
   async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/categories`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      console.log("API Response:", response);
-      console.log("Categories Data:", response.data.data.categories);
+      const response = await axiosInstance.get("/");
       return response.data.data.categories;
     } catch (error) {
-      console.error("Error fetching categories:", error); // Log any error
+      console.error("Error fetching categories:", error);
       throw new Error(error.response?.data?.message || error.message);
     }
   }
@@ -44,18 +45,10 @@ export const fetchCategories = createAsyncThunk(
 
 // Thunk action for creating a new category
 export const createCategory = createAsyncThunk(
-  "categories/createCategory",
+  "schedules/createCategory",
   async (categoryData) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/api/categories`,
-        categoryData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axiosInstance.post("/", categoryData);
       dispatchToast(i18next.t("createCategorySuccess"), "success");
       return response.data.data.category;
     } catch (error) {
@@ -67,18 +60,10 @@ export const createCategory = createAsyncThunk(
 
 // Thunk action for updating a category
 export const updateCategory = createAsyncThunk(
-  "categories/updateCategory",
+  "schedules/updateCategory",
   async ({ id, updatedData }) => {
     try {
-      const response = await axios.put(
-        `${API_URL}/api/categories/${id}`,
-        updatedData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await axiosInstance.put(`/${id}`, updatedData);
       dispatchToast(i18next.t("updateCategorySuccess"), "success");
       return response.data.data.category;
     } catch (error) {
@@ -90,14 +75,10 @@ export const updateCategory = createAsyncThunk(
 
 // Thunk action for deleting a category
 export const deleteCategory = createAsyncThunk(
-  "categories/deleteCategory",
+  "schedules/deleteCategory",
   async (id) => {
     try {
-      await axios.delete(`${API_URL}/api/categories/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await axiosInstance.delete(`/${id}`);
       dispatchToast(i18next.t("deleteCategorySuccess"), "success");
       return id;
     } catch (error) {

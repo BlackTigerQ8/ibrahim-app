@@ -20,12 +20,12 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { cardio } from "ldrs";
 import Profile from "./Pages/Profile";
 import Contact from "./Pages/Contact";
 import About from "./Pages/About";
 import Categories from "./Pages/Categories/Categories";
+import CategoryForm from "./Pages/ScheduleForm";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -49,7 +49,11 @@ function App() {
   useEffect(() => {
     const checkUser = async () => {
       // Allow access to "/" without checking the token
-      if (location.pathname === "/" || location.pathname === "/login") {
+      if (
+        location.pathname === "/" ||
+        location.pathname === "/about" ||
+        location.pathname === "/login"
+      ) {
         setIsLoading(false);
         return;
       }
@@ -90,7 +94,7 @@ function App() {
   }
 
   // ProtectedRoute component to handle access control
-  const ProtectedRoute = ({ children, requiredRole }) => {
+  const ProtectedRoute = ({ children, requiredRole = [] }) => {
     if (!savedToken) {
       toast.warn(t("loginRequred"), {
         position: "top-right",
@@ -101,16 +105,53 @@ function App() {
       });
       return <Navigate to="/login" replace />;
     }
-    if (userRole && requiredRole && userRole !== requiredRole) {
-      return <Navigate to={`/${userRole.toLowerCase()}`} replace />;
+
+    // Allow Admin role regardless of requiredRoles
+    if (userRole === "Admin") {
+      return children;
+    }
+
+    if (requiredRole.length > 0 && !requiredRole.includes(userRole)) {
+      toast.warn(t("notAuthorized"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return <Navigate to={"/"} replace />;
     }
     return children;
   };
 
-  // PublicRoute component to allow access to public pages like "/home"
+  // PublicRoute component to allow access to public pages like "/"
   const PublicRoute = ({ children }) => {
     return children;
   };
+
+  const publicRoutes = [
+    { path: "/", component: <Home /> },
+    { path: "/about", component: <About /> },
+  ];
+
+  const protectedRoutes = [
+    { path: "/category-form", component: <CategoryForm /> },
+    {
+      path: "/schedules",
+      component: <Categories />,
+      requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/contact",
+      component: <Contact />,
+      requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/profile/:id",
+      component: <Profile />,
+      requiredRole: ["Family", "Coach", "Athlete"],
+    },
+  ];
 
   return (
     <I18nextProvider i18n={i18n}>
@@ -121,63 +162,26 @@ function App() {
 
           <main id="page-content" style={{ filter: "none" }}>
             <Routes>
-              <Route
-                path="/"
-                element={
-                  <PublicRoute>
-                    <Home />
-                  </PublicRoute>
-                }
-              />
+              {publicRoutes.map((route, index) => (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={<PublicRoute>{route.component}</PublicRoute>}
+                />
+              ))}
+
+              {protectedRoutes.map((route, index) => (
+                <Route
+                  key={index}
+                  path={route.path}
+                  element={
+                    <ProtectedRoute requiredRole={route.requiredRole}>
+                      {route.component}
+                    </ProtectedRoute>
+                  }
+                />
+              ))}
               <Route path="/login" element={<Login />} />
-              <Route
-                path="/categories"
-                element={
-                  <ProtectedRoute>
-                    <Categories />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/about"
-                element={
-                  <ProtectedRoute>
-                    <About />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/contact"
-                element={
-                  <ProtectedRoute>
-                    <Contact />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/coach"
-                element={
-                  <ProtectedRoute requiredRole="Coach">
-                    {/* <Coach /> */}
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/athlete"
-                element={
-                  <ProtectedRoute requiredRole="Athlete">
-                    {/* <Athlete /> */}
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile/:id"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
             </Routes>
           </main>
           <ToastContainer />

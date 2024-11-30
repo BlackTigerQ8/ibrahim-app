@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 export const Container = styled.div`
   display: flex;
@@ -7,16 +7,6 @@ export const Container = styled.div`
   position: fixed;
   z-index: 1000;
   width: 100%;
-`;
-
-export const StyledLink = styled(Link)`
-  color: ${(props) => props.color};
-  text-decoration: none;
-  font-weight: 600;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `;
 
 export const HamburgerContainer = styled.div`

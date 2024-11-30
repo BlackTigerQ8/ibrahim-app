@@ -30,6 +30,7 @@ export default function Cards() {
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchCategories());
+      console.error("Error fetching categories:", error);
     }
   }, [dispatch, status]);
 

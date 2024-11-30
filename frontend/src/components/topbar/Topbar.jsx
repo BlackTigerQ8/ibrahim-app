@@ -9,12 +9,16 @@ import {
   MenuItem,
   Menu,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { ColorModeContext } from "../../theme";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/userSlice";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
@@ -27,6 +31,7 @@ const Topbar = () => {
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const savedToken = localStorage.getItem("token");
@@ -34,6 +39,8 @@ const Topbar = () => {
   const userRole = useSelector((state) => state.user.userRole);
   const currentUser = useSelector((state) => state.user.userInfo);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null); // Optional, if you need to control other UI elements like a menu
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
@@ -42,8 +49,16 @@ const Topbar = () => {
   }, []);
 
   const handleLogout = () => {
-    dispatch(logoutUser());
-    localStorage.clear();
+    setOpenModal(true); // Open the confirmation modal
+  };
+
+  const handleModalClose = (confirm) => {
+    if (confirm) {
+      dispatch(logoutUser()); // Dispatch logout only if confirmed
+      localStorage.clear(); // Clear local storage after confirmation
+      navigate("/"); // Redirect to homepage after logout
+    }
+    setOpenModal(false); // Close the modal regardless of confirmation
   };
 
   const handleLanguageMenu = (event) => {
@@ -72,6 +87,15 @@ const Topbar = () => {
       id: 5,
       title: t("profile"),
       url: currentUser?._id ? `/profile/${currentUser._id}` : "/login",
+    });
+  }
+
+  // Only add CategoryForm link if the user is Admin
+  if (userRole === "Admin") {
+    links.push({
+      id: 6,
+      title: t("categoryForm"),
+      url: "/category-form",
     });
   }
 
@@ -172,8 +196,6 @@ const Topbar = () => {
           </Button>
         ) : (
           <Button
-            component={Link}
-            to="/"
             onClick={handleLogout}
             sx={{
               color: colors.secondary.main,
@@ -184,6 +206,17 @@ const Topbar = () => {
             {t("logout")}
           </Button>
         )}
+        <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+          <DialogTitle>{t("areYouSureLogout")}</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => handleModalClose(false)} color="inherit">
+              {t("cancel")}
+            </Button>
+            <Button onClick={() => handleModalClose(true)} color="secondary">
+              {t("confirm")}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Toolbar>
     </AppBar>
   );

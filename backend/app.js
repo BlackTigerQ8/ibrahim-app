@@ -21,10 +21,10 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/users", userRouter);
-app.use("/api/categories", categoryRouter);
+app.use("/api/schedules", categoryRouter);
 
-app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "Ok", timestamp: new Date().toISOString() });
-});
+// app.get("/api/health", (req, res) => {
+//   res.status(200).json({ status: "Ok", timestamp: new Date().toISOString() });
+// });
 
 module.exports = app;

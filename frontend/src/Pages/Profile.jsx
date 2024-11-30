@@ -5,7 +5,7 @@ import {
   TextField,
   Button,
   Avatar,
-  Grid,
+  Grid2,
   Paper,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
@@ -68,15 +68,15 @@ const Profile = () => {
         gap={2}
         sx={{ flexDirection: { xs: "column", sm: "row" } }}
       >
-        <Grid spacing={3} alignItems="center">
-          <Grid item>
+        <Grid2 spacing={3} alignItems="center">
+          <Grid2 item>
             <Avatar
               src={selectedImage || userInfo?.profileImage || ""}
               alt="Profile Image"
               sx={{ width: 100, height: 100 }}
             />
-          </Grid>
-          <Grid item>
+          </Grid2>
+          <Grid2 item>
             <Button variant="contained" component="label">
               {t("uploadImage")}
               <input
@@ -86,8 +86,8 @@ const Profile = () => {
                 onChange={handleImageChange}
               />
             </Button>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
         <Box display="flex" flexDirection="column">
           <Typography variant="h2" gutterBottom textAlign="center">
             {t(currentUser.role)}
