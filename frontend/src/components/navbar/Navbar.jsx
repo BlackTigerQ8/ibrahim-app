@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Container, HamburgerContainer, Sidebar } from "./NavbarEl";
+import { Container, HamburgerContainer, Sidebar, Overlay } from "./NavbarEl";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
 import { tokens } from "../../theme";
@@ -171,7 +171,7 @@ const Navbar = () => {
           }
         />
       </HamburgerContainer>
-
+      <Overlay isOpen={isOpen} onClick={closeMobileMenu} />
       <div id="navbar">
         <Sidebar
           id="sidebar"

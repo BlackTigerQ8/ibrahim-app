@@ -36,3 +36,15 @@ export const Sidebar = styled.div`
   transition: transform 0.3s ease-in-out;
   transform: translateX(${(props) => (props.isOpen ? "0" : "-100%")});
 `;
+
+export const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0);
+  z-index: 0;
+  display: ${(props) => (props.isOpen ? "block" : "none")};
+  transition: opacity 0.3s ease-in-out;
+`;
