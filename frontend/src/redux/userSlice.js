@@ -25,19 +25,19 @@ const dispatchToast = (message, type) => {
 // Thunk action for user registration
 export const registerUser = createAsyncThunk(
   "user/registerUser",
-  async (userFormData) => {
+  async (formData, { rejectWithValue }) => {
     try {
-      // Inside the code where you make API requests
-      const response = await axios.post(`${API_URL}/users`, userFormData, {
+      const response = await axios.post(`${API_URL}/users`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "multipart/form-data",
+          // Do NOT set Content-Type for FormData
         },
       });
-
+      dispatchToast(i18next.t("userCreatedSuccessfully"), "success");
       return response.data;
     } catch (error) {
-      throw new Error(error.response.data.message || error.message);
+      dispatchToast(error.response?.data?.message || "Error occurred", "error");
+      return rejectWithValue(error.response?.data || "Failed to register user");
     }
   }
 );

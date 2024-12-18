@@ -4,35 +4,35 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../theme";
 import { cardio } from "ldrs";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, Container, Alert, CircularProgress } from "@mui/material";
+import { Box, Button, Container, Alert, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Title from "../components/Title";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchTrainings } from "../redux/trainingSlice";
 
 const Trainings = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { categoryId } = useParams();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
 
-  const {
-    trainings = [],
-    status,
-    error,
-  } = useSelector((state) => state.training); // Default to empty array if trainings is undefined
+  const { trainings, status, error } = useSelector((state) => state.training);
+
+  console.log(trainings);
 
   useEffect(() => {
-    dispatch(fetchTrainings(token));
-  }, [dispatch, token]);
+    if (categoryId) {
+      dispatch(fetchTrainings({ token, categoryId }));
+    }
+  }, [dispatch, categoryId, token]);
 
   cardio.register();
 
-  // Handle different loading states
   if (status === "loading") {
     return (
       <div
@@ -84,7 +84,9 @@ const Trainings = () => {
             trainings.map((item) => (
               <Box key={item._id} sx={{ width: "100%", maxWidth: 345 }}>
                 <Button
-                  onClick={() => navigate(`/training/${item._id}`)}
+                  onClick={() =>
+                    navigate(`/categories/${categoryId}/trainings/${item._id}`)
+                  }
                   sx={{
                     width: "100%",
                     height: "100%",
@@ -93,17 +95,42 @@ const Trainings = () => {
                     border: "1px solid #ddd",
                     borderRadius: "8px",
                     padding: "1rem",
+                    color: "neutral.light",
+                    "&:hover": {
+                      backgroundColor: "primary.light",
+                    },
                   }}
                 >
                   <Box>
-                    <h4>{item.name}</h4>
-                    <p>{item.description}</p>
+                    <Typography variant="h4" sx={{ mb: 1 }}>
+                      {item.name}
+                    </Typography>
+                    <Typography variant="body1">{item.description}</Typography>
                   </Box>
                 </Button>
               </Box>
             ))
           ) : (
-            <Alert severity="error">{t("noTrainingsAvailable")}</Alert>
+            <Box
+              sx={{
+                width: "100%",
+                height: "50vh",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Alert
+                severity="error"
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {t("noTrainingsAvailable")}
+              </Alert>
+            </Box>
           )}
         </Box>
       </Box>

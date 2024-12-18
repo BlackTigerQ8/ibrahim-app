@@ -78,7 +78,7 @@ const UserForm = () => {
       const formData = new FormData();
 
       Object.keys(values).forEach((key) => {
-        if (key !== "iamge") {
+        if (key !== "image") {
           formData.append(
             key,
             key === "email"

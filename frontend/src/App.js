@@ -30,6 +30,7 @@ import Calendar from "./Pages/Calendar";
 import UserForm from "./Pages/UserForm";
 import Users from "./Pages/Users";
 import Trainings from "./Pages/Trainings";
+import Training from "./Pages/Training";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -152,6 +153,11 @@ function App() {
     {
       path: "/categories/:categoryId/trainings",
       component: <Trainings />,
+      requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/categories/:categoryId/trainings/:trainingId",
+      component: <Training />,
       requiredRole: ["Family", "Coach", "Athlete"],
     },
     {

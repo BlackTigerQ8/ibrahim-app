@@ -7,7 +7,9 @@ const mongoose = require("mongoose");
 // @access  Private/Admin
 const getAllTrainings = async (req, res) => {
   try {
-    const trainings = await Training.find().populate("category");
+    const categoryId = req.query.categoryId;
+    const query = categoryId ? { category: categoryId } : {};
+    const trainings = await Training.find(query).populate("category");
     res.status(200).json({
       status: "Success",
       data: {

@@ -23,17 +23,17 @@ const dispatchToast = (message, type) => {
 
 export const fetchTrainings = createAsyncThunk(
   "training/fetchTrainings",
-  async (token) => {
+  async ({ token, categoryId }) => {
     try {
       const response = await axios.get(`${API_URL}/trainings`, {
+        params: { categoryId },
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data); // Log the API response to ensure it's correct
-      return response.data;
+      return response.data.data.trainings;
     } catch (error) {
-      console.error(error); // Log error details
+      console.error(error);
       throw new Error(error.response?.data.message || error.message);
     }
   }

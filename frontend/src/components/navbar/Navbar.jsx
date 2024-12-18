@@ -34,7 +34,7 @@ import { ColorModeContext } from "../../theme";
 import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import PostAddIcon from "@mui/icons-material/PostAdd";
+import PeopleIcon from "@mui/icons-material/People";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HomeIcon from "@mui/icons-material/Home";
 import ScheduleIcon from "@mui/icons-material/Schedule";
@@ -152,15 +152,15 @@ const Navbar = () => {
     links.push(
       {
         id: 6,
-        title: t("categoryForm"),
-        url: "/category-form",
-        icon: <PostAddIcon />,
-      },
-      {
-        id: 7,
         title: t("calendar"),
         url: "/calendar",
         icon: <CalendarMonthOutlinedIcon />,
+      },
+      {
+        id: 7,
+        title: t("users"),
+        url: "/users",
+        icon: <PeopleIcon />,
       }
     );
   }
