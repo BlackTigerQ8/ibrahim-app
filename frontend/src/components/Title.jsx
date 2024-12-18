@@ -7,7 +7,7 @@ const Title = ({ title, subtitle }) => {
   const colors = tokens(theme.palette.mode);
 
   return (
-    <Box mb="10px" p="4rem 2rem">
+    <Box mb="10px" p="4rem 0 1rem 2rem">
       <Typography
         variant="h2"
         color={colors.secondary.main}

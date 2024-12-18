@@ -21,11 +21,15 @@ import Login from "./Pages/Login";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { cardio } from "ldrs";
+import Categories from "./Pages/Categories/Categories";
+import CategoryForm from "./Pages/Categories/CategoryForm";
 import Profile from "./Pages/Profile";
 import Contact from "./Pages/Contact";
 import About from "./Pages/About";
-import Categories from "./Pages/Categories/Categories";
-import CategoryForm from "./Pages/ScheduleForm";
+import Calendar from "./Pages/Calendar";
+import UserForm from "./Pages/UserForm";
+import Users from "./Pages/Users";
+import Trainings from "./Pages/Trainings";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -37,7 +41,7 @@ function App() {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  const currentUser = useSelector((state) => state.user.userInfo);
+  // const currentUser = useSelector((state) => state.user.userInfo);
   const userRole =
     useSelector((state) => state.user.userRole) || getUserRoleFromToken();
   const savedToken = localStorage.getItem("token");
@@ -135,11 +139,35 @@ function App() {
   ];
 
   const protectedRoutes = [
-    { path: "/category-form", component: <CategoryForm /> },
     {
-      path: "/schedules",
+      path: "/category-form",
+      component: <CategoryForm />,
+      requiredRole: ["Admin", "Coach"],
+    },
+    {
+      path: "/categories",
       component: <Categories />,
       requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/categories/:categoryId/trainings",
+      component: <Trainings />,
+      requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/calendar",
+      component: <Calendar />,
+      requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/user-form",
+      component: <UserForm />,
+      requiredRole: ["Admin"],
+    },
+    {
+      path: "/users",
+      component: <Users />,
+      requiredRole: ["Admin"],
     },
     {
       path: "/contact",

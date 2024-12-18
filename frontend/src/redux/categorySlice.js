@@ -6,10 +6,15 @@ import i18next from "i18next";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const axiosInstance = axios.create({
-  baseURL: `${API_URL}/schedules`,
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
+  baseURL: `${API_URL}/categories`,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 const initialState = {
@@ -31,43 +36,48 @@ const dispatchToast = (message, type) => {
 
 // Thunk action for fetching all categories
 export const fetchCategories = createAsyncThunk(
-  "schedules/fetchCategories",
-  async () => {
+  "categories/fetchCategories",
+  async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/");
+      console.log("API Response:", response.data);
       return response.data.data.categories;
     } catch (error) {
       console.error("Error fetching categories:", error);
-      throw new Error(error.response?.data?.message || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
 // Thunk action for creating a new category
 export const createCategory = createAsyncThunk(
-  "schedules/createCategory",
+  "categories/createCategory",
   async (categoryData) => {
     try {
-      const response = await axiosInstance.post("/", categoryData);
+      const response = await axiosInstance.post(`/`, categoryData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       dispatchToast(i18next.t("createCategorySuccess"), "success");
+      console.log("Created Category Response:", response.data);
       return response.data.data.category;
     } catch (error) {
-      dispatchToast(i18next.t("createCategoryError"), "error");
-      throw new Error(error.response?.data?.message || error.message);
+      console.error("Error creating category:", error);
+      throw new Error(error.response?.data.message || error.message);
     }
   }
 );
 
 // Thunk action for updating a category
 export const updateCategory = createAsyncThunk(
-  "schedules/updateCategory",
+  "categories/updateCategory",
   async ({ id, updatedData }) => {
     try {
       const response = await axiosInstance.put(`/${id}`, updatedData);
       dispatchToast(i18next.t("updateCategorySuccess"), "success");
       return response.data.data.category;
     } catch (error) {
-      dispatchToast(i18next.t("updateCategoryError"), "error");
       throw new Error(error.response?.data?.message || error.message);
     }
   }
@@ -75,14 +85,13 @@ export const updateCategory = createAsyncThunk(
 
 // Thunk action for deleting a category
 export const deleteCategory = createAsyncThunk(
-  "schedules/deleteCategory",
+  "categories/deleteCategory",
   async (id) => {
     try {
       await axiosInstance.delete(`/${id}`);
       dispatchToast(i18next.t("deleteCategorySuccess"), "success");
       return id;
     } catch (error) {
-      dispatchToast(i18next.t("deleteCategoryError"), "error");
       throw new Error(error.response?.data?.message || error.message);
     }
   }
@@ -114,11 +123,14 @@ const categorySlice = createSlice({
       })
       .addCase(createCategory.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.categories.push(action.payload);
+        console.log("Created category:", action.payload);
+        state.categories = [...state.categories, action.payload];
+        dispatchToast(i18next.t("createCategorySuccess"), "success");
       })
       .addCase(createCategory.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.error.message || "Error creating category";
+        dispatchToast(i18next.t("createCategoryError"), "error");
       })
 
       // Update category

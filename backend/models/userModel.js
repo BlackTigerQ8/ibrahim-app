@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Email is required for future login"],
   },
+  phone: {
+    type: Number,
+    required: [true, "Phone number is required"],
+  },
   role: {
     type: String,
     enum: USER_ROLES,

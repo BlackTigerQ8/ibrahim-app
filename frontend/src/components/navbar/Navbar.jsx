@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Container, HamburgerContainer, Sidebar, Overlay } from "./NavbarEl";
+import {
+  Container,
+  HamburgerContainer,
+  Sidebar,
+  Overlay,
+  ImageContainer,
+  IconWrapper,
+} from "./NavbarEl";
 import Logo from "../../assets/Kuwait_Flag_Emoji.png";
 import { Sling as Hamburger } from "hamburger-react";
 import { tokens } from "../../theme";
@@ -33,6 +40,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate, Link } from "react-router-dom";
@@ -52,6 +60,7 @@ const Navbar = () => {
   const savedToken = localStorage.getItem("token");
   const user = savedToken ? true : false;
   const [openModal, setOpenModal] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const handleToggle = () => setOpen(!isOpen);
   const closeMobileMenu = () => setOpen(false);
@@ -117,13 +126,14 @@ const Navbar = () => {
 
   const links = [
     { id: 1, title: t("home"), url: "/", icon: <HomeIcon /> },
+    { id: 2, title: t("aboutMe"), url: "/about", icon: <InfoIcon /> },
+
     {
-      id: 2,
-      title: t("schedules"),
-      url: "/schedules",
+      id: 3,
+      title: t("categories"),
+      url: "/categories",
       icon: <ScheduleIcon />,
     },
-    { id: 3, title: t("aboutMe"), url: "/about", icon: <InfoIcon /> },
     { id: 4, title: t("contact"), url: "/contact", icon: <ContactMailIcon /> },
   ];
 
@@ -139,12 +149,20 @@ const Navbar = () => {
 
   // Only add CategoryForm link if the user is Admin
   if (userRole === "Admin") {
-    links.push({
-      id: 6,
-      title: t("categoryForm"),
-      url: "/category-form",
-      icon: <PostAddIcon />,
-    });
+    links.push(
+      {
+        id: 6,
+        title: t("categoryForm"),
+        url: "/category-form",
+        icon: <PostAddIcon />,
+      },
+      {
+        id: 7,
+        title: t("calendar"),
+        url: "/calendar",
+        icon: <CalendarMonthOutlinedIcon />,
+      }
+    );
   }
 
   return (
@@ -185,19 +203,23 @@ const Navbar = () => {
                 : colors.primary.dark,
           }}
         >
-          <img src={Logo} alt="Logo" width={100} />
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              color: colors.secondary.main,
-              textTransform: "uppercase",
-              fontWeight: 900,
-              fontSize: "18px",
-            }}
-          >
-            {t(userRole)}
-          </Typography>
+          <ImageContainer>
+            <img src={Logo} alt="Logo" width={100} />
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                color: colors.secondary.main,
+                textTransform: "uppercase",
+                fontWeight: 900,
+                fontSize: "18px",
+                marginTop: "1rem",
+              }}
+            >
+              {t(userRole)}
+            </Typography>
+          </ImageContainer>
+
           <List>
             {links.map((item) => (
               <ListItem
@@ -205,11 +227,15 @@ const Navbar = () => {
                 component={Link}
                 to={item.url}
                 onClick={closeMobileMenu}
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
                 sx={{
                   padding: "12px 16px",
-                  margin: "8px 0",
+                  margin: "4px 0",
                   borderRadius: "8px",
                   width: "100%",
+                  alignItems: "center",
+                  gap: "12px",
                   color:
                     theme.palette.mode === "dark"
                       ? colors.secondary.main
@@ -220,7 +246,9 @@ const Navbar = () => {
                   },
                 }}
               >
-                {item.icon}
+                <IconWrapper $isHovered={hoveredItem === item.id}>
+                  {item.icon}
+                </IconWrapper>
                 <ListItemText
                   primary={item.title}
                   sx={{
@@ -243,6 +271,7 @@ const Navbar = () => {
                   padding: "12px 16px",
                   margin: "8px 0",
                   borderRadius: "8px",
+                  width: "100%",
                   color:
                     theme.palette.mode === "dark"
                       ? colors.secondary.main
@@ -275,7 +304,7 @@ const Navbar = () => {
                     backgroundColor: colors.primary.extraLight,
                     color: colors.secondary.hover,
                   },
-                  width: "100%", // Ensures it takes up the entire row
+                  width: "100%",
                 }}
               >
                 <ExitToAppIcon style={{ marginRight: "8px" }} />

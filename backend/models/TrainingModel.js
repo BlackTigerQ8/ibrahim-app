@@ -31,6 +31,11 @@ const trainingSchema = new mongoose.Schema({
     required: [true, "Rest time between repeats is required"],
     min: [0, "Rest time between repeats cannot be negative"],
   },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: [true, "Category is required"],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

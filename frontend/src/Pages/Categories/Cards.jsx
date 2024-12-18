@@ -15,24 +15,31 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../../redux/categorySlice";
+// import { getUserRoleFromToken } from "../../getUserRoleFromToken";
 
 export default function Cards() {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const token =
+    useSelector((state) => state.user.token) || localStorage.getItem("token");
   const { categories, status, error } = useSelector((state) => state.category);
-
-  console.log("Categories in Redux state:", categories);
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchCategories());
-      console.error("Error fetching categories:", error);
     }
   }, [dispatch, status]);
+
+  console.log("Current status:", status);
+  console.log("Current categories:", categories);
+
+  if (status === "failed") {
+    console.error("Error fetching categories:", error);
+  }
 
   if (status === "loading") {
     return (
@@ -75,7 +82,9 @@ export default function Cards() {
             },
           }}
         >
-          <CardActionArea onClick={() => navigate(`/training/${item._id}`)}>
+          <CardActionArea
+            onClick={() => navigate(`/categories/${item._id}/trainings`)}
+          >
             <CardMedia
               sx={{ height: 140 }}
               image={item.image || "https://via.placeholder.com/345x140"}

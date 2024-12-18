@@ -6,16 +6,13 @@ import { cardio } from "ldrs";
 import { setUser } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  Avatar,
   Box,
   Button,
   Container,
   FormControl,
-  Grid2,
   Input,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   TextField,
   Typography,
@@ -24,38 +21,56 @@ import { ErrorMessage, Formik } from "formik";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import Title from "../components/Title";
-import { toast } from "react-toastify";
-import { createCategory } from "../redux/categorySlice";
+import { registerUser } from "../redux/userSlice";
+import { useNavigate } from "react-router-dom";
 
-const CategoryForm = () => {
+const initialValues = {
+  firstName: "",
+  lastName: "",
+  email: undefined,
+  phone: "",
+  role: "",
+  image: "",
+  password: "",
+  confirmPassword: "",
+};
+
+const phoneRegExp =
+  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
+
+const UserForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isLoading, setIsLoading] = useState(true);
   const savedToken = localStorage.getItem("token");
-  const user = Boolean(savedToken);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { userInfo } = useSelector((state) => state.user);
-
-  const initialValues = {
-    name: "",
-    description: "",
-    role: "",
-    image: "",
-  };
+  const navigate = useNavigate();
 
   const userSchema = yup.object().shape({
-    name: yup.string().required(t("nameIsRequired")),
-    description: yup.string().required(t("descriptionIsRequired")),
+    firstName: yup.string().required(t("firstNameIsRequired")),
+    lastName: yup.string().required(t("lastNameIsRequired")),
+    email: yup.string().email(t("invalidEmail")).required(t("emailIsRequired")),
+    phone: yup
+      .string()
+      .matches(phoneRegExp, t("invalidPhoneNumber"))
+      .required(t("phoneIsRequired")),
     role: yup.string().required(t("roleIsRequired")),
-    categoryImage: yup
-      .mixed()
-      .test("fileType", t("onlyImageAllowed"), (value) => {
-        if (!value) return true;
-        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-        return allowedTypes.includes(value.type);
-      }),
+    image: yup.mixed().test("fileType", t("onlyImageAllowed"), (value) => {
+      if (!value) return true;
+      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+      return allowedTypes.includes(value.type);
+    }),
+    password: yup
+      .string()
+      .min(6, t("passwordMinLength"))
+      .required(t("passwordIsRequired")),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password"), null], t("passwordsMustMatch"))
+      .required(t("confirmPasswordIsRequired")),
   });
 
   const handleFormSubmit = async (values) => {
@@ -63,21 +78,22 @@ const CategoryForm = () => {
       const formData = new FormData();
 
       Object.keys(values).forEach((key) => {
-        if (key !== "categoryImage") {
-          formData.append(key, values[key] || ""); // Ensure undefined values are not passed
+        if (key !== "iamge") {
+          formData.append(
+            key,
+            key === "email"
+              ? values[key].toLowerCase()
+              : values[key] || undefined
+          );
         }
       });
 
-      formData.append("categoryImage", values.categoryImage);
+      formData.append("image", values.image);
 
-      // Check formData contents
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ": " + pair[1]);
-      }
-
-      await dispatch(createCategory(formData));
+      await dispatch(registerUser(formData));
+      navigate("/users");
     } catch (error) {
-      console.error("Error creating category:", error.message);
+      console.error("Error registering user:", error.message);
     }
   };
 
@@ -150,26 +166,78 @@ const CategoryForm = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label={t("name")}
+                label={t("firstName")}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.name}
-                name="name"
-                error={!!touched.name && !!errors.name}
-                helperText={touched.name && errors.name}
+                value={values.firstName}
+                name="firstName"
+                error={!!touched.firstName && !!errors.firstName}
+                helperText={touched.firstName && errors.firstName}
                 sx={{ gridColumn: "span 2" }}
               />
               <TextField
                 fullWidth
                 variant="filled"
                 type="text"
-                label={t("description")}
+                label={t("lastName")}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.description}
-                name="description"
-                error={!!touched.description && !!errors.description}
-                helperText={touched.description && errors.description}
+                value={values.lastName}
+                name="lastName"
+                error={!!touched.lastName && !!errors.lastName}
+                helperText={touched.lastName && errors.lastName}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label={t("email")}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.email ?? undefined}
+                name="email"
+                error={!!touched.email && !!errors.email}
+                helperText={touched.email && errors.email}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label={t("phone")}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.phone}
+                name="phone"
+                error={!!touched.phone && !!errors.phone}
+                helperText={touched.phone && errors.phone}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="password"
+                label={t("password")}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.password}
+                name="password"
+                error={!!touched.password && !!errors.password}
+                helperText={touched.password && errors.password}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="password"
+                label={t("confirmPassword")}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.confirmPassword}
+                name="confirmPassword"
+                error={!!touched.confirmPassword && !!errors.confirmPassword}
+                helperText={touched.confirmPassword && errors.confirmPassword}
                 sx={{ gridColumn: "span 2" }}
               />
               <FormControl
@@ -196,26 +264,22 @@ const CategoryForm = () => {
                 </Select>
               </FormControl>
               <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
-                <InputLabel shrink htmlFor="categoryImage">
+                <InputLabel shrink htmlFor="image">
                   {t("uploadImage")}
                 </InputLabel>
                 <Input
-                  id="categoryImage"
+                  id="image"
                   type="file"
-                  name="categoryImage"
+                  name="image"
                   onBlur={handleBlur}
                   onChange={(event) => {
-                    // Setting file to Formik state
-                    setFieldValue(
-                      "categoryImage",
-                      event.currentTarget.files[0]
-                    );
+                    setFieldValue("image", event.currentTarget.files[0]);
                   }}
-                  error={!!touched.categoryImage && !!errors.categoryImage}
-                  helperText={touched.categoryImage && errors.categoryImage}
+                  error={!!touched.image && !!errors.image}
+                  helperText={touched.image && errors.image}
                 />
                 <ErrorMessage
-                  name="categoryImage"
+                  name="image"
                   render={(msg) => (
                     <Typography variant="caption" color="error">
                       {msg}
@@ -226,7 +290,7 @@ const CategoryForm = () => {
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                {t("createNewCategory")}
+                {t("createNewUser")}
               </Button>
             </Box>
           </form>
@@ -236,4 +300,4 @@ const CategoryForm = () => {
   );
 };
 
-export default CategoryForm;
+export default UserForm;

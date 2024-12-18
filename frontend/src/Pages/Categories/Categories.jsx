@@ -5,10 +5,11 @@ import { tokens } from "../../theme";
 import { cardio } from "ldrs";
 import { setUser } from "../../redux/userSlice";
 import { useDispatch } from "react-redux";
-import { Box, Container } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import Cards from "./Cards";
+import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -19,20 +20,20 @@ const Categories = () => {
   const user = Boolean(savedToken);
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkUser = async () => {
       if (savedToken) {
         const savedUser = JSON.parse(localStorage.getItem("userInfo"));
         if (savedUser) {
-          dispatch(setUser(savedUser));
+          dispatch(setUser({ user: savedUser, token: savedToken }));
         }
       }
       setIsLoading(false);
     };
 
     checkUser();
-    cardio.register();
   }, [dispatch, savedToken]);
 
   cardio.register();
@@ -58,7 +59,16 @@ const Categories = () => {
   return (
     <Container>
       <Box>
-        <Title title={t("SCHEDULES")} subtitle={t("trainingCategories")} />
+        <Title title={t("CATEGORIES")} subtitle={t("trainingCategories")} />
+        <Box display="flex" justifyContent="start" margin="20px">
+          <Button
+            onClick={() => navigate("/category-form")}
+            color="secondary"
+            variant="contained"
+          >
+            {t("createNewCategory")}
+          </Button>
+        </Box>
         <Cards />
       </Box>
     </Container>

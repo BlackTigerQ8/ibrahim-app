@@ -12,7 +12,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(protect, restrictTo("Admin"), getAllCategories)
+  .get(protect, getAllCategories)
   .post(protect, restrictTo("Admin"), createCategory);
 
 router

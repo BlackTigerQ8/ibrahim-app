@@ -11,7 +11,6 @@ import {
   Box,
   Dialog,
   DialogActions,
-  DialogContent,
   DialogTitle,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -40,7 +39,6 @@ const Topbar = () => {
   const currentUser = useSelector((state) => state.user.userInfo);
   const [isScrolled, setIsScrolled] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null); // Optional, if you need to control other UI elements like a menu
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
@@ -49,16 +47,16 @@ const Topbar = () => {
   }, []);
 
   const handleLogout = () => {
-    setOpenModal(true); // Open the confirmation modal
+    setOpenModal(true);
   };
 
   const handleModalClose = (confirm) => {
     if (confirm) {
-      dispatch(logoutUser()); // Dispatch logout only if confirmed
-      localStorage.clear(); // Clear local storage after confirmation
-      navigate("/"); // Redirect to homepage after logout
+      dispatch(logoutUser());
+      localStorage.clear();
+      navigate("/");
     }
-    setOpenModal(false); // Close the modal regardless of confirmation
+    setOpenModal(false);
   };
 
   const handleLanguageMenu = (event) => {
@@ -76,9 +74,9 @@ const Topbar = () => {
 
   const links = [
     { id: 1, title: t("home"), url: "/" },
-    { id: 2, title: t("schedules"), url: "/schedules" },
-    { id: 3, title: t("aboutMe"), url: "/about" },
-    { id: 4, title: t("contact"), url: "/contact" },
+    { id: 2, title: t("aboutMe"), url: "/about" },
+    { id: 3, title: t("contact"), url: "/contact" },
+    { id: 4, title: t("categories"), url: "/categories" },
   ];
 
   // Only add Profile link if the user is logged in
@@ -92,11 +90,18 @@ const Topbar = () => {
 
   // Only add CategoryForm link if the user is Admin
   if (userRole === "Admin") {
-    links.push({
-      id: 6,
-      title: t("categoryForm"),
-      url: "/category-form",
-    });
+    links.push(
+      {
+        id: 6,
+        title: t("calendar"),
+        url: "/calendar",
+      },
+      {
+        id: 7,
+        title: t("users"),
+        url: "/users",
+      }
+    );
   }
 
   const hexToRgba = (hex, alpha = 1) => {

@@ -80,31 +80,6 @@ export const profileImage = createAsyncThunk(
   }
 );
 
-// Thunk action for user update
-export const updateUser = createAsyncThunk(
-  "user/updateUser",
-  async (updatedData, { getState }) => {
-    const token = localStorage.getItem("token");
-    const { userInfo } = getState().user;
-
-    try {
-      const response = await axios.put(
-        `${API_URL}/users/${userInfo._id}`,
-        updatedData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response.data.message || error.message);
-    }
-  }
-);
-
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -130,6 +105,7 @@ const userSlice = createSlice({
         state.status = "succeeded";
         const { user, token } = action.payload.data;
         state.userInfo = user;
+        state.token = token;
         state.token = action.payload.token;
         state.userRole = user.role;
         localStorage.setItem("token", action.payload.token);

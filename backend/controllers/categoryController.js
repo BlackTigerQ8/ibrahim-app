@@ -57,9 +57,10 @@ const createCategory = async (req, res) => {
 
     // Ensure all required fields are provided
     if (!name || !description || !role) {
+      console.log("Missing required fields:", { name, description, role });
       return res.status(400).json({
         status: "Error",
-        message: "All fields (name, description, role, image) are required",
+        message: "All fields (name, description, role) are required",
       });
     }
 

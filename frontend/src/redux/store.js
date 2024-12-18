@@ -3,6 +3,8 @@ import userReducer from "./userSlice";
 import categoryReducer from "./categorySlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+import usersReducer from "./usersSlice";
+import trainingReducer from "./trainingSlice";
 
 const persistConfig = {
   key: "root",
@@ -11,7 +13,9 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   user: userReducer,
+  users: usersReducer,
   category: categoryReducer,
+  training: trainingReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
