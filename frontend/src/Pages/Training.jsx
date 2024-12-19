@@ -1,7 +1,14 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Paper, Container, Alert, Typography } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Container,
+  Alert,
+  Typography,
+  Button,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../theme";
 import { cardio } from "ldrs";
@@ -13,6 +20,7 @@ const Training = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useTheme();
+  const navigate = useNavigate();
   const colors = tokens(theme.palette.mode);
   // Assuming you'll create these in your trainingSlice
   const { trainings, status, error } = useSelector((state) => state.training);
@@ -51,7 +59,15 @@ const Training = () => {
   return (
     <Container>
       <Title title={selectedTraining?.name} subtitle={t("trainingDetails")} />
-
+      <Box display="flex" justifyContent="start" margin="20px">
+        <Button
+          onClick={() => navigate(-1)}
+          color="secondary"
+          variant="contained"
+        >
+          {t("backToTrainings")}
+        </Button>
+      </Box>
       <Paper
         sx={{
           width: "100%",
@@ -111,7 +127,7 @@ const Training = () => {
               {t("restBetweenSets")}:
             </Typography>
             <Typography variant="body1">
-              {selectedTraining?.restBetweenSets} {t("seconds")}
+              {selectedTraining?.restBetweenSets} {t("second")}
             </Typography>
           </Box>
           <Box>
@@ -119,7 +135,7 @@ const Training = () => {
               {t("restBetweenRepeats")}:
             </Typography>
             <Typography variant="body1">
-              {selectedTraining?.restBetweenRepeats} {t("seconds")}
+              {selectedTraining?.restBetweenRepeats} {t("second")}
             </Typography>
           </Box>
         </Box>

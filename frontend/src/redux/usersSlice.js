@@ -100,6 +100,7 @@ const usersSlice = createSlice({
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         const deletedUserId = action.meta.arg;
+        state.status = "succeeded";
         state.users = state.users.filter((user) => user._id !== deletedUserId);
         dispatchToast(i18next.t("deleteUserFulfilled"), "success");
       })

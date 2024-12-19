@@ -143,17 +143,17 @@ function App() {
     {
       path: "/category-form",
       component: <CategoryForm />,
-      requiredRole: ["Admin", "Coach"],
+      requiredRole: ["Admin"],
     },
     {
       path: "/categories",
       component: <Categories />,
-      requiredRole: ["Family", "Coach", "Athlete"],
+      requiredRole: ["Coach"],
     },
     {
       path: "/categories/:categoryId/trainings",
       component: <Trainings />,
-      requiredRole: ["Family", "Coach", "Athlete"],
+      requiredRole: ["Coach"],
     },
     {
       path: "/categories/:categoryId/trainings/:trainingId",

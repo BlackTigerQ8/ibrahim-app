@@ -75,25 +75,27 @@ const UserForm = () => {
 
   const handleFormSubmit = async (values) => {
     try {
+      // Create FormData object to handle file upload
       const formData = new FormData();
 
+      // Add all user data to FormData
       Object.keys(values).forEach((key) => {
         if (key !== "image") {
-          formData.append(
-            key,
-            key === "email"
-              ? values[key].toLowerCase()
-              : values[key] || undefined
-          );
+          formData.append(key, values[key]);
         }
       });
 
-      formData.append("image", values.image);
+      if (values.image) {
+        formData.append("file", values.image);
+      }
 
-      await dispatch(registerUser(formData));
-      navigate("/users");
+      const result = await dispatch(registerUser(formData)).unwrap();
+
+      if (result) {
+        navigate("/users");
+      }
     } catch (error) {
-      console.error("Error registering user:", error.message);
+      console.error("Registration failed:", error);
     }
   };
 

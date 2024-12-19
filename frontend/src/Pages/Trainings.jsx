@@ -4,7 +4,17 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../theme";
 import { cardio } from "ldrs";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, Container, Alert, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Alert,
+  Typography,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Title from "../components/Title";
 import { useNavigate, useParams } from "react-router-dom";
@@ -60,7 +70,15 @@ const Trainings = () => {
     <Container>
       <Box>
         <Title title={t("TRAININGS")} subtitle={t("availableTrainings")} />
-        <Box display="flex" justifyContent="start" margin="20px">
+        <Box display="flex" justifyContent="space-between" margin="20px">
+          <Button
+            onClick={() => navigate(-1)}
+            color="secondary"
+            variant="contained"
+          >
+            {t("backToCategories")}
+          </Button>
+
           <Button
             onClick={() => navigate("/training-form")}
             color="secondary"
@@ -82,33 +100,44 @@ const Trainings = () => {
         >
           {trainings.length > 0 ? (
             trainings.map((item) => (
-              <Box key={item._id} sx={{ width: "100%", maxWidth: 345 }}>
-                <Button
+              <Card
+                key={item._id}
+                sx={{
+                  maxWidth: 345,
+                  flex: "1 1 calc(100% - 2rem)",
+                  "@media (min-width: 600px)": {
+                    flex: "1 1 calc(50% - 2rem)",
+                  },
+                }}
+              >
+                <CardActionArea
                   onClick={() =>
                     navigate(`/categories/${categoryId}/trainings/${item._id}`)
                   }
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                    display: "block",
-                    textAlign: "left",
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    padding: "1rem",
-                    color: "neutral.light",
-                    "&:hover": {
-                      backgroundColor: "primary.light",
-                    },
-                  }}
                 >
-                  <Box>
-                    <Typography variant="h4" sx={{ mb: 1 }}>
+                  <CardMedia
+                    sx={{ height: 140 }}
+                    image={item.image || "https://via.placeholder.com/345x140"}
+                    title={item.name}
+                  />
+                  <CardContent>
+                    <Typography
+                      gutterBottom
+                      variant="h5"
+                      component="div"
+                      color={colors.secondary.main}
+                    >
                       {item.name}
                     </Typography>
-                    <Typography variant="body1">{item.description}</Typography>
-                  </Box>
-                </Button>
-              </Box>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "text.secondary" }}
+                    >
+                      {item.description}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
             ))
           ) : (
             <Box

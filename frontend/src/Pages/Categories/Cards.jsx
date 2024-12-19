@@ -34,9 +34,6 @@ export default function Cards() {
     }
   }, [dispatch, status]);
 
-  console.log("Current status:", status);
-  console.log("Current categories:", categories);
-
   if (status === "failed") {
     console.error("Error fetching categories:", error);
   }

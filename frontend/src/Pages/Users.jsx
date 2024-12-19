@@ -32,6 +32,7 @@ const Users = () => {
     {
       field: "name",
       headerName: t("name"),
+      headerAlign: "center",
       flex: 0.75,
       cellClassName: "name-column--cell",
       renderCell: ({ row: { firstName, lastName } }) => {
@@ -52,9 +53,11 @@ const Users = () => {
       field: "email",
       headerName: t("email"),
       flex: 1,
+      headerAlign: "center",
     },
     {
       field: "phone",
+      headerAlign: "center",
       headerName: t("phone"),
       flex: 1,
     },
@@ -63,18 +66,19 @@ const Users = () => {
       headerName: t("accessLevel"),
       flex: 1,
       headerAlign: "center",
-
+      align: "center",
       renderCell: ({ row: { role } }) => {
         return (
           <Box
             width="80%"
             m="0 auto"
-            p="5px"
+            p="8px"
             display="flex"
             justifyContent="center"
             alignItems="center"
+            color={colors.primary.main}
             backgroundColor={
-              role === "Admin" ? colors.secondary.dark : colors.secondary.dark
+              role === "Admin" ? colors.secondary.dark : colors.secondary.main
             }
             borderRadius="4px"
           >
@@ -82,7 +86,7 @@ const Users = () => {
             {role === "Family" && <Diversity3OutlinedIcon />}
             {role === "Athlete" && <DirectionsRunOutlinedIcon />}
             {role === "Coach" && <SportsOutlinedIcon />}
-            <Typography color={colors.primary.main} sx={{ ml: "5px" }}>
+            <Typography color={colors.primary.main} sx={{ ml: 1 }}>
               {t(role)}
             </Typography>
           </Box>
@@ -178,14 +182,14 @@ const Users = () => {
             borderBottom: "none",
           },
           "& .name-column--cell": {
-            color: colors.secondary.main,
+            color: colors.neutral.main,
           },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.secondary.dark,
+            backgroundColor: colors.primary.extraLight,
             borderBottom: "none",
           },
           "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary.light,
+            backgroundColor: colors.primary.extraLight,
           },
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
@@ -207,6 +211,17 @@ const Users = () => {
           columns={columns}
           getRowId={(row) => row._id}
           components={{ Toolbar: GridToolbar }}
+          sx={{
+            "& .MuiDataGrid-cell": {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              textAlign: "center",
+            },
+          }}
         />
       </Box>
     </Box>

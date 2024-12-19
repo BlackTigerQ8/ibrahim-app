@@ -19,25 +19,33 @@ const dispatchToast = (message, type) => {
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
+    style:
+      type === "error"
+        ? {
+            backgroundColor: "#FFF1F0",
+            color: "#FF4D4F",
+            borderLeft: "4px solid #FF4D4F",
+          }
+        : undefined,
   });
 };
 
 // Thunk action for user registration
 export const registerUser = createAsyncThunk(
   "user/registerUser",
-  async (formData, { rejectWithValue }) => {
+  async (userFormData) => {
     try {
-      const response = await axios.post(`${API_URL}/users`, formData, {
+      // Inside the code where you make API requests
+      const response = await axios.post(`${API_URL}/users`, userFormData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-          // Do NOT set Content-Type for FormData
+          "Content-Type": "multipart/form-data",
         },
       });
-      dispatchToast(i18next.t("userCreatedSuccessfully"), "success");
+
       return response.data;
     } catch (error) {
-      dispatchToast(error.response?.data?.message || "Error occurred", "error");
-      return rejectWithValue(error.response?.data || "Failed to register user");
+      throw new Error(error.response.data.message || error.message);
     }
   }
 );
@@ -113,7 +121,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
         dispatchToast(i18next.t("loggingIn"), "success");
       })
 

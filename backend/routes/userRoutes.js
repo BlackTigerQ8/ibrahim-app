@@ -14,7 +14,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(protect, restrictTo("Admin"), getAllusers)
+  .get(protect, restrictTo("Admin", "Coach"), getAllusers)
   .post(protect, restrictTo("Admin"), createUser);
 
 router
