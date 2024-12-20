@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Avatar,
   IconButton,
   TextField,
   FormControl,
@@ -16,11 +15,12 @@ import { PhotoCamera } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { fetchUsers, updateUser } from "../redux/usersSlice";
+import { fetchUsers, updateUser } from "../../redux/usersSlice";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { tokens } from "../theme";
-import Title from "../components/Title";
+import { tokens } from "../../theme";
+import Title from "../../components/Title";
+import Avatar from "../../assets/avatar.jpg";
 
 const UserProfile = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -32,6 +32,7 @@ const UserProfile = () => {
   const users = useSelector((state) => state.users.users ?? []);
   const userInfo = users.find((user) => user._id === id);
   const { status, error } = useSelector((state) => state.user);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
@@ -52,6 +53,10 @@ const UserProfile = () => {
     createdAt: "",
   };
 
+  useEffect(() => {
+    if (userInfo?.image) setProfileImage(`${API_URL}/${userInfo.image}`);
+  }, [userInfo]);
+
   const validationSchema = Yup.object({
     image: Yup.mixed().test(
       "fileType",
@@ -71,10 +76,16 @@ const UserProfile = () => {
   };
 
   const handleFormSubmit = async (values) => {
-    if (!userInfo || !userInfo._id) return;
+    // if (!userInfo || !userInfo._id) return;
+    //
 
+    console.log("IN handleFormSubmit", values);
     const formData = new FormData();
-    if (profileImage instanceof File) formData.append("image", profileImage);
+
+    // Check if the profileImage is a valid File object and append it to FormData
+    if (profileImage instanceof File) {
+      formData.append("image", profileImage);
+    }
 
     Object.entries(values).forEach(([key, value]) => {
       if (value !== initialValues[key] && key !== "__v") {
@@ -82,9 +93,13 @@ const UserProfile = () => {
       }
     });
 
-    if (values.password) formData.append("password", values.password);
     try {
-      await dispatch(updateUser({ userId: userInfo._id, formData })).unwrap();
+      await dispatch(
+        updateUser({
+          userId: userInfo._id,
+          formData,
+        })
+      ).unwrap();
     } catch (error) {
       console.error(error);
     }
@@ -94,6 +109,7 @@ const UserProfile = () => {
     return (
       <Box
         display="flex"
+        f
         justifyContent="center"
         alignItems="center"
         height="100vh"
@@ -156,20 +172,25 @@ const UserProfile = () => {
                 alignItems="center"
                 flexDirection="column"
               >
-                <Avatar
+                <img
+                  crossorigin="anonymous"
                   src={
-                    profileImage instanceof File
-                      ? URL.createObjectURL(profileImage)
-                      : profileImage
+                    profileImage
+                      ? profileImage instanceof File
+                        ? URL.createObjectURL(profileImage)
+                        : profileImage
+                      : Avatar
                   }
                   alt={t("profileImage")}
-                  sx={{
-                    width: 120,
-                    height: 120,
-                    mb: 2,
-                    border: `2px solid ${colors.primary[500]}`,
+                  style={{
+                    width: 200,
+                    height: 200,
+                    marginBottom: "16px",
+                    borderRadius: "50%",
+                    border: `2px solid ${colors.secondary.main}`,
                   }}
                 />
+
                 <IconButton color="secondary" component="label">
                   <input
                     hidden
@@ -241,9 +262,10 @@ const UserProfile = () => {
             </Box>
             <Box display="flex" justifyContent="end" mt={2}>
               <Button
-                type="submit"
+                //type="submit"
                 variant="contained"
                 color="secondary"
+                onClick={() => handleFormSubmit(values)}
                 sx={{
                   fontSize: "16px",
                   minWidth: isNonMobile ? "120px" : "100%",

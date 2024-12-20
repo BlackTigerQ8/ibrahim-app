@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { tokens } from "../theme";
+import { tokens } from "../../theme";
 import { cardio } from "ldrs";
-import { setUser } from "../redux/userSlice";
+import { setUser } from "../../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -20,8 +20,8 @@ import {
 import { ErrorMessage, Formik } from "formik";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
-import Title from "../components/Title";
-import { registerUser } from "../redux/userSlice";
+import Title from "../../components/Title";
+import { registerUser } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 const initialValues = {
@@ -69,7 +69,7 @@ const UserForm = () => {
       .required(t("passwordIsRequired")),
     confirmPassword: yup
       .string()
-      .oneOf([yup.ref("password"), null], t("passwordsMustMatch"))
+      .oneOf([yup.ref("password"), null], t("passwordMustMatch"))
       .required(t("confirmPasswordIsRequired")),
   });
 
@@ -86,7 +86,7 @@ const UserForm = () => {
       });
 
       if (values.image) {
-        formData.append("file", values.image);
+        formData.append("image", values.image);
       }
 
       const result = await dispatch(registerUser(formData)).unwrap();
@@ -136,10 +136,7 @@ const UserForm = () => {
   return (
     <Container>
       <Box>
-        <Title
-          title={t("categoriesFormTitle")}
-          subtitle={t("categoriesFormSubtitle")}
-        />
+        <Title title={t("userFormTitle")} subtitle={t("userFormSubtitle")} />
       </Box>
       <Formik
         onSubmit={handleFormSubmit}

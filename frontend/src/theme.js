@@ -27,6 +27,7 @@ export const tokens = (mode) => ({
         primary: {
           main: "#ffffff",
           light: "#f1f1f1",
+          darkLight: "#4e4e4e",
           extraLight: "#e9e9e9",
         },
         secondary: {

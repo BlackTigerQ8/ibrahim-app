@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import { tokens } from "../theme";
+import { tokens } from "../../theme";
 import { cardio } from "ldrs";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,9 +16,9 @@ import {
   CardMedia,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import Title from "../components/Title";
+import Title from "../../components/Title";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchTrainings } from "../redux/trainingSlice";
+import { fetchTrainings } from "../../redux/trainingSlice";
 
 const Trainings = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");

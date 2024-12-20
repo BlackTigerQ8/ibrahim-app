@@ -21,16 +21,17 @@ import Login from "./Pages/Login";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { cardio } from "ldrs";
-import Categories from "./Pages/Categories/Categories";
-import CategoryForm from "./Pages/Categories/CategoryForm";
-import Profile from "./Pages/Profile";
+import Categories from "./Pages/Category/Categories";
+import CategoryForm from "./Pages/Category/CategoryForm";
+import Profile from "./Pages/User/Profile";
 import Contact from "./Pages/Contact";
 import About from "./Pages/About";
 import Calendar from "./Pages/Calendar";
-import UserForm from "./Pages/UserForm";
-import Users from "./Pages/Users";
-import Trainings from "./Pages/Trainings";
-import Training from "./Pages/Training";
+import UserForm from "./Pages/User/UserForm";
+import Users from "./Pages/User/Users";
+import Trainings from "./Pages/Training/Trainings";
+import Training from "./Pages/Training/Training";
+import TrainingForm from "./Pages/Training/TrainingForm";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -148,6 +149,11 @@ function App() {
     {
       path: "/categories",
       component: <Categories />,
+      requiredRole: ["Coach"],
+    },
+    {
+      path: "/training-form",
+      component: <TrainingForm />,
       requiredRole: ["Coach"],
     },
     {

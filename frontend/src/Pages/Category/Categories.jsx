@@ -12,14 +12,14 @@ import Cards from "./Cards";
 import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
-  const isNonMobile = useMediaQuery("(min-width: 600px)");
+  // const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isLoading, setIsLoading] = useState(true);
   const savedToken = localStorage.getItem("token");
-  const user = Boolean(savedToken);
+  // const user = Boolean(savedToken);
   const dispatch = useDispatch();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   useEffect(() => {

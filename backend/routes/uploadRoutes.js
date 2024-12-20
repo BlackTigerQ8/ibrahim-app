@@ -107,7 +107,7 @@ function checkPdfFileType(file, cb, storageType) {
 router.post(
   "/profile-images",
   protect,
-  imageUpload.single("file"),
+  profileImageUpload.single("file"),
   async (req, res) => {
     try {
       const updatedUser = await User.findByIdAndUpdate(
@@ -136,7 +136,7 @@ router.post(
 router.post(
   "/category-images",
   protect,
-  imageUpload.single("file"),
+  categoryImageUpload.single("file"),
   async (req, res) => {
     try {
       const updatedUser = await User.findByIdAndUpdate(
@@ -165,7 +165,7 @@ router.post(
 router.post(
   "/training-images",
   protect,
-  imageUpload.single("file"),
+  trainingImageUpload.single("file"),
   async (req, res) => {
     try {
       const updatedUser = await User.findByIdAndUpdate(

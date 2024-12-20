@@ -62,7 +62,9 @@ const getUser = async (req, res) => {
 // @access  Private/Admin
 const createUser = async (req, res) => {
   try {
-    const newUser = await User.create({ ...req.body });
+    const uploadedFile = req.file;
+    const filePath = uploadedFile ? uploadedFile.path : null;
+    const newUser = await User.create({ ...req.body, image: filePath });
     res.status(201).json({
       status: "Success",
       data: {
@@ -82,6 +84,7 @@ const createUser = async (req, res) => {
 // @access  Private
 const updateUser = async (req, res) => {
   try {
+    console.log("IN update user metod", req.body, req.file);
     // Check if the user is accessing their own data or is an admin
     if (req.user.id !== req.params.id && req.user.role !== "Admin") {
       return res.status(403).json({
@@ -90,8 +93,13 @@ const updateUser = async (req, res) => {
       });
     }
 
+    const uploadedFile = req.file;
+    const filePath = uploadedFile ? uploadedFile.path : null;
+
     // Prepare the updated data
-    const updateData = { ...req.body };
+    const updateData = req.file
+      ? { ...req.body, image: filePath }
+      : { ...req.body };
 
     // Check if password is included in the request body and hash it
     if (req.body.password) {

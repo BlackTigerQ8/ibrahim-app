@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Typography, Box, Button, useTheme, Alert } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { tokens } from "../theme";
+import { tokens } from "../../theme";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Diversity3OutlinedIcon from "@mui/icons-material/Diversity3Outlined";
 import SportsOutlinedIcon from "@mui/icons-material/SportsOutlined";
@@ -10,9 +10,9 @@ import DirectionsRunOutlinedIcon from "@mui/icons-material/DirectionsRunOutlined
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
-import Title from "../components/Title";
+import Title from "../../components/Title";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUsers, deleteUser } from "../redux/usersSlice";
+import { fetchUsers, deleteUser } from "../../redux/usersSlice";
 import { cardio } from "ldrs";
 import { useTranslation } from "react-i18next";
 
@@ -170,7 +170,7 @@ const Users = () => {
 
   return (
     <Box m="20px">
-      <Title title={t("Users")} subtitle={t("manageUsers")} />
+      <Title title={t("users")} subtitle={t("manageUsers")} />
       <Box
         mt="40px"
         height="75vh"
@@ -193,7 +193,7 @@ const Users = () => {
           },
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
-            backgroundColor: colors.primary.extraLight,
+            backgroundColor: colors.primary.darkLight,
           },
         }}
       >
@@ -220,6 +220,7 @@ const Users = () => {
             },
             "& .MuiDataGrid-columnHeaders": {
               textAlign: "center",
+              backgroundColor: colors.secondary.main,
             },
           }}
         />

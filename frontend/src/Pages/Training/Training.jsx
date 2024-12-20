@@ -10,10 +10,10 @@ import {
   Button,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { tokens } from "../theme";
+import { tokens } from "../../theme";
 import { cardio } from "ldrs";
 import { useTranslation } from "react-i18next";
-import Title from "../components/Title";
+import Title from "../../components/Title";
 
 const Training = () => {
   const { trainingId } = useParams();
