@@ -64,11 +64,13 @@ const createCategory = async (req, res) => {
       });
     }
 
+    const uploadedFile = req.file;
+    const filePath = uploadedFile ? uploadedFile.path : null;
     const category = await Category.create({
       name,
       description,
       role,
-      image,
+      image: filePath,
     });
 
     res.status(201).json({
@@ -92,9 +94,11 @@ const updateCategory = async (req, res) => {
   try {
     const { name, description, role, image } = req.body;
 
+    const uploadedFile = req.file;
+    const filePath = uploadedFile ? uploadedFile.path : null;
     const updatedCategory = await Category.findByIdAndUpdate(
       req.params.id,
-      { name, description, role, image },
+      { name, description, role, image: filePath },
       { new: true, runValidators: true }
     );
 

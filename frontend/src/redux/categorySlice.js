@@ -58,7 +58,7 @@ export const createCategory = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      dispatchToast(i18next.t("createCategorySuccess"), "success");
+
       console.log("Created Category Response:", response.data);
       return response.data.data.category;
     } catch (error) {

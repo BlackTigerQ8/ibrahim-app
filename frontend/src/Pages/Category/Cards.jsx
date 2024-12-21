@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
@@ -10,11 +10,15 @@ import {
   CardMedia,
   Typography,
   Alert,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "../../redux/categorySlice";
+import { fetchCategories, deleteCategory } from "../../redux/categorySlice";
 // import { getUserRoleFromToken } from "../../getUserRoleFromToken";
 
 export default function Cards() {
@@ -27,12 +31,40 @@ export default function Cards() {
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
   const { categories, status, error } = useSelector((state) => state.category);
+  const API_URL = process.env.REACT_APP_API_URL;
+  const { id } = useParams();
+  const categoryInfo = categories.find((category) => category._id === id);
+  const [categoryImage, setCategoryImage] = useState(categoryInfo?.image || "");
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchCategories());
     }
   }, [dispatch, status]);
+
+  useEffect(() => {
+    if (categoryInfo?.image)
+      setCategoryImage(`${API_URL}/${categoryInfo.image}`);
+  }, [categoryInfo, API_URL]);
+
+  const handleUpdate = (categoryId) => {
+    navigate(`/categories/${categoryId}/edit`); // TODO: Create Edit Category Page
+  };
+
+  const handleDelete = (categoryId) => {
+    setSelectedCategoryId(categoryId);
+    setOpenDeleteModal(true);
+  };
+
+  const handleModalClose = (confirm) => {
+    if (confirm && selectedCategoryId) {
+      dispatch(deleteCategory(selectedCategoryId));
+    }
+    setOpenDeleteModal(false);
+    setSelectedCategoryId(null);
+  };
 
   if (status === "failed") {
     console.error("Error fetching categories:", error);
@@ -68,9 +100,9 @@ export default function Cards() {
         margin: "2rem 0",
       }}
     >
-      {categories.map((item, id) => (
+      {categories.map((item) => (
         <Card
-          key={id}
+          key={item._id}
           sx={{
             maxWidth: 345,
             flex: "1 1 calc(100% - 2rem)",
@@ -84,7 +116,11 @@ export default function Cards() {
           >
             <CardMedia
               sx={{ height: 140 }}
-              image={item.image || "https://via.placeholder.com/345x140"}
+              image={
+                item.image
+                  ? `${API_URL}/${item.image}`
+                  : "https://via.placeholder.com/345x140"
+              }
               title={item.name}
             />
             <CardContent>
@@ -101,6 +137,49 @@ export default function Cards() {
               </Typography>
             </CardContent>
           </CardActionArea>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "0.5rem 1rem",
+            }}
+          >
+            <Button
+              variant="outlined"
+              color={"secondary"}
+              onClick={() => handleUpdate(item._id)}
+            >
+              {t("Update")}
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => handleDelete(item._id)}
+            >
+              {t("Delete")}
+            </Button>
+          </Box>
+          {/* Delete Confirmation Modal */}
+          <Dialog
+            open={openDeleteModal}
+            onClose={() => setOpenDeleteModal(false)}
+            BackdropProps={{
+              style: { backgroundColor: "rgba(0, 0, 0, 0.05)" },
+            }}
+            PaperProps={{
+              style: { boxShadow: "none" },
+            }}
+          >
+            <DialogTitle>{t("areYouSureDeleteCategory")}</DialogTitle>
+            <DialogActions>
+              <Button onClick={() => handleModalClose(false)} color="inherit">
+                {t("cancel")}
+              </Button>
+              <Button onClick={() => handleModalClose(true)} color="secondary">
+                {t("confirm")}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Card>
       ))}
     </Box>

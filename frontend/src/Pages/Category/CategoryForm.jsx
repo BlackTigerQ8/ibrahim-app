@@ -22,6 +22,8 @@ import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import { createCategory } from "../../redux/categorySlice";
+import * as Yup from "yup";
+import { useParams } from "react-router-dom";
 
 const CategoryForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -34,6 +36,10 @@ const CategoryForm = () => {
   const { t } = useTranslation();
   const { userInfo } = useSelector((state) => state.user);
   const { categories, status, error } = useSelector((state) => state.category);
+  const API_URL = process.env.REACT_APP_API_URL;
+  const { id } = useParams();
+  const categoryInfo = categories.find((category) => category._id === id);
+  const [categoryImage, setCategoryImage] = useState(categoryInfo?.image || "");
 
   const initialValues = {
     name: "",
@@ -51,6 +57,15 @@ const CategoryForm = () => {
       const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
       return allowedTypes.includes(value.type);
     }),
+  });
+
+  const validationSchema = Yup.object({
+    image: Yup.mixed().test(
+      "fileType",
+      t("onlyImagesAllowed"),
+      (value) =>
+        !value || ["image/jpeg", "image/png", "image/jpg"].includes(value.type)
+    ),
   });
 
   const handleFormSubmit = async (values) => {

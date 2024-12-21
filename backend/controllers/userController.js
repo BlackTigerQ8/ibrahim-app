@@ -84,7 +84,6 @@ const createUser = async (req, res) => {
 // @access  Private
 const updateUser = async (req, res) => {
   try {
-    console.log("IN update user metod", req.body, req.file);
     // Check if the user is accessing their own data or is an admin
     if (req.user.id !== req.params.id && req.user.role !== "Admin") {
       return res.status(403).json({
