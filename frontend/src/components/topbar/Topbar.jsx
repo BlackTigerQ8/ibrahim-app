@@ -24,6 +24,7 @@ import TranslateOutlinedIcon from "@mui/icons-material/TranslateOutlined";
 import { useTranslation } from "react-i18next";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import Avatar from "../../assets/avatar.jpg";
 
 const Topbar = () => {
   const theme = useTheme();
@@ -39,12 +40,22 @@ const Topbar = () => {
   const currentUser = useSelector((state) => state.user.userInfo);
   const [isScrolled, setIsScrolled] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const { userInfo } = useSelector((state) => state.user);
+  const API_URL = process.env.REACT_APP_API_URL;
+  const [profileImage, setProfileImage] = useState("");
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (userInfo?.image) {
+      const imageUrl = `${API_URL}/${userInfo.image}`;
+      setProfileImage(imageUrl);
+    }
+  }, [userInfo, API_URL]);
 
   const handleLogout = () => {
     setOpenModal(true);
@@ -127,7 +138,17 @@ const Topbar = () => {
       }}
     >
       <Toolbar>
-        <img src={Logo} alt="Logo" width={40} style={{ marginRight: "1rem" }} />
+        <img
+          crossOrigin="anonymous"
+          src={profileImage || Avatar}
+          alt={t("profileImage")}
+          width={60}
+          style={{
+            margin: ".5rem",
+            borderRadius: "50%",
+            border: `2px solid ${colors.secondary.main}`,
+          }}
+        />
         <Typography
           variant="h6"
           component="div"

@@ -22,6 +22,7 @@ const Users = () => {
   const dispatch = useDispatch();
   const { users, status, error } = useSelector((state) => state.users);
   const filteredUsers = users.filter((user) => user.role !== "Admin");
+  const { userRole } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -44,7 +45,7 @@ const Users = () => {
             justifyContent="center"
             borderRadius="4px"
           >
-            {firstName} {lastName}
+            {t(firstName)} {t(lastName)}
           </Box>
         );
       },
@@ -197,15 +198,17 @@ const Users = () => {
           },
         }}
       >
-        <Box display="flex" justifyContent="start" mb="20px">
-          <Button
-            onClick={() => navigate("/user-form")}
-            color="secondary"
-            variant="contained"
-          >
-            {t("createNewUser")}
-          </Button>
-        </Box>
+        {userRole === "Admin" && (
+          <Box display="flex" justifyContent="start" mb="20px">
+            <Button
+              onClick={() => navigate("/user-form")}
+              color="secondary"
+              variant="contained"
+            >
+              {t("createNewUser")}
+            </Button>
+          </Box>
+        )}
         <DataGrid
           rows={Array.isArray(filteredUsers) ? filteredUsers : []}
           columns={columns}

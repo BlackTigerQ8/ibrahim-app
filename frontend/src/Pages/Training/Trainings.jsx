@@ -30,10 +30,9 @@ const Trainings = () => {
   const navigate = useNavigate();
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
+  const { userRole } = useSelector((state) => state.user);
 
   const { trainings, status, error } = useSelector((state) => state.training);
-
-  console.log(trainings);
 
   useEffect(() => {
     if (categoryId) {
@@ -79,13 +78,15 @@ const Trainings = () => {
             {t("backToCategories")}
           </Button>
 
-          <Button
-            onClick={() => navigate("/training-form")}
-            color="secondary"
-            variant="contained"
-          >
-            {t("createNewTraining")}
-          </Button>
+          {userRole === "Admin" && (
+            <Button
+              onClick={() => navigate("/training-form")}
+              color="secondary"
+              variant="contained"
+            >
+              {t("createNewTraining")}
+            </Button>
+          )}
         </Box>
 
         {/* Display list of trainings */}

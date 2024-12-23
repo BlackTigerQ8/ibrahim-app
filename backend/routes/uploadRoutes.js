@@ -70,8 +70,6 @@ const trainingImageUpload = multer({
 ///// CHECK FILE TYPES /////
 // Check image file type
 function checkImageFileType(file, cb, storageType) {
-  console.log("checkImageFileType", file);
-
   const filetypes = /pdf|jpeg|jpg|png/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = filetypes.test(file.mimetype);

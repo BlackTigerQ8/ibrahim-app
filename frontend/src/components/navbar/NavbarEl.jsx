@@ -42,7 +42,7 @@ export const Sidebar = styled.div`
   text-align: left;
   z-index: 1;
   transition: transform 0.3s ease-in-out;
-  transform: translateX(${(props) => (props.isOpen ? "0" : "-100%")});
+  transform: translateX(${(props) => (props.$isOpen ? "0" : "-100%")});
 `;
 
 export const Overlay = styled.div`
@@ -53,7 +53,7 @@ export const Overlay = styled.div`
   height: 100dvh;
   background-color: rgba(0, 0, 0, 0);
   z-index: 0;
-  display: ${(props) => (props.isOpen ? "block" : "none")};
+  display: ${(props) => (props.$isOpen ? "block" : "none")};
   transition: opacity 0.3s ease-in-out;
 `;
 

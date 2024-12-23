@@ -32,6 +32,7 @@ const UserProfile = () => {
   const users = useSelector((state) => state.users.users ?? []);
   const userInfo = users.find((user) => user._id === id);
   const { status, error } = useSelector((state) => state.user);
+  const currentUser = useSelector((state) => state.user);
   const API_URL = process.env.REACT_APP_API_URL;
 
   const token =
@@ -79,7 +80,6 @@ const UserProfile = () => {
     // if (!userInfo || !userInfo._id) return;
     //
 
-    console.log("IN handleFormSubmit", values);
     const formData = new FormData();
 
     // Check if the profileImage is a valid File object and append it to FormData
@@ -173,7 +173,7 @@ const UserProfile = () => {
                 flexDirection="column"
               >
                 <img
-                  crossorigin="anonymous"
+                  crossOrigin="anonymous"
                   src={
                     profileImage
                       ? profileImage instanceof File
@@ -250,7 +250,7 @@ const UserProfile = () => {
                   value={values.role}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  disabled={userInfo?.role !== "Admin"}
+                  disabled={currentUser?.userRole !== "Admin"}
                 >
                   {["Admin", "Coach", "Athlete", "Family"].map((role) => (
                     <MenuItem key={role} value={role}>

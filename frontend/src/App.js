@@ -32,6 +32,7 @@ import Users from "./Pages/User/Users";
 import Trainings from "./Pages/Training/Trainings";
 import Training from "./Pages/Training/Training";
 import TrainingForm from "./Pages/Training/TrainingForm";
+import NotFound from "./Pages/NotFound";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -222,6 +223,7 @@ function App() {
                 />
               ))}
               <Route path="/login" element={<Login />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <ToastContainer />

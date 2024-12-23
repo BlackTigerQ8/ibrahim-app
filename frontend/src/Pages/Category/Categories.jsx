@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import { cardio } from "ldrs";
 import { setUser } from "../../redux/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Box, Button, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
@@ -17,6 +17,7 @@ const Categories = () => {
   const colors = tokens(theme.palette.mode);
   const [isLoading, setIsLoading] = useState(true);
   const savedToken = localStorage.getItem("token");
+  const { userRole } = useSelector((state) => state.user);
   // const user = Boolean(savedToken);
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -60,15 +61,17 @@ const Categories = () => {
     <Container>
       <Box>
         <Title title={t("CATEGORIES")} subtitle={t("trainingCategories")} />
-        <Box display="flex" justifyContent="start" margin="20px">
-          <Button
-            onClick={() => navigate("/category-form")}
-            color="secondary"
-            variant="contained"
-          >
-            {t("createNewCategory")}
-          </Button>
-        </Box>
+        {userRole === "Admin" && (
+          <Box display="flex" justifyContent="start" margin="20px">
+            <Button
+              onClick={() => navigate("/category-form")}
+              color="secondary"
+              variant="contained"
+            >
+              {t("createNewCategory")}
+            </Button>
+          </Box>
+        )}
         <Cards />
       </Box>
     </Container>

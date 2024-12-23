@@ -37,6 +37,7 @@ export default function Cards() {
   const [categoryImage, setCategoryImage] = useState(categoryInfo?.image || "");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const { userRole } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (status === "idle") {
@@ -137,49 +138,59 @@ export default function Cards() {
               </Typography>
             </CardContent>
           </CardActionArea>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "0.5rem 1rem",
-            }}
-          >
-            <Button
-              variant="outlined"
-              color={"secondary"}
-              onClick={() => handleUpdate(item._id)}
-            >
-              {t("Update")}
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => handleDelete(item._id)}
-            >
-              {t("Delete")}
-            </Button>
-          </Box>
-          {/* Delete Confirmation Modal */}
-          <Dialog
-            open={openDeleteModal}
-            onClose={() => setOpenDeleteModal(false)}
-            BackdropProps={{
-              style: { backgroundColor: "rgba(0, 0, 0, 0.05)" },
-            }}
-            PaperProps={{
-              style: { boxShadow: "none" },
-            }}
-          >
-            <DialogTitle>{t("areYouSureDeleteCategory")}</DialogTitle>
-            <DialogActions>
-              <Button onClick={() => handleModalClose(false)} color="inherit">
-                {t("cancel")}
-              </Button>
-              <Button onClick={() => handleModalClose(true)} color="secondary">
-                {t("confirm")}
-              </Button>
-            </DialogActions>
-          </Dialog>
+          {userRole === "Admin" && (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "0.5rem 1rem",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color={"secondary"}
+                  onClick={() => handleUpdate(item._id)}
+                >
+                  {t("update")}
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleDelete(item._id)}
+                >
+                  {t("delete")}
+                </Button>
+              </Box>
+              {/* Delete Confirmation Modal */}
+              <Dialog
+                open={openDeleteModal}
+                onClose={() => setOpenDeleteModal(false)}
+                BackdropProps={{
+                  style: { backgroundColor: "rgba(0, 0, 0, 0.05)" },
+                }}
+                PaperProps={{
+                  style: { boxShadow: "none" },
+                }}
+              >
+                <DialogTitle>{t("areYouSureDeleteCategory")}</DialogTitle>
+                <DialogActions>
+                  <Button
+                    onClick={() => handleModalClose(false)}
+                    color="inherit"
+                  >
+                    {t("cancel")}
+                  </Button>
+                  <Button
+                    onClick={() => handleModalClose(true)}
+                    color="secondary"
+                  >
+                    {t("confirm")}
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
         </Card>
       ))}
     </Box>

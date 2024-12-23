@@ -45,6 +45,8 @@ const Login = () => {
       email: credentials.email.toLowerCase(),
     };
     dispatch(loginUser(lowercaseCredentials));
+    const logoutTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+    localStorage.setItem("logoutTime", logoutTime);
   };
 
   useEffect(() => {

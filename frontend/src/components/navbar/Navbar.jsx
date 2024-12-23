@@ -44,6 +44,7 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate, Link } from "react-router-dom";
+import Avatar from "../../assets/avatar.jpg";
 
 const Navbar = () => {
   const theme = useTheme();
@@ -56,11 +57,13 @@ const Navbar = () => {
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const userRole = useSelector((state) => state.user.userRole);
-  const currentUser = useSelector((state) => state.user.userInfo);
+  const { userInfo } = useSelector((state) => state.user);
   const savedToken = localStorage.getItem("token");
   const user = savedToken ? true : false;
   const [openModal, setOpenModal] = useState(false);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
+  const [profileImage, setProfileImage] = useState("");
 
   const handleToggle = () => setOpen(!isOpen);
   const closeMobileMenu = () => setOpen(false);
@@ -110,6 +113,13 @@ const Navbar = () => {
     }
   }, [savedToken]); // Depend on savedToken to trigger the effect when the login state changes
 
+  useEffect(() => {
+    if (userInfo?.image) {
+      const imageUrl = `${API_URL}/${userInfo.image}`;
+      setProfileImage(imageUrl);
+    }
+  }, [userInfo, API_URL]);
+
   const handleLogout = () => {
     setOpenModal(true);
   };
@@ -142,7 +152,7 @@ const Navbar = () => {
     links.push({
       id: 5,
       title: t("profile"),
-      url: currentUser?._id ? `/profile/${currentUser._id}` : "/login",
+      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
       icon: <AccountCircleIcon />,
     });
   }
@@ -189,11 +199,11 @@ const Navbar = () => {
           }
         />
       </HamburgerContainer>
-      <Overlay isOpen={isOpen} onClick={closeMobileMenu} />
+      <Overlay $isOpen={isOpen} onClick={closeMobileMenu} />
       <div id="navbar">
         <Sidebar
           id="sidebar"
-          isOpen={isOpen}
+          $isOpen={isOpen}
           style={{
             zIndex: 49,
             backgroundColor: colors.background.default,
@@ -203,22 +213,37 @@ const Navbar = () => {
                 : colors.primary.dark,
           }}
         >
-          <ImageContainer>
-            <img src={Logo} alt="Logo" width={100} />
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                color: colors.secondary.main,
-                textTransform: "uppercase",
-                fontWeight: 900,
-                fontSize: "18px",
-                marginTop: "1rem",
-              }}
-            >
-              {t(userRole)}
-            </Typography>
-          </ImageContainer>
+          {user ? (
+            <ImageContainer>
+              <img
+                crossOrigin="anonymous"
+                src={profileImage || Avatar}
+                alt={t("profileImage")}
+                style={{
+                  width: 100,
+                  height: 100,
+                  marginBottom: "16px",
+                  borderRadius: "50%",
+                  border: `2px solid ${colors.secondary.main}`,
+                }}
+              />
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{
+                  color: colors.secondary.main,
+                  textTransform: "uppercase",
+                  fontWeight: 900,
+                  fontSize: "18px",
+                  marginTop: "1rem",
+                }}
+              >
+                {t(userRole)}
+              </Typography>
+            </ImageContainer>
+          ) : (
+            <ImageContainer></ImageContainer>
+          )}
 
           <List>
             {links.map((item) => (
