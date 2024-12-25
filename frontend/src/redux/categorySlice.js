@@ -73,7 +73,7 @@ export const updateCategory = createAsyncThunk(
   "categories/updateCategory",
   async ({ id, updatedData }) => {
     try {
-      const response = await axiosInstance.put(`/${id}`, updatedData);
+      const response = await axiosInstance.patch(`/${id}`, updatedData);
       dispatchToast(i18next.t("updateCategorySuccess"), "success");
       return response.data.data.category;
     } catch (error) {

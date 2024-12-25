@@ -51,7 +51,7 @@ export default function Cards() {
   }, [categoryInfo, API_URL]);
 
   const handleUpdate = (categoryId) => {
-    navigate(`/categories/${categoryId}/edit`); // TODO: Create Edit Category Page
+    navigate(`/categories/edit/${categoryId}`); // TODO: Create Edit Category Page
   };
 
   const handleDelete = (categoryId) => {

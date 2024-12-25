@@ -33,6 +33,7 @@ import Trainings from "./Pages/Training/Trainings";
 import Training from "./Pages/Training/Training";
 import TrainingForm from "./Pages/Training/TrainingForm";
 import NotFound from "./Pages/NotFound";
+import EditCategory from "./Pages/Category/EditCategory";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -151,6 +152,11 @@ function App() {
       path: "/categories",
       component: <Categories />,
       requiredRole: ["Coach", "Family"],
+    },
+    {
+      path: "/categories/edit/:categoryId",
+      component: <EditCategory />,
+      requiredRole: ["Admin"],
     },
     {
       path: "/training-form",

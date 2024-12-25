@@ -138,17 +138,19 @@ const Topbar = () => {
       }}
     >
       <Toolbar>
-        <img
-          crossOrigin="anonymous"
-          src={profileImage || Avatar}
-          alt={t("profileImage")}
-          width={60}
-          style={{
-            margin: ".5rem",
-            borderRadius: "50%",
-            border: `2px solid ${colors.secondary.main}`,
-          }}
-        />
+        {user && (
+          <img
+            crossOrigin="anonymous"
+            src={profileImage || Avatar}
+            alt={t("profileImage")}
+            width={60}
+            style={{
+              margin: ".5rem",
+              borderRadius: "50%",
+              border: `2px solid ${colors.secondary.main}`,
+            }}
+          />
+        )}
         <Typography
           variant="h6"
           component="div"
