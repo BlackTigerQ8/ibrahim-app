@@ -50,6 +50,35 @@ const Users = () => {
         );
       },
     },
+
+    {
+      field: "age",
+      headerName: t("age"),
+      flex: 0.5,
+      headerAlign: "center",
+      align: "center",
+      renderCell: ({ row: { dateOfBirth } }) => {
+        const calculateAge = (dob) => {
+          const birthDate = new Date(dob);
+          const today = new Date();
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const monthDifference = today.getMonth() - birthDate.getMonth();
+          if (
+            monthDifference < 0 ||
+            (monthDifference === 0 && today.getDate() < birthDate.getDate())
+          ) {
+            age--;
+          }
+          return age;
+        };
+
+        return (
+          <Typography>
+            {dateOfBirth ? calculateAge(dateOfBirth) : t("notAvailable")}
+          </Typography>
+        );
+      },
+    },
     {
       field: "email",
       headerName: t("email"),

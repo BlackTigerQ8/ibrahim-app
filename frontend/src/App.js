@@ -159,7 +159,7 @@ function App() {
       requiredRole: ["Admin"],
     },
     {
-      path: "/training-form",
+      path: "/categories/:categoryId/trainings/training-form",
       component: <TrainingForm />,
       requiredRole: ["Coach", "Family"],
     },

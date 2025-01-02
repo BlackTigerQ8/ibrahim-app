@@ -36,6 +36,12 @@ const trainingSchema = new mongoose.Schema({
     ref: "Category",
     required: [true, "Category is required"],
   },
+  file: {
+    type: String,
+  },
+  image: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

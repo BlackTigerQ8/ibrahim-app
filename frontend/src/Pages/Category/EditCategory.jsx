@@ -85,7 +85,7 @@ const EditCategory = () => {
 
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
-      if (key !== "_id" && key !== "__v") {
+      if (key !== "_id" && key !== "__v" && key !== "image") {
         formData.append(key, value);
       }
     });

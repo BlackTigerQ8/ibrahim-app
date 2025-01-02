@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Phone number is required"],
   },
+  dateOfBirth: {
+    type: Date,
+    required: [true, "Date of birth is required"],
+  },
   role: {
     type: String,
     enum: USER_ROLES,

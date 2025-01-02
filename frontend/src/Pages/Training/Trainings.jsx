@@ -31,8 +31,9 @@ const Trainings = () => {
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
   const { userRole } = useSelector((state) => state.user);
-
   const { trainings, status, error } = useSelector((state) => state.training);
+  const { categories } = useSelector((state) => state.category);
+  const category = categories.find((cat) => cat._id === categoryId);
 
   useEffect(() => {
     if (categoryId) {
@@ -68,7 +69,10 @@ const Trainings = () => {
   return (
     <Container>
       <Box>
-        <Title title={t("TRAININGS")} subtitle={t("availableTrainings")} />
+        <Title
+          title={category ? category.name : t("TRAININGS")}
+          subtitle={t("availableTrainings")}
+        />
         <Box display="flex" justifyContent="space-between" margin="20px">
           <Button
             onClick={() => navigate(-1)}
@@ -80,7 +84,9 @@ const Trainings = () => {
 
           {userRole === "Admin" && (
             <Button
-              onClick={() => navigate("/training-form")}
+              onClick={() =>
+                navigate(`/categories/${categoryId}/trainings/training-form`)
+              }
               color="secondary"
               variant="contained"
             >

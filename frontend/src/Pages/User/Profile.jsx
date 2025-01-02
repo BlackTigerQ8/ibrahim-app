@@ -34,6 +34,7 @@ const UserProfile = () => {
   const { status, error } = useSelector((state) => state.user);
   const currentUser = useSelector((state) => state.user);
   const API_URL = process.env.REACT_APP_API_URL;
+  // const { dateOfBirth } = user;
 
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
@@ -48,10 +49,19 @@ const UserProfile = () => {
     lastName: "",
     email: "",
     phone: "",
+    dateOfBirth: "",
     image: "",
     role: "",
     password: "",
     createdAt: "",
+  };
+
+  const calculateAge = (dateOfBirth) => {
+    const dob = new Date(dateOfBirth);
+    const diffMs = Date.now() - dob.getTime();
+    const ageDt = new Date(diffMs);
+
+    return Math.abs(ageDt.getUTCFullYear() - 1970);
   };
 
   useEffect(() => {
@@ -239,6 +249,30 @@ const UserProfile = () => {
                 disabled
                 sx={{ gridColumn: "span 2" }}
               />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="date"
+                label={t("dateOfBirth")}
+                value={
+                  values.dateOfBirth ? values.dateOfBirth.split("T")[0] : ""
+                }
+                name="dateOfBirth"
+                onChange={handleChange}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                label={t("age")}
+                value={
+                  values.dateOfBirth ? calculateAge(values.dateOfBirth) : "N/A"
+                }
+                name="age"
+                disabled
+                sx={{ gridColumn: "span 2" }}
+              />
+
               <FormControl
                 fullWidth
                 variant="filled"

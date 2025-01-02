@@ -29,6 +29,7 @@ const initialValues = {
   lastName: "",
   email: undefined,
   phone: "",
+  dateOfBirth: "",
   role: "",
   image: "",
   password: "",
@@ -57,6 +58,7 @@ const UserForm = () => {
       .string()
       .matches(phoneRegExp, t("invalidPhoneNumber"))
       .required(t("phoneIsRequired")),
+    dateOfBirth: yup.string().required(t("dateOfBirthIsRequired")),
     role: yup.string().required(t("roleIsRequired")),
     image: yup.mixed().test("fileType", t("onlyImageAllowed"), (value) => {
       if (!value) return true;
@@ -211,6 +213,19 @@ const UserForm = () => {
                 name="phone"
                 error={!!touched.phone && !!errors.phone}
                 helperText={touched.phone && errors.phone}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="date"
+                label={t("dateOfBirth")}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.dateOfBirth}
+                name="dateOfBirth"
+                error={!!touched.dateOfBirth && !!errors.dateOfBirth}
+                helperText={touched.dateOfBirth && errors.dateOfBirth}
                 sx={{ gridColumn: "span 2" }}
               />
               <TextField

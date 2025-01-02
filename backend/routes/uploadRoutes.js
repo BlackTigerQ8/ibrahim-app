@@ -42,6 +42,14 @@ const trainingImages = multer.diskStorage({
   },
 });
 
+// Training files storage configuration
+const trainingFiles = multer.diskStorage({
+  destination: "./uploads/training-files",
+  filename(req, file, cb) {
+    cb(null, getUploadFileName(file));
+  },
+});
+
 ///// INSTANCES /////
 // Image upload instance
 const profileImageUpload = multer({
@@ -64,6 +72,14 @@ const trainingImageUpload = multer({
   storage: trainingImages,
   fileFilter: function (req, file, cb) {
     checkImageFileType(file, cb, "training images");
+  },
+});
+
+// Training file upload instance
+const trainingFileUpload = multer({
+  storage: trainingFiles,
+  fileFilter: function (req, file, cb) {
+    checkPdfFileType(file, cb, "training files");
   },
 });
 
@@ -188,9 +204,39 @@ router.post(
   }
 );
 
+// Route for uploading to the training files
+router.post(
+  "/training-files",
+  protect,
+  trainingFileUpload.single("file"),
+  async (req, res) => {
+    try {
+      const trainingFile = await Training.findByIdAndUpdate(
+        req.training.id,
+        { $set: { image: req.file.path } },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      res.send({
+        message: "File uploaded successfully to files",
+        file: `${req.file.path}`,
+        training: trainingFile,
+      });
+    } catch (error) {
+      console.log("Error while saving file", error);
+
+      return res.status(500).json({ error });
+    }
+  }
+);
+
 module.exports = {
   router,
   profileImageUpload,
   categoryImageUpload,
   trainingImageUpload,
+  trainingFileUpload,
 };
