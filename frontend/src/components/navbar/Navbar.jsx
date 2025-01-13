@@ -41,6 +41,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
+import EditCalendarOutlinedIcon from "@mui/icons-material/EditCalendarOutlined";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate, Link } from "react-router-dom";
@@ -137,40 +138,65 @@ const Navbar = () => {
   const links = [
     { id: 1, title: t("home"), url: "/", icon: <HomeIcon /> },
     { id: 2, title: t("aboutMe"), url: "/about", icon: <InfoIcon /> },
-
-    {
-      id: 3,
-      title: t("categories"),
-      url: "/categories",
-      icon: <ScheduleIcon />,
-    },
-    { id: 4, title: t("contact"), url: "/contact", icon: <ContactMailIcon /> },
+    { id: 3, title: t("contact"), url: "/contact", icon: <ContactMailIcon /> },
   ];
 
   // Only add Profile link if the user is logged in
-  if (user) {
-    links.push({
-      id: 5,
-      title: t("profile"),
-      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
-      icon: <AccountCircleIcon />,
-    });
+  if (user && userRole !== "Admin") {
+    links.push(
+      {
+        id: 4,
+        title: t("mySchedule"),
+        url: "/schedule",
+        icon: <EditCalendarOutlinedIcon />,
+      },
+      {
+        id: 5,
+        title: t("categories"),
+        url: "/categories",
+        icon: <ScheduleIcon />,
+      },
+      {
+        id: 6,
+        title: t("profile"),
+        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+        icon: <AccountCircleIcon />,
+      }
+    );
   }
 
   // Only add CategoryForm link if the user is Admin
   if (userRole === "Admin") {
     links.push(
       {
-        id: 6,
+        id: 7,
+        title: t("schedules"),
+        url: "/schedules",
+        icon: <EditCalendarOutlinedIcon />,
+      },
+      {
+        id: 8,
         title: t("calendar"),
         url: "/calendar",
         icon: <CalendarMonthOutlinedIcon />,
       },
       {
-        id: 7,
+        id: 9,
         title: t("users"),
         url: "/users",
         icon: <PeopleIcon />,
+      },
+      {
+        id: 10,
+        title: t("categories"),
+        url: "/categories",
+        icon: <ScheduleIcon />,
+      },
+      {
+        id: 11,
+        title: t("profile"),
+        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+        icon: <AccountCircleIcon />,
       }
     );
   }

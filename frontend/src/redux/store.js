@@ -5,6 +5,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import usersReducer from "./usersSlice";
 import trainingReducer from "./trainingSlice";
+import scheduleReducer from "./scheduleSlice";
 
 const persistConfig = {
   key: "root",
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   users: usersReducer,
   category: categoryReducer,
   training: trainingReducer,
+  schedule: scheduleReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

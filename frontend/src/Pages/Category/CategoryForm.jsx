@@ -44,14 +44,12 @@ const CategoryForm = () => {
   const initialValues = {
     name: "",
     description: "",
-    role: "",
     image: "",
   };
 
   const userSchema = yup.object().shape({
     name: yup.string().required(t("nameIsRequired")),
     description: yup.string().required(t("descriptionIsRequired")),
-    role: yup.string().required(t("roleIsRequired")),
     image: yup.mixed().test("fileType", t("onlyImageAllowed"), (value) => {
       if (!value) return true;
       const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
@@ -73,7 +71,6 @@ const CategoryForm = () => {
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("description", values.description);
-    formData.append("role", values.role);
 
     if (values.image) {
       formData.append("image", values.image);
@@ -163,12 +160,14 @@ const CategoryForm = () => {
                 name="name"
                 error={!!touched.name && !!errors.name}
                 helperText={touched.name && errors.name}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 4" }}
               />
               <TextField
                 fullWidth
                 variant="filled"
                 type="text"
+                multiline
+                rows={4}
                 label={t("description")}
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -176,32 +175,10 @@ const CategoryForm = () => {
                 name="description"
                 error={!!touched.description && !!errors.description}
                 helperText={touched.description && errors.description}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 4" }}
               />
-              <FormControl
-                fullWidth
-                variant="filled"
-                sx={{ gridColumn: "span 2" }}
-              >
-                <InputLabel htmlFor="role">{t("role")}</InputLabel>
-                <Select
-                  label="Role"
-                  value={values.role}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  name="role"
-                  error={!!touched.role && !!errors.role}
-                  helperText={touched.role && errors.role}
-                >
-                  <MenuItem value={"Coach"}>{t("Coach")}</MenuItem>
-                  <MenuItem value={"Athlete"}>{t("Athlete")}</MenuItem>
-                  <MenuItem value={"Family"}>{t("Family")}</MenuItem>
-                  {userInfo.role === "Admin" && (
-                    <MenuItem value={"Admin"}>{t("Admin")}</MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
+
+              <FormControl fullWidth sx={{ gridColumn: "span 4" }}>
                 <InputLabel shrink htmlFor="image">
                   {t("uploadImage")}
                 </InputLabel>

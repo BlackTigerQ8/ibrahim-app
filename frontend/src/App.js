@@ -34,6 +34,11 @@ import Training from "./Pages/Training/Training";
 import TrainingForm from "./Pages/Training/TrainingForm";
 import NotFound from "./Pages/NotFound";
 import EditCategory from "./Pages/Category/EditCategory";
+import Cards from "./Pages/Category/Cards";
+import ScheduleForm from "./Pages/Schedule/ScheduleForm";
+import Schedules from "./Pages/Schedule/Schedules";
+import EditSchedule from "./Pages/Schedule/EditSchedule";
+import UserSchedule from "./Pages/Schedule/UserSchedule";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -127,7 +132,13 @@ function App() {
         closeOnClick: true,
         pauseOnHover: true,
       });
-      return <Navigate to={"/"} replace />;
+      return (
+        <Navigate
+          to={location.state?.from || "/"}
+          replace
+          state={{ from: location.pathname }}
+        />
+      );
     }
     return children;
   };
@@ -154,6 +165,11 @@ function App() {
       requiredRole: ["Coach", "Family"],
     },
     {
+      path: "/categories/:id",
+      component: <Cards />,
+      requiredRole: ["Coach", "Family", "Athlete"],
+    },
+    {
       path: "/categories/edit/:categoryId",
       component: <EditCategory />,
       requiredRole: ["Admin"],
@@ -172,6 +188,26 @@ function App() {
       path: "/categories/:categoryId/trainings/:trainingId",
       component: <Training />,
       requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/schedule-form",
+      component: <ScheduleForm />,
+      requiredRole: ["Admin"],
+    },
+    {
+      path: "/schedules",
+      component: <Schedules />,
+      requiredRole: ["Coach"],
+    },
+    {
+      path: "/schedule",
+      component: <UserSchedule />,
+      requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/schedules/edit/:scheduleId",
+      component: <EditSchedule />,
+      requiredRole: ["Admin"],
     },
     {
       path: "/calendar",

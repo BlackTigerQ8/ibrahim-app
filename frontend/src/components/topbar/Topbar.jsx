@@ -87,16 +87,27 @@ const Topbar = () => {
     { id: 1, title: t("home"), url: "/" },
     { id: 2, title: t("aboutMe"), url: "/about" },
     { id: 3, title: t("contact"), url: "/contact" },
-    { id: 4, title: t("categories"), url: "/categories" },
   ];
 
   // Only add Profile link if the user is logged in
-  if (user) {
-    links.push({
-      id: 5,
-      title: t("profile"),
-      url: currentUser?._id ? `/profile/${currentUser._id}` : "/login",
-    });
+  if (user && userRole !== "Admin") {
+    links.push(
+      {
+        id: 4,
+        title: t("mySchedule"),
+        url: "/schedule",
+      },
+      {
+        id: 5,
+        title: t("categories"),
+        url: "/categories",
+      },
+      {
+        id: 6,
+        title: t("profile"),
+        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+      }
+    );
   }
 
   // Only add CategoryForm link if the user is Admin
@@ -104,13 +115,28 @@ const Topbar = () => {
     links.push(
       {
         id: 6,
+        title: t("schedules"),
+        url: "/schedules",
+      },
+      {
+        id: 7,
         title: t("calendar"),
         url: "/calendar",
       },
       {
-        id: 7,
+        id: 8,
         title: t("users"),
         url: "/users",
+      },
+      {
+        id: 9,
+        title: t("categories"),
+        url: "/categories",
+      },
+      {
+        id: 10,
+        title: t("profile"),
+        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
       }
     );
   }

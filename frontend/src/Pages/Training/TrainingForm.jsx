@@ -3,7 +3,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import { cardio } from "ldrs";
-import { setUser } from "../../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Alert,
@@ -20,22 +19,24 @@ import {
   Typography,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
-import { ErrorMessage, Formik } from "formik";
+import { ErrorMessage, Formik, useFormik } from "formik";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import { fetchCategories } from "../../redux/categorySlice";
+import { createTraining } from "../../redux/trainingSlice";
+import { useNavigate, useParams } from "react-router-dom";
 
 const TrainingForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [isLoading, setIsLoading] = useState(true);
   const savedToken = localStorage.getItem("token");
   const user = Boolean(savedToken);
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { userInfo } = useSelector((state) => state.user);
+  const { categoryId } = useParams();
+  const navigate = useNavigate();
   const { categories, status, error } = useSelector((state) => state.category);
 
   useEffect(() => {
@@ -51,12 +52,13 @@ const TrainingForm = () => {
     numberOfSets: "",
     restBetweenSets: "",
     restBetweenRepeats: "",
-    category: "",
+    category: categoryId || "",
+    file: "",
     image: "",
     createdAt: new Date(),
   };
 
-  const userSchema = yup.object().shape({
+  const validationSchema = yup.object().shape({
     name: yup.string().required(t("nameIsRequired")),
     description: yup.string().required(t("descriptionIsRequired")),
     numberOfRepeats: yup.number().required(t("numberOfRepeatsIsRequired")),
@@ -65,8 +67,18 @@ const TrainingForm = () => {
     restBetweenRepeats: yup
       .number()
       .required(t("restBetweenRepeatsIsRequired")),
-    category: yup.string().required(t("categoryIsRequired")),
-    role: yup.string().required(t("roleIsRequired")),
+    category: yup
+      .string()
+      .required(t("categoryIsRequired"))
+      .oneOf(
+        categories.map((category) => category._id),
+        t("invalidCategory")
+      ),
+    file: yup.mixed().test("fileType", t("onlyPdfAllowed"), (value) => {
+      if (!value) return true;
+      const allowedTypes = ["application/pdf"];
+      return allowedTypes.includes(value.type);
+    }),
     image: yup.mixed().test("fileType", t("onlyImageAllowed"), (value) => {
       if (!value) return true;
       const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
@@ -75,22 +87,38 @@ const TrainingForm = () => {
   });
 
   const handleFormSubmit = async (values) => {
-    console.log("Form Values before submit:", values);
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("description", values.description);
-    formData.append("role", values.role);
+    try {
+      const formData = new FormData();
 
-    if (values.image) {
-      formData.append("image", values.image);
+      // Add all training data to FormData
+      Object.keys(values).forEach((key) => {
+        if (key !== "file" && key !== "image") {
+          formData.append(key, values[key]);
+        }
+      });
+
+      // Handle file uploads separately
+      if (values.file) {
+        formData.append("file", values.file);
+      }
+      if (values.image) {
+        formData.append("image", values.image);
+      }
+
+      // Log the form data being sent
+      console.log("Submitting form data:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ": " + pair[1]);
+      }
+
+      const result = await dispatch(createTraining({ formData })).unwrap();
+
+      if (result) {
+        navigate(`/categories/${categoryId}/trainings`);
+      }
+    } catch (error) {
+      console.error("Training creation failed:", error);
     }
-
-    // Log FormData content for debugging
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ": " + pair[1]);
-    }
-
-    // await dispatch(createCategory(formData));
   };
 
   if (status === "loading") {
@@ -115,7 +143,6 @@ const TrainingForm = () => {
 
   return (
     <>
-      {" "}
       <Container>
         <Box>
           <Title
@@ -126,7 +153,7 @@ const TrainingForm = () => {
         <Formik
           onSubmit={handleFormSubmit}
           initialValues={initialValues}
-          validationSchema={userSchema}
+          validationSchema={validationSchema}
         >
           {({
             values,
@@ -157,12 +184,14 @@ const TrainingForm = () => {
                   name="name"
                   error={!!touched.name && !!errors.name}
                   helperText={touched.name && errors.name}
-                  sx={{ gridColumn: "span 2" }}
+                  sx={{ gridColumn: "span 4" }}
                 />
                 <TextField
                   fullWidth
                   variant="filled"
                   type="text"
+                  multiline
+                  rows={4}
                   label={t("description")}
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -170,7 +199,7 @@ const TrainingForm = () => {
                   name="description"
                   error={!!touched.description && !!errors.description}
                   helperText={touched.description && errors.description}
-                  sx={{ gridColumn: "span 2" }}
+                  sx={{ gridColumn: "span 4" }}
                 />
                 <TextField
                   fullWidth
@@ -238,12 +267,12 @@ const TrainingForm = () => {
                   <Select
                     labelId="select-user-label"
                     id="select-category"
-                    value={values.category || []}
+                    value={values.category || ""}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     error={!!touched.category && !!errors.category}
                     name="category"
-                    label="Select Category"
+                    label={t("selectCategory")}
                   >
                     {Array.isArray(categories) &&
                       categories.map((category) => (
@@ -252,6 +281,7 @@ const TrainingForm = () => {
                         </MenuItem>
                       ))}
                   </Select>
+
                   {Array.isArray(values.categories) &&
                     values.categories.length > 0 && (
                       <IconButton
@@ -273,18 +303,18 @@ const TrainingForm = () => {
                     {t("uploadFile")}
                   </InputLabel>
                   <Input
-                    id="image"
+                    id="file"
                     type="file"
-                    name="image"
+                    name="file"
                     onBlur={handleBlur}
                     onChange={(event) => {
-                      setFieldValue("image", event.currentTarget.files[0]);
+                      setFieldValue("file", event.currentTarget.files[0]);
                     }}
-                    error={!!touched.image && !!errors.image}
-                    helperText={touched.image && errors.image}
+                    error={!!touched.file && !!errors.file}
+                    // helperText={touched.file && errors.file}
                   />
                   <ErrorMessage
-                    name="image"
+                    name="file"
                     render={(msg) => (
                       <Typography variant="caption" color="error">
                         {msg}

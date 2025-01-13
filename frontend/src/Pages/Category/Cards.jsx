@@ -33,11 +33,11 @@ export default function Cards() {
   const { categories, status, error } = useSelector((state) => state.category);
   const API_URL = process.env.REACT_APP_API_URL;
   const { id } = useParams();
-  const categoryInfo = categories.find((category) => category._id === id);
-  const [categoryImage, setCategoryImage] = useState(categoryInfo?.image || "");
+  // const [categoryImage, setCategoryImage] = useState(categories?.image || "");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const { userRole } = useSelector((state) => state.user);
+  const categoryInfo = categories.find((category) => category._id === id);
 
   useEffect(() => {
     if (status === "idle") {
@@ -45,10 +45,12 @@ export default function Cards() {
     }
   }, [dispatch, status]);
 
-  useEffect(() => {
-    if (categoryInfo?.image)
-      setCategoryImage(`${API_URL}/${categoryInfo.image}`);
-  }, [categoryInfo, API_URL]);
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "https://via.placeholder.com/345x140";
+    // Remove 'uploads/' from the beginning of the path if it exists
+    const cleanPath = imagePath.replace(/^uploads\//, "");
+    return `${API_URL}/${cleanPath}`;
+  };
 
   const handleUpdate = (categoryId) => {
     navigate(`/categories/edit/${categoryId}`); // TODO: Create Edit Category Page
@@ -117,11 +119,7 @@ export default function Cards() {
           >
             <CardMedia
               sx={{ height: 140 }}
-              image={
-                item.image
-                  ? `${API_URL}/${item.image}`
-                  : "https://via.placeholder.com/345x140"
-              }
+              image={getImageUrl(item.image)}
               title={item.name}
             />
             <CardContent>

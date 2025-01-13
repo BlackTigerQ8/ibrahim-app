@@ -53,24 +53,22 @@ const getCategoryById = async (req, res) => {
 // @access  Private/Admin
 const createCategory = async (req, res) => {
   try {
-    const { name, description, role, image } = req.body;
+    const { name, description } = req.body;
 
     // Ensure all required fields are provided
-    if (!name || !description || !role) {
-      console.log("Missing required fields:", { name, description, role });
+    if (!name || !description) {
+      console.log("Missing required fields:", { name, description });
       return res.status(400).json({
         status: "Error",
-        message: "All fields (name, description, role) are required",
+        message: "All fields (name, description) are required",
       });
     }
 
-    const uploadedFile = req.file;
-    const filePath = uploadedFile ? uploadedFile.path : null;
+    const image = req.file ? req.file.path : null;
     const category = await Category.create({
       name,
       description,
-      role,
-      image: filePath,
+      image,
     });
 
     res.status(201).json({
@@ -92,13 +90,13 @@ const createCategory = async (req, res) => {
 // @access  Private/Admin
 const updateCategory = async (req, res) => {
   try {
-    const { name, description, role, image } = req.body;
+    const { name, description, image } = req.body;
 
     const uploadedFile = req.file;
     const filePath = uploadedFile ? uploadedFile.path : null;
     const updatedCategory = await Category.findByIdAndUpdate(
       req.params.id,
-      { name, description, role, image: filePath },
+      { name, description, image: filePath },
       { new: true, runValidators: true }
     );
 

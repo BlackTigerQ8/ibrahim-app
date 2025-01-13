@@ -22,6 +22,11 @@ export const tokens = (mode) => ({
         background: {
           default: "#111317",
         },
+        status: {
+          success: "#4caf50", // green for completed
+          error: "#f44336", // red for cancelled
+          default: "#1f2125", // using primary.light for pending/default
+        },
       }
     : {
         primary: {
@@ -41,6 +46,11 @@ export const tokens = (mode) => ({
         },
         background: {
           default: "#f1f1f1",
+        },
+        status: {
+          success: "#4caf50", // green for completed
+          error: "#f44336", // red for cancelled
+          default: "#f1f1f1", // using primary.light for pending/default
         },
       }),
 });

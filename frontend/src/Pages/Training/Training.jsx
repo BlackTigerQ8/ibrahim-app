@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -14,9 +14,12 @@ import { tokens } from "../../theme";
 import { cardio } from "ldrs";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
+import { updateScheduleStatus } from "../../redux/scheduleSlice";
 
 const Training = () => {
   const { trainingId } = useParams();
+  const location = useLocation(); // Add this
+  const scheduleId = location.state?.scheduleId;
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -32,6 +35,10 @@ const Training = () => {
     // TODO: Add fetchTrainingById action in trainingSlice
     // dispatch(fetchTrainingById(trainingId));
   }, [dispatch, trainingId]);
+
+  const handleStatusChange = (newStatus) => {
+    dispatch(updateScheduleStatus({ id: trainingId, status: newStatus }));
+  };
 
   cardio.register();
   if (status === "loading") {
@@ -138,6 +145,23 @@ const Training = () => {
               {selectedTraining?.restBetweenRepeats} {t("second")}
             </Typography>
           </Box>
+        </Box>
+        <Box mt={4}>
+          <Button
+            onClick={() => handleStatusChange("Completed")}
+            color="primary"
+            variant="contained"
+            sx={{ mr: 2 }}
+          >
+            {t("markAsCompleted")}
+          </Button>
+          <Button
+            onClick={() => handleStatusChange("Cancelled")}
+            color="error"
+            variant="contained"
+          >
+            {t("markAsCancelled")}
+          </Button>
         </Box>
       </Box>
     </Container>

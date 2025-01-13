@@ -12,11 +12,6 @@ const categorySchema = new mongoose.Schema({
     type: String,
     required: [true, "Category description is required"],
   },
-  role: {
-    type: [String],
-    enum: USER_ROLES,
-    required: [true, "A specified role is required for access"],
-  },
   image: {
     type: String,
   },

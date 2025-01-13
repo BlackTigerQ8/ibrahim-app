@@ -43,7 +43,6 @@ const EditCategory = () => {
     name: "",
     description: "",
     image: "",
-    createdAt: "",
   };
 
   useEffect(() => {
@@ -84,21 +83,26 @@ const EditCategory = () => {
     }
 
     const formData = new FormData();
+
+    // Add all values except _id and __v
     Object.entries(values).forEach(([key, value]) => {
-      if (key !== "_id" && key !== "__v" && key !== "image") {
+      if (key !== "_id" && key !== "__v") {
         formData.append(key, value);
       }
     });
 
+    // Handle image: if it's a new File, use that. Otherwise, keep the existing image path
     if (categoryImage instanceof File) {
       formData.append("image", categoryImage);
+    } else if (categoryInfo.image) {
+      // Keep the existing image path
+      formData.append("image", categoryInfo.image);
     }
 
     try {
-      // Fix: Pass categoryId correctly in the object
       await dispatch(
         updateCategory({
-          id: categoryId, // Changed from categoryId to {id: categoryId}
+          id: categoryId,
           updatedData: formData,
         })
       ).unwrap();
@@ -215,49 +219,34 @@ const EditCategory = () => {
                   <PhotoCamera />
                 </IconButton>
               </Box>
-              {["name", "description"].map((field, index) => (
-                <TextField
-                  key={field}
-                  fullWidth
-                  variant="filled"
-                  label={t(field)}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values[field]}
-                  name={field}
-                  error={touched[field] && !!errors[field]}
-                  helperText={touched[field] && errors[field]}
-                  sx={{ gridColumn: "span 2" }}
-                />
-              ))}
               <TextField
                 fullWidth
                 variant="filled"
-                label={t("createdAt")}
-                value={values.createdAt.split("T")[0]}
-                name="createdAt"
-                disabled
-                sx={{ gridColumn: "span 2" }}
+                type="text"
+                label={t("name")}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.name}
+                name="name"
+                error={!!touched.name && !!errors.name}
+                helperText={touched.name && errors.name}
+                sx={{ gridColumn: "span 4" }}
               />
-              <FormControl
+              <TextField
                 fullWidth
                 variant="filled"
-                sx={{ gridColumn: "span 2" }}
-              >
-                <InputLabel>{t("role")}</InputLabel>
-                <Select
-                  name="role"
-                  value={values.role}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                >
-                  {["Admin", "Coach", "Athlete", "Family"].map((role) => (
-                    <MenuItem key={role} value={role}>
-                      {t(role)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                type="text"
+                label={t("description")}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.description}
+                name="description"
+                multiline
+                rows={4}
+                error={!!touched.description && !!errors.description}
+                helperText={touched.description && errors.description}
+                sx={{ gridColumn: "span 4" }}
+              />
             </Box>
             <Box display="flex" justifyContent="end" mt={2}>
               <Button
