@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, deleteCategory } from "../../redux/categorySlice";
-// import { getUserRoleFromToken } from "../../getUserRoleFromToken";
+import PlaceholderImage from "../../assets/JRG-1.png";
 
 export default function Cards() {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -46,10 +46,8 @@ export default function Cards() {
   }, [dispatch, status]);
 
   const getImageUrl = (imagePath) => {
-    if (!imagePath) return "https://via.placeholder.com/345x140";
-    // Remove 'uploads/' from the beginning of the path if it exists
-    const cleanPath = imagePath.replace(/^uploads\//, "");
-    return `${API_URL}/${cleanPath}`;
+    if (!imagePath) return PlaceholderImage;
+    return `${API_URL}/${imagePath}`;
   };
 
   const handleUpdate = (categoryId) => {
@@ -119,7 +117,12 @@ export default function Cards() {
           >
             <CardMedia
               sx={{ height: 140 }}
-              image={getImageUrl(item.image)}
+              component="img"
+              crossOrigin="anonymous"
+              image={(() => {
+                const url = getImageUrl(item.image);
+                return url;
+              })()}
               title={item.name}
             />
             <CardContent>

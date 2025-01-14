@@ -50,22 +50,32 @@ export const fetchTrainings = createAsyncThunk(
 
 export const createTraining = createAsyncThunk(
   "training/createTraining",
-  async ({ formData, categoryId }, { rejectWithValue }) => {
+  async ({ formData }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/${categoryId}`, formData, {
+      // Debug log
+      console.log("FormData being sent to API:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      const response = await axiosInstance.post("/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+
+      // Debug log
+      console.log("API Response:", response.data);
+
       dispatchToast(i18next.t("trainingCreatedSuccessfully"), "success");
       return response.data.data.training;
     } catch (error) {
-      console.error(error);
+      console.error("API Error:", error.response?.data || error);
       dispatchToast(
-        error.response?.data.message || i18next.t("errorCreatingTraining"),
+        error.response?.data?.message || i18next.t("errorCreatingTraining"),
         "error"
       );
-      return rejectWithValue(error.response?.data.message || error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );

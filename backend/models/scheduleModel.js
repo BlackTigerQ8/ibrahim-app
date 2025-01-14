@@ -35,8 +35,31 @@ const scheduleSchema = new mongoose.Schema(
   }
 );
 
-// Add indexes for better performance
+// Add index for better query performance
 scheduleSchema.index({ athlete: 1, date: 1 });
-scheduleSchema.index({ status: 1 });
+
+// Improve pre-save middleware
+scheduleSchema.pre("save", async function (next) {
+  try {
+    // Validate ObjectIds
+    const fields = ["athlete", "category", "training"];
+    for (const field of fields) {
+      if (!mongoose.Types.ObjectId.isValid(this[field])) {
+        throw new Error(`Invalid ${field} ID`);
+      }
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Add error handling for required fields
+scheduleSchema.pre("validate", function (next) {
+  if (!this.date) {
+    next(new Error("Date is required"));
+  }
+  next();
+});
 
 module.exports = mongoose.model("Schedule", scheduleSchema);

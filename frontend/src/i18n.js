@@ -172,6 +172,7 @@ i18n
           errorLoadingTrainings:
             "Error loading trainings. Please try again later.",
           createTrainingSuccess: "Training created successfully",
+          errorCreatingTraining: "Error creating training",
           createTrainingError: "Failed to create training",
           updateTrainingSuccess: "Training updated successfully",
           updateTrainingError: "Failed to update training",
@@ -422,6 +423,7 @@ i18n
           errorLoadingTrainings:
             "حدث خطأ في تحميل التدريبات. يرجى المحاولة لاحقاً.",
           createTrainingSuccess: "تم إنشاء التدريب بنجاح",
+          errorCreatingTraining: "حدث خطأ ما! يرجى المحاولة لاحقًا.",
           createTrainingError: "فشل إنشاء التدريب",
           updateTrainingSuccess: "تم تحديث التدريب بنجاح",
           updateTrainingError: "فشل تحديث التدريب",

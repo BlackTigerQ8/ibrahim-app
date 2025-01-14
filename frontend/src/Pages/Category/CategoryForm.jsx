@@ -23,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import { createCategory } from "../../redux/categorySlice";
 import * as Yup from "yup";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const CategoryForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -34,6 +34,7 @@ const CategoryForm = () => {
   const user = Boolean(savedToken);
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.user);
   const { categories, status, error } = useSelector((state) => state.category);
   const API_URL = process.env.REACT_APP_API_URL;
@@ -82,6 +83,7 @@ const CategoryForm = () => {
     }
 
     await dispatch(createCategory(formData));
+    navigate("/categories");
   };
 
   useEffect(() => {
@@ -97,6 +99,24 @@ const CategoryForm = () => {
 
     checkUser();
   }, [dispatch, savedToken]);
+
+  const commonInputStyles = {
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "secondary.main",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiFilledInput-root.Mui-focused": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+  };
 
   cardio.register();
   if (isLoading) {
@@ -160,7 +180,7 @@ const CategoryForm = () => {
                 name="name"
                 error={!!touched.name && !!errors.name}
                 helperText={touched.name && errors.name}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 4", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -175,10 +195,13 @@ const CategoryForm = () => {
                 name="description"
                 error={!!touched.description && !!errors.description}
                 helperText={touched.description && errors.description}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 4", ...commonInputStyles }}
               />
 
-              <FormControl fullWidth sx={{ gridColumn: "span 4" }}>
+              <FormControl
+                fullWidth
+                sx={{ gridColumn: "span 4", ...commonInputStyles }}
+              >
                 <InputLabel shrink htmlFor="image">
                   {t("uploadImage")}
                 </InputLabel>

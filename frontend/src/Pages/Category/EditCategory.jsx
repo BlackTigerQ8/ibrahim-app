@@ -14,7 +14,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { tokens } from "../../theme";
 import Title from "../../components/Title";
@@ -28,6 +28,7 @@ const EditCategory = () => {
   const colors = tokens(theme.palette.mode);
   const API_URL = process.env.REACT_APP_API_URL;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { categoryId } = useParams();
   const { categories, status, error } = useSelector((state) => state.category);
@@ -106,9 +107,28 @@ const EditCategory = () => {
           updatedData: formData,
         })
       ).unwrap();
+      navigate("/categories");
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const commonInputStyles = {
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "secondary.main",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiFilledInput-root.Mui-focused": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
   };
 
   if (status === "loading") {
@@ -230,7 +250,7 @@ const EditCategory = () => {
                 name="name"
                 error={!!touched.name && !!errors.name}
                 helperText={touched.name && errors.name}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 4", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -245,7 +265,7 @@ const EditCategory = () => {
                 rows={4}
                 error={!!touched.description && !!errors.description}
                 helperText={touched.description && errors.description}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 4", ...commonInputStyles }}
               />
             </Box>
             <Box display="flex" justifyContent="end" mt={2}>

@@ -92,33 +92,44 @@ const TrainingForm = () => {
 
       // Add all training data to FormData
       Object.keys(values).forEach((key) => {
-        if (key !== "file" && key !== "image") {
+        if (key === "file" || key === "image") {
+          if (values[key]) {
+            formData.append(key, values[key]);
+          }
+        } else if (key === "category") {
+          // Ensure category is sent as a string
+          formData.append("category", values.category.toString());
+        } else {
           formData.append(key, values[key]);
         }
       });
 
-      // Handle file uploads separately
-      if (values.file) {
-        formData.append("file", values.file);
-      }
-      if (values.image) {
-        formData.append("image", values.image);
-      }
-
-      // Log the form data being sent
-      console.log("Submitting form data:");
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ": " + pair[1]);
-      }
-
       const result = await dispatch(createTraining({ formData })).unwrap();
 
       if (result) {
-        navigate(`/categories/${categoryId}/trainings`);
+        navigate(`/categories/${values.category}/trainings`);
       }
     } catch (error) {
       console.error("Training creation failed:", error);
     }
+  };
+
+  const commonInputStyles = {
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "secondary.main",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiFilledInput-root.Mui-focused": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
   };
 
   if (status === "loading") {
@@ -184,7 +195,7 @@ const TrainingForm = () => {
                   name="name"
                   error={!!touched.name && !!errors.name}
                   helperText={touched.name && errors.name}
-                  sx={{ gridColumn: "span 4" }}
+                  sx={{ gridColumn: "span 4", ...commonInputStyles }}
                 />
                 <TextField
                   fullWidth
@@ -199,7 +210,7 @@ const TrainingForm = () => {
                   name="description"
                   error={!!touched.description && !!errors.description}
                   helperText={touched.description && errors.description}
-                  sx={{ gridColumn: "span 4" }}
+                  sx={{ gridColumn: "span 4", ...commonInputStyles }}
                 />
                 <TextField
                   fullWidth
@@ -212,7 +223,7 @@ const TrainingForm = () => {
                   name="numberOfRepeats"
                   error={!!touched.numberOfRepeats && !!errors.numberOfRepeats}
                   helperText={touched.numberOfRepeats && errors.numberOfRepeats}
-                  sx={{ gridColumn: "span 2" }}
+                  sx={{ gridColumn: "span 2", ...commonInputStyles }}
                 />
                 <TextField
                   fullWidth
@@ -225,7 +236,7 @@ const TrainingForm = () => {
                   name="numberOfSets"
                   error={!!touched.numberOfSets && !!errors.numberOfSets}
                   helperText={touched.numberOfSets && errors.numberOfSets}
-                  sx={{ gridColumn: "span 2" }}
+                  sx={{ gridColumn: "span 2", ...commonInputStyles }}
                 />
                 <TextField
                   fullWidth
@@ -238,7 +249,7 @@ const TrainingForm = () => {
                   name="restBetweenSets"
                   error={!!touched.restBetweenSets && !!errors.restBetweenSets}
                   helperText={touched.restBetweenSets && errors.restBetweenSets}
-                  sx={{ gridColumn: "span 2" }}
+                  sx={{ gridColumn: "span 2", ...commonInputStyles }}
                 />
                 <TextField
                   fullWidth
@@ -255,11 +266,21 @@ const TrainingForm = () => {
                   helperText={
                     touched.restBetweenRepeats && errors.restBetweenRepeats
                   }
-                  sx={{ gridColumn: "span 2" }}
+                  sx={{ gridColumn: "span 2", ...commonInputStyles }}
                 />
                 <FormControl
                   fullWidth
-                  sx={{ gridColumn: "span 2", position: "relative" }}
+                  sx={{
+                    gridColumn: "span 2",
+                    position: "relative",
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "secondary.main",
+                    },
+                    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                      {
+                        borderColor: "secondary.main",
+                      },
+                  }}
                 >
                   <InputLabel id="select-user-label">
                     {t("selectCategory")}
@@ -282,23 +303,25 @@ const TrainingForm = () => {
                       ))}
                   </Select>
 
-                  {Array.isArray(values.categories) &&
-                    values.categories.length > 0 && (
-                      <IconButton
-                        onClick={() => setFieldValue("categories")}
-                        style={{
-                          position: "absolute",
-                          top: "50%",
-                          right: "8px",
-                          transform: "translateY(-50%)",
-                        }}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    )}
+                  {values.category && (
+                    <IconButton
+                      onClick={() => setFieldValue("category", "")}
+                      style={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "8px",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  )}
                 </FormControl>
 
-                <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
+                <FormControl
+                  fullWidth
+                  sx={{ gridColumn: "span 2", ...commonInputStyles }}
+                >
                   <InputLabel shrink htmlFor="file">
                     {t("uploadFile")}
                   </InputLabel>
@@ -315,6 +338,32 @@ const TrainingForm = () => {
                   />
                   <ErrorMessage
                     name="file"
+                    render={(msg) => (
+                      <Typography variant="caption" color="error">
+                        {msg}
+                      </Typography>
+                    )}
+                  />
+                </FormControl>
+                <FormControl
+                  fullWidth
+                  sx={{ gridColumn: "span 2", ...commonInputStyles }}
+                >
+                  <InputLabel shrink htmlFor="image">
+                    {t("uploadImage")}
+                  </InputLabel>
+                  <Input
+                    id="image"
+                    type="file"
+                    name="image"
+                    onBlur={handleBlur}
+                    onChange={(event) => {
+                      setFieldValue("image", event.currentTarget.files[0]);
+                    }}
+                    error={!!touched.image && !!errors.image}
+                  />
+                  <ErrorMessage
+                    name="image"
                     render={(msg) => (
                       <Typography variant="caption" color="error">
                         {msg}

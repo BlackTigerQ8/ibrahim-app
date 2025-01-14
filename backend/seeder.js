@@ -17,8 +17,10 @@ const createAdmin = async () => {
 
     // Create new admin user
     const newAdmin = new User({
-      firstName: "Ibrahim",
-      lastName: "Aldhufeeri",
+      firstName: "Abdullah",
+      lastName: "Alenezi",
+      phone: "66850080",
+      dateOfBirth: "1995-07-21",
       email: "admin@gmail.com",
       password: "123123",
       confirmPassword: "123123",
@@ -32,53 +34,13 @@ const createAdmin = async () => {
   }
 };
 
-// Function to create Random Users
-const createRandomUsers = async () => {
-  try {
-    // Find the last sequence number in the database
-    const lastUser = await User.findOne(
-      {},
-      {},
-      { sort: { sequenceNumber: -1 } }
-    );
-    let lastSequenceNumber = 1;
-
-    if (lastUser) {
-      lastSequenceNumber = lastUser.sequenceNumber;
-    }
-
-    // Ensure faker is correctly imported
-    const faker = require("faker"); // Make sure to import faker
-
-    for (let i = 0; i < 3; i++) {
-      const firstName = faker.name.firstName();
-      const lastName = faker.name.lastName();
-      const roles = ["Family", "Athlete", "Coach"];
-      const role = roles[Math.floor(Math.random() * roles.length)];
-      const email = faker.internet.email(firstName, lastName);
-      const phone = faker.phone.phoneNumber("050########");
-      const password = "123123";
-      const hashedPassword = await bcrypt.hash(password, 12);
-
-      const newUser = new User({
-        firstName,
-        lastName,
-        email,
-        phone,
-        role,
-        password: hashedPassword,
-        confirmPassword: hashedPassword,
-      });
-
-      await newUser.save();
-      console.log(`User ${i + 1}: ${firstName} ${lastName} created`);
-    }
-
-    console.log("All users created successfully!");
-  } catch (error) {
-    console.error("Error creating random users:", error);
-  }
-};
+function generateRandomDOB(startYear = 1980, endYear = 2000) {
+  const year =
+    Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;
+  const month = Math.floor(Math.random() * 12);
+  const day = Math.floor(Math.random() * 28) + 1; // Days between 1 and 28 (to avoid invalid dates)
+  return new Date(year, month, day).toISOString().split("T")[0]; // returns in YYYY-MM-DD format
+}
 
 // Family users list
 const familyUsers = [
@@ -90,6 +52,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Wahab",
@@ -99,6 +62,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Khaled",
@@ -108,6 +72,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Yousif",
@@ -117,6 +82,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Hilayl",
@@ -126,6 +92,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Omar",
@@ -135,6 +102,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Sultan",
@@ -144,6 +112,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Abdulaziz",
@@ -153,6 +122,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
   {
     firstName: "Aziz",
@@ -162,6 +132,7 @@ const familyUsers = [
     password: "123123",
     confirmPassword: "123123",
     role: "Family",
+    dateOfBirth: generateRandomDOB(),
   },
 ];
 
@@ -184,7 +155,9 @@ const createFamilyUsers = async () => {
         password,
         confirmPassword,
         role,
+        dateOfBirth, // Make sure you are including dateOfBirth here
       } = familyUsers[i];
+
       const hashedPassword = await bcrypt.hash(password, 12);
 
       const newFamilyUser = new User({
@@ -192,6 +165,7 @@ const createFamilyUsers = async () => {
         lastName,
         email,
         phone,
+        dateOfBirth, // Use dateOfBirth here
         password: hashedPassword,
         confirmPassword: hashedPassword,
         role,
@@ -222,7 +196,6 @@ const deleteAllUsers = async () => {
 };
 
 // Uncomment the relevant function call as needed
-// createRandomUsers();
 // createAdmin();
 createFamilyUsers();
 // deleteAllUsers();

@@ -88,6 +88,24 @@ const ScheduleForm = () => {
     }
   };
 
+  const commonInputStyles = {
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "secondary.main",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiFilledInput-root.Mui-focused": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+  };
+
   return (
     <Container>
       <Box>
@@ -105,7 +123,10 @@ const ScheduleForm = () => {
             "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
           }}
         >
-          <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
+          <FormControl
+            fullWidth
+            sx={{ gridColumn: "span 2", ...commonInputStyles }}
+          >
             <InputLabel id="athlete-label">{t("athlete")}</InputLabel>
             <Select
               labelId="athlete-label"
@@ -121,7 +142,10 @@ const ScheduleForm = () => {
             </Select>
           </FormControl>
 
-          <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
+          <FormControl
+            fullWidth
+            sx={{ gridColumn: "span 2", ...commonInputStyles }}
+          >
             <InputLabel id="category-label">{t("category")}</InputLabel>
             <Select
               labelId="category-label"
@@ -137,7 +161,10 @@ const ScheduleForm = () => {
             </Select>
           </FormControl>
 
-          <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
+          <FormControl
+            fullWidth
+            sx={{ gridColumn: "span 2", ...commonInputStyles }}
+          >
             <InputLabel id="training-label">{t("training")}</InputLabel>
             <Select
               labelId="training-label"
@@ -163,7 +190,7 @@ const ScheduleForm = () => {
             label={t("date")}
             value={formValues.date || ""}
             onChange={(e) => handleSelectChange("date", e.target.value)}
-            sx={{ gridColumn: "span 2" }}
+            sx={{ gridColumn: "span 2", ...commonInputStyles }}
           />
 
           <TextField
@@ -175,7 +202,7 @@ const ScheduleForm = () => {
             name="notes"
             value={formValues.notes}
             onChange={(e) => handleSelectChange("notes", e.target.value)}
-            sx={{ gridColumn: "span 4" }}
+            sx={{ gridColumn: "span 4", ...commonInputStyles }}
           />
         </Box>
 

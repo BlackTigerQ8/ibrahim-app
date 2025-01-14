@@ -29,8 +29,4 @@ app.use("/api/trainings", trainingRoutes);
 app.use("/api/schedules", scheduleRoutes);
 app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
-// app.get("/api/health", (req, res) => {
-//   res.status(200).json({ status: "Ok", timestamp: new Date().toISOString() });
-// });
-
 module.exports = app;

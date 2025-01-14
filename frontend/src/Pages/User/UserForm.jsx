@@ -115,6 +115,24 @@ const UserForm = () => {
     checkUser();
   }, [dispatch, savedToken]);
 
+  const commonInputStyles = {
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "secondary.main",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiFilledInput-root.Mui-focused": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+  };
+
   cardio.register();
   if (isLoading) {
     return (
@@ -174,7 +192,7 @@ const UserForm = () => {
                 name="firstName"
                 error={!!touched.firstName && !!errors.firstName}
                 helperText={touched.firstName && errors.firstName}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -187,7 +205,7 @@ const UserForm = () => {
                 name="lastName"
                 error={!!touched.lastName && !!errors.lastName}
                 helperText={touched.lastName && errors.lastName}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -200,7 +218,7 @@ const UserForm = () => {
                 name="email"
                 error={!!touched.email && !!errors.email}
                 helperText={touched.email && errors.email}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -213,7 +231,7 @@ const UserForm = () => {
                 name="phone"
                 error={!!touched.phone && !!errors.phone}
                 helperText={touched.phone && errors.phone}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -226,7 +244,7 @@ const UserForm = () => {
                 name="dateOfBirth"
                 error={!!touched.dateOfBirth && !!errors.dateOfBirth}
                 helperText={touched.dateOfBirth && errors.dateOfBirth}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -239,7 +257,7 @@ const UserForm = () => {
                 name="password"
                 error={!!touched.password && !!errors.password}
                 helperText={touched.password && errors.password}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -252,12 +270,12 @@ const UserForm = () => {
                 name="confirmPassword"
                 error={!!touched.confirmPassword && !!errors.confirmPassword}
                 helperText={touched.confirmPassword && errors.confirmPassword}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <FormControl
                 fullWidth
                 variant="filled"
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               >
                 <InputLabel htmlFor="role">{t("role")}</InputLabel>
                 <Select
@@ -277,7 +295,10 @@ const UserForm = () => {
                   )}
                 </Select>
               </FormControl>
-              <FormControl fullWidth sx={{ gridColumn: "span 2" }}>
+              <FormControl
+                fullWidth
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
+              >
                 <InputLabel shrink htmlFor="image">
                   {t("uploadImage")}
                 </InputLabel>

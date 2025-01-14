@@ -115,6 +115,24 @@ const UserProfile = () => {
     }
   };
 
+  const commonInputStyles = {
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "secondary.main",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiFilledInput-root.Mui-focused": {
+      borderColor: "secondary.main",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: "secondary.main",
+    },
+  };
+
   if (status === "loading") {
     return (
       <Box
@@ -224,7 +242,7 @@ const UserProfile = () => {
                     name={field}
                     error={touched[field] && !!errors[field]}
                     helperText={touched[field] && errors[field]}
-                    sx={{ gridColumn: "span 2" }}
+                    sx={{ gridColumn: "span 2", ...commonInputStyles }}
                   />
                 )
               )}
@@ -238,7 +256,7 @@ const UserProfile = () => {
                 name="password"
                 error={touched.password && !!errors.password}
                 helperText={touched.password && errors.password}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -247,7 +265,7 @@ const UserProfile = () => {
                 value={values.createdAt.split("T")[0]}
                 name="createdAt"
                 disabled
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -259,7 +277,7 @@ const UserProfile = () => {
                 }
                 name="dateOfBirth"
                 onChange={handleChange}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
               <TextField
                 fullWidth
@@ -270,13 +288,13 @@ const UserProfile = () => {
                 }
                 name="age"
                 disabled
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               />
 
               <FormControl
                 fullWidth
                 variant="filled"
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 2", ...commonInputStyles }}
               >
                 <InputLabel>{t("role")}</InputLabel>
                 <Select
