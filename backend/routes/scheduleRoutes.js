@@ -16,12 +16,12 @@ router
   .get(protect, getAllSchedules)
   .post(protect, restrictTo("Admin", "Coach"), createSchedule);
 
+router.route("/:id/status").patch(protect, updateScheduleStatus);
+
 router
   .route("/:id")
   .get(protect, getScheduleById)
   .patch(protect, restrictTo("Admin", "Coach"), updateSchedule)
   .delete(protect, restrictTo("Admin", "Coach"), deleteSchedule);
-
-router.route("/:id/status").patch(protect, updateScheduleStatus);
 
 module.exports = router;

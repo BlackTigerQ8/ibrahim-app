@@ -34,6 +34,34 @@ const categoryImages = multer.diskStorage({
   },
 });
 
+///// COMBINED TRAINING UPLOAD /////
+const trainingUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const dest =
+        file.fieldname === "image"
+          ? "./uploads/training-images"
+          : "./uploads/training-files";
+      cb(null, dest);
+    },
+    filename: (req, file, cb) => {
+      cb(null, getUploadFileName(file));
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === "image") {
+      checkImageFileType(file, cb, "training images");
+    } else {
+      checkPdfFileType(file, cb, "training files");
+    }
+  },
+});
+
+const uploadFields = [
+  { name: "image", maxCount: 1 },
+  { name: "file", maxCount: 1 },
+];
+
 // Training image storage configuration
 const trainingImages = multer.diskStorage({
   destination: "./uploads/training-images",
@@ -179,7 +207,7 @@ router.post(
 router.post(
   "/training-images",
   protect,
-  trainingImageUpload.single("file"),
+  trainingImageUpload.single("image"),
   async (req, res) => {
     try {
       const updatedUser = await User.findByIdAndUpdate(
@@ -239,4 +267,5 @@ module.exports = {
   categoryImageUpload,
   trainingImageUpload,
   trainingFileUpload,
+  trainingUpload: trainingUpload.fields(uploadFields),
 };

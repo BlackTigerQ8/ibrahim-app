@@ -72,9 +72,9 @@ const ScheduleForm = () => {
         date: null,
         notes: "",
       });
-      message.success(t("scheduleCreatedSuccessfully"));
+      // message.success(t("scheduleCreatedSuccessfully"));
     } catch (error) {
-      message.error(t("errorCreatingSchedule"));
+      // message.error(t("errorCreatingSchedule"));
     }
   };
 

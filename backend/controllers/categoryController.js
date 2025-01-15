@@ -90,13 +90,17 @@ const createCategory = async (req, res) => {
 // @access  Private/Admin
 const updateCategory = async (req, res) => {
   try {
-    const { name, description, image } = req.body;
-
     const uploadedFile = req.file;
     const filePath = uploadedFile ? uploadedFile.path : null;
+
+    // Prepare the updated data
+    const updateData = req.file
+      ? { ...req.body, image: filePath }
+      : { ...req.body };
+
     const updatedCategory = await Category.findByIdAndUpdate(
       req.params.id,
-      { name, description, image: filePath },
+      updateData,
       { new: true, runValidators: true }
     );
 

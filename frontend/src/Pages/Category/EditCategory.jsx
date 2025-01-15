@@ -4,10 +4,6 @@ import {
   Button,
   IconButton,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
@@ -92,12 +88,8 @@ const EditCategory = () => {
       }
     });
 
-    // Handle image: if it's a new File, use that. Otherwise, keep the existing image path
     if (categoryImage instanceof File) {
       formData.append("image", categoryImage);
-    } else if (categoryInfo.image) {
-      // Keep the existing image path
-      formData.append("image", categoryInfo.image);
     }
 
     try {

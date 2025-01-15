@@ -43,6 +43,7 @@ const TrainingForm = () => {
     if (status === "idle") {
       dispatch(fetchCategories());
     }
+    console.log("categories:", categories);
   }, [dispatch, status]);
 
   const initialValues = {
@@ -87,9 +88,10 @@ const TrainingForm = () => {
   });
 
   const handleFormSubmit = async (values) => {
+    console.log("Category ID during form submission:", values.category); // Check category here
+
     try {
       const formData = new FormData();
-
       // Add all training data to FormData
       Object.keys(values).forEach((key) => {
         if (key === "file" || key === "image") {
@@ -97,7 +99,6 @@ const TrainingForm = () => {
             formData.append(key, values[key]);
           }
         } else if (key === "category") {
-          // Ensure category is sent as a string
           formData.append("category", values.category.toString());
         } else {
           formData.append(key, values[key]);

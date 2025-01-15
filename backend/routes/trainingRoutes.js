@@ -7,18 +7,19 @@ const {
   deleteTraining,
 } = require("../controllers/trainingController");
 const { protect, restrictTo } = require("../middleware/authMiddleware");
+const { trainingUpload } = require("./uploadRoutes");
 
 const router = express.Router();
 
 router
   .route("/")
   .get(protect, getAllTrainings)
-  .post(protect, restrictTo("Admin"), createTraining);
+  .post(protect, trainingUpload, restrictTo("Admin"), createTraining);
 
 router
   .route("/:id")
   .get(protect, getTrainingById)
-  .patch(protect, restrictTo("Admin"), updateTraining)
+  .patch(protect, trainingUpload, restrictTo("Admin"), updateTraining)
   .delete(protect, restrictTo("Admin"), deleteTraining);
 
 module.exports = router;

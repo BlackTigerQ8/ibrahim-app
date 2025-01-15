@@ -1,7 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSchedules, deleteSchedule } from "../../redux/scheduleSlice";
-import { Box, Button, Typography, useTheme, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  useTheme,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { tokens } from "../../theme";
@@ -18,17 +27,28 @@ const Schedules = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedScheduleId, setSelectedScheduleId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchSchedules());
   }, [dispatch]);
 
   const handleDelete = async (id) => {
-    try {
-      await dispatch(deleteSchedule(id)).unwrap();
-    } catch (error) {
-      console.error("Failed to delete schedule:", error);
+    setSelectedScheduleId(id);
+    setOpenDeleteModal(true);
+  };
+
+  const handleModalClose = async (confirm) => {
+    if (confirm && selectedScheduleId) {
+      try {
+        await dispatch(deleteSchedule(selectedScheduleId)).unwrap();
+      } catch (error) {
+        console.error("Failed to delete schedule:", error);
+      }
     }
+    setOpenDeleteModal(false);
+    setSelectedScheduleId(null);
   };
 
   const columns = [
@@ -83,14 +103,14 @@ const Schedules = () => {
       renderCell: (params) => (
         <Box display="flex" justifyContent="center">
           {(userRole === "Admin" || userRole === "Coach") && (
-            <Popconfirm
-              title={t("deleteConfirmation")}
-              onConfirm={() => handleDelete(params.row._id)}
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={() => handleDelete(params.row._id)}
             >
-              <Button variant="contained" color="secondary" size="small">
-                {t("delete")}
-              </Button>
-            </Popconfirm>
+              {t("delete")}
+            </Button>
           )}
         </Box>
       ),
@@ -157,6 +177,26 @@ const Schedules = () => {
             </Button>
           </Box>
         )}
+        <Dialog
+          open={openDeleteModal}
+          onClose={() => setOpenDeleteModal(false)}
+          BackdropProps={{
+            style: { backgroundColor: "rgba(0, 0, 0, 0.7)" },
+          }}
+          PaperProps={{
+            style: { boxShadow: "none" },
+          }}
+        >
+          <DialogTitle>{t("deleteConfirmation")}</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => handleModalClose(false)} color="inherit">
+              {t("cancel")}
+            </Button>
+            <Button onClick={() => handleModalClose(true)} color="secondary">
+              {t("confirm")}
+            </Button>
+          </DialogActions>
+        </Dialog>
         <DataGrid
           rows={schedules}
           columns={columns}

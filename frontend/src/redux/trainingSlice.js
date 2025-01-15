@@ -52,21 +52,11 @@ export const createTraining = createAsyncThunk(
   "training/createTraining",
   async ({ formData }, { rejectWithValue }) => {
     try {
-      // Debug log
-      console.log("FormData being sent to API:");
-      for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
-
       const response = await axiosInstance.post("/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // Debug log
-      console.log("API Response:", response.data);
-
       dispatchToast(i18next.t("trainingCreatedSuccessfully"), "success");
       return response.data.data.training;
     } catch (error) {

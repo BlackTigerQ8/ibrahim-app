@@ -14,21 +14,9 @@ const getAllSchedules = async (req, res) => {
     }
 
     const schedules = await Schedule.find(query)
-      .populate({
-        path: "athlete",
-        select: "firstName lastName",
-        options: { strictPopulate: false },
-      })
-      .populate({
-        path: "category",
-        select: "name",
-        options: { strictPopulate: false },
-      })
-      .populate({
-        path: "training",
-        select: "name description",
-        options: { strictPopulate: false },
-      });
+      .populate("athlete", "firstName lastName")
+      .populate("category", "name")
+      .populate("training", "name description");
 
     res.status(200).json({
       status: "Success",
@@ -89,6 +77,7 @@ const getScheduleById = async (req, res) => {
 // @access  Private/Admin/Coach
 const createSchedule = async (req, res) => {
   try {
+    const { athlete, category, training, date, notes } = req.body;
     if (req.user.role !== "Admin" && req.user.role !== "Coach") {
       return res.status(403).json({
         status: "Error",
@@ -96,7 +85,13 @@ const createSchedule = async (req, res) => {
       });
     }
 
-    const schedule = await Schedule.create(req.body);
+    const schedule = await Schedule.create({
+      athlete,
+      category,
+      training,
+      date,
+      notes,
+    });
 
     res.status(201).json({
       status: "Success",
@@ -156,6 +151,9 @@ const updateScheduleStatus = async (req, res) => {
   try {
     const schedule = await Schedule.findById(req.params.id);
 
+    console.log(req.params.id);
+    console.log(schedule);
+
     if (!schedule) {
       return res.status(404).json({
         status: "Error",
@@ -198,7 +196,7 @@ const updateScheduleStatus = async (req, res) => {
 // @access  Private/Admin/Coach
 const deleteSchedule = async (req, res) => {
   try {
-    const schedule = await Schedule.findById(req.params.id);
+    const schedule = await Schedule.findByIdAndDelete(req.params.id);
 
     if (!schedule) {
       return res.status(404).json({
@@ -213,8 +211,6 @@ const deleteSchedule = async (req, res) => {
         message: "Not authorized to delete schedules",
       });
     }
-
-    await schedule.remove();
 
     res.status(204).json({
       status: "Success",

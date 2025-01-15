@@ -59,6 +59,7 @@ const getTrainingById = async (req, res) => {
 // @access  Private/Admin
 const createTraining = async (req, res) => {
   try {
+    console.log("Hello");
     const {
       name,
       description,
