@@ -15,7 +15,7 @@ import { cardio } from "ldrs";
 import { useTranslation } from "react-i18next";
 import { fetchSchedules } from "../../redux/scheduleSlice";
 import Title from "../../components/Title";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const UserSchedule = () => {
   const theme = useTheme();
@@ -23,6 +23,8 @@ const UserSchedule = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { categoryId } = useParams();
+  const { trainingId } = useParams();
 
   const { schedules, status, error } = useSelector((state) => state.schedule);
   const { userInfo } = useSelector((state) => state.user);
@@ -35,6 +37,10 @@ const UserSchedule = () => {
   const userSchedules = schedules.filter(
     (schedule) => schedule.athlete._id === userInfo?._id
   );
+
+  const handleViewTraining = (schedule) => {
+    navigate(`/categories/${categoryId}/trainings/${trainingId}`);
+  };
 
   cardio.register();
   if (status === "loading") {
@@ -115,7 +121,7 @@ const UserSchedule = () => {
                         color={colors.neutral.light}
                         sx={{ mt: 1 }}
                       >
-                        {new Date(schedule.dateTime).toLocaleString()}
+                        {new Date(schedule.date).toLocaleString()}
                       </Typography>
                     </Box>
                     <Box
@@ -138,11 +144,7 @@ const UserSchedule = () => {
                       <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() =>
-                          navigate(
-                            `/categories/${schedule.training?.categoryId}/trainings/${schedule.training?._id}`
-                          )
-                        }
+                        onClick={() => handleViewTraining(schedule)}
                       >
                         {t("viewTraining")}
                       </Button>

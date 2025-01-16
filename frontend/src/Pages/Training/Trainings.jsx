@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
@@ -14,11 +14,15 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchTrainings } from "../../redux/trainingSlice";
+import { deleteTraining, fetchTrainings } from "../../redux/trainingSlice";
+import PlaceholderImage from "../../assets/JRG-1.png";
 
 const Trainings = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -34,12 +38,37 @@ const Trainings = () => {
   const { trainings, status, error } = useSelector((state) => state.training);
   const { categories } = useSelector((state) => state.category);
   const category = categories.find((cat) => cat._id === categoryId);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedTrainingId, setSelectedTrainingId] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (categoryId) {
       dispatch(fetchTrainings({ token, categoryId }));
     }
   }, [dispatch, categoryId, token]);
+
+  const handleUpdate = (trainingId) => {
+    navigate(`/categories/${categoryId}/trainings/edit/${trainingId}`);
+  };
+
+  const handleDelete = (trainingId) => {
+    setSelectedTrainingId(trainingId);
+    setOpenDeleteModal(true);
+  };
+
+  const handleModalClose = (confirm) => {
+    if (confirm && selectedTrainingId) {
+      dispatch(deleteTraining(selectedTrainingId));
+    }
+    setOpenDeleteModal(false);
+    setSelectedTrainingId(null);
+  };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return PlaceholderImage;
+    return `${API_URL}/${imagePath}`;
+  };
 
   cardio.register();
 
@@ -124,7 +153,12 @@ const Trainings = () => {
                 >
                   <CardMedia
                     sx={{ height: 140 }}
-                    image={item.image || "https://via.placeholder.com/345x140"}
+                    component="img"
+                    crossOrigin="anonymous"
+                    image={(() => {
+                      const url = getImageUrl(item.image);
+                      return url;
+                    })()}
                     title={item.name}
                   />
                   <CardContent>
@@ -144,6 +178,38 @@ const Trainings = () => {
                     </Typography>
                   </CardContent>
                 </CardActionArea>
+                {userRole === "Admin" && (
+                  <>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        padding: "0.5rem 1rem",
+                      }}
+                    >
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpdate(item._id);
+                        }}
+                      >
+                        {t("update")}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(item._id);
+                        }}
+                      >
+                        {t("delete")}
+                      </Button>
+                    </Box>
+                  </>
+                )}
               </Card>
             ))
           ) : (
@@ -170,6 +236,26 @@ const Trainings = () => {
           )}
         </Box>
       </Box>
+      <Dialog
+        open={openDeleteModal}
+        onClose={() => setOpenDeleteModal(false)}
+        BackdropProps={{
+          style: { backgroundColor: "rgba(0, 0, 0, 0.05)" },
+        }}
+        PaperProps={{
+          style: { boxShadow: "none" },
+        }}
+      >
+        <DialogTitle>{t("deleteTrainingConfirmation")}</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => handleModalClose(false)} color="inherit">
+            {t("cancel")}
+          </Button>
+          <Button onClick={() => handleModalClose(true)} color="secondary">
+            {t("confirm")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

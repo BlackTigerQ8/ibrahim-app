@@ -18,23 +18,25 @@ import { updateScheduleStatus } from "../../redux/scheduleSlice";
 
 const Training = () => {
   const { trainingId } = useParams();
-  const location = useLocation(); // Add this
-  const scheduleId = location.state?.scheduleId;
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL;
   const colors = tokens(theme.palette.mode);
-  // Assuming you'll create these in your trainingSlice
   const { trainings, status, error } = useSelector((state) => state.training);
   const selectedTraining = trainings.find(
     (training) => training._id === trainingId
   );
+  const userRole = useSelector((state) => state.user.userRole);
 
-  useEffect(() => {
-    // TODO: Add fetchTrainingById action in trainingSlice
-    // dispatch(fetchTrainingById(trainingId));
-  }, [dispatch, trainingId]);
+  const canChangeStatus = () => {
+    return ["Family", "Athlete"].includes(userRole);
+  };
+
+  const getImageUrl = (imagePath) => {
+    return `${API_URL}/${imagePath}`;
+  };
 
   const handleStatusChange = (newStatus) => {
     dispatch(updateScheduleStatus({ id: trainingId, status: newStatus }));
@@ -85,11 +87,31 @@ const Training = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "column",
+          gap: "1rem",
+          overflow: "hidden",
+          position: "relative",
         }}
       >
-        <Typography variant="h3" color="textSecondary">
-          {t("mediaPlaceholder")}
-        </Typography>
+        {selectedTraining?.image ? (
+          <img
+            src={getImageUrl(selectedTraining?.image)}
+            alt={selectedTraining.name}
+            crossOrigin="anonymous"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              position: "absolute",
+              top: 0,
+              left: 0,
+            }}
+          />
+        ) : (
+          <Typography variant="h3" color="textSecondary">
+            {t("mediaPlaceholder")}
+          </Typography>
+        )}
       </Paper>
       <Box
         sx={{
@@ -134,7 +156,7 @@ const Training = () => {
               {t("restBetweenSets")}:
             </Typography>
             <Typography variant="body1">
-              {selectedTraining?.restBetweenSets} {t("second")}
+              {selectedTraining?.restBetweenSets} {t("minute")}
             </Typography>
           </Box>
           <Box>
@@ -142,26 +164,61 @@ const Training = () => {
               {t("restBetweenRepeats")}:
             </Typography>
             <Typography variant="body1">
-              {selectedTraining?.restBetweenRepeats} {t("second")}
+              {selectedTraining?.restBetweenRepeats} {t("minute")}
             </Typography>
           </Box>
         </Box>
-        <Box mt={4}>
-          <Button
-            onClick={() => handleStatusChange("Completed")}
-            color="primary"
-            variant="contained"
-            sx={{ mr: 2 }}
-          >
-            {t("markAsCompleted")}
-          </Button>
-          <Button
-            onClick={() => handleStatusChange("Cancelled")}
-            color="error"
-            variant="contained"
-          >
-            {t("markAsCancelled")}
-          </Button>
+
+        <Box
+          mt={4}
+          display="flex"
+          flexDirection={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems="center"
+          gap="1rem"
+        >
+          <Box width={{ xs: "100%", sm: "200px" }}>
+            {selectedTraining?.file && (
+              <Button
+                variant="contained"
+                color="secondary"
+                href={`${API_URL}/${selectedTraining.file}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                fullWidth
+                sx={{ height: "40px" }}
+              >
+                {t("viewTrainingFile")}
+              </Button>
+            )}
+          </Box>
+          {canChangeStatus() && (
+            <Box
+              width={{ xs: "100%", sm: "auto" }}
+              display="flex"
+              flexDirection={{ xs: "column", sm: "row" }}
+              gap="1rem"
+            >
+              <Button
+                onClick={() => handleStatusChange("Completed")}
+                color="success"
+                variant="contained"
+                fullWidth
+                sx={{ width: { sm: "200px" }, height: "40px" }}
+              >
+                {t("markAsCompleted")}
+              </Button>
+              <Button
+                onClick={() => handleStatusChange("Cancelled")}
+                color="error"
+                variant="contained"
+                fullWidth
+                sx={{ width: { sm: "200px" }, height: "40px" }}
+              >
+                {t("markAsCancelled")}
+              </Button>
+            </Box>
+          )}
         </Box>
       </Box>
     </Container>

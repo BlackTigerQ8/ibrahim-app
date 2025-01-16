@@ -1,7 +1,18 @@
 import React from "react";
 
 const EditSchedule = () => {
-  return <div>EditSchedule</div>;
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      Edit Schedule
+    </div>
+  );
 };
 
 export default EditSchedule;

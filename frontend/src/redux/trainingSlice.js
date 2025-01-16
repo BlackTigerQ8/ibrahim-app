@@ -57,7 +57,7 @@ export const createTraining = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      dispatchToast(i18next.t("trainingCreatedSuccessfully"), "success");
+      dispatchToast(i18next.t("createTrainingSuccess"), "success");
       return response.data.data.training;
     } catch (error) {
       console.error("API Error:", error.response?.data || error);

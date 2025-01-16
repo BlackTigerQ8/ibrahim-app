@@ -14,10 +14,11 @@ import {
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { tokens } from "../../theme";
-import Popconfirm from "antd/lib/popconfirm";
 import Title from "../../components/Title";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Schedules = () => {
   const dispatch = useDispatch();
@@ -69,7 +70,7 @@ const Schedules = () => {
       field: "training",
       headerName: t("training"),
       flex: 1,
-      renderCell: ({ row }) => row.training.name,
+      renderCell: ({ row }) => row.training?.name || t("notAvailable"),
     },
     {
       field: "date",
@@ -103,14 +104,24 @@ const Schedules = () => {
       renderCell: (params) => (
         <Box display="flex" justifyContent="center">
           {(userRole === "Admin" || userRole === "Coach") && (
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              onClick={() => handleDelete(params.row._id)}
-            >
-              {t("delete")}
-            </Button>
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                style={{ marginRight: 8 }}
+                onClick={() => navigate(`/schedules/edit/${params.row._id}`)}
+                startIcon={<EditIcon />}
+              />
+              <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                onClick={() => handleDelete(params.row._id)}
+              >
+                <DeleteIcon />
+              </Button>
+            </>
           )}
         </Box>
       ),

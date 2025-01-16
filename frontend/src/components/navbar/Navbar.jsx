@@ -135,69 +135,90 @@ const Navbar = () => {
     setOpenModal(false);
   };
 
-  const links = [
+  const commonLinks = [
     { id: 1, title: t("home"), url: "/", icon: <HomeIcon /> },
-    { id: 2, title: t("aboutMe"), url: "/about", icon: <InfoIcon /> },
+    { id: 2, title: t("about"), url: "/about", icon: <InfoIcon /> },
     { id: 3, title: t("contact"), url: "/contact", icon: <ContactMailIcon /> },
   ];
 
-  // Only add Profile link if the user is logged in
-  if (user && userRole !== "Admin") {
-    links.push(
-      {
-        id: 4,
-        title: t("mySchedule"),
-        url: "/schedule",
-        icon: <EditCalendarOutlinedIcon />,
-      },
-      {
-        id: 5,
-        title: t("categories"),
-        url: "/categories",
-        icon: <ScheduleIcon />,
-      },
-      {
-        id: 6,
-        title: t("profile"),
-        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
-        icon: <AccountCircleIcon />,
-      }
-    );
-  }
+  const adminLinks = [
+    {
+      id: 4,
+      title: t("schedules"),
+      url: "/schedules",
+      icon: <EditCalendarOutlinedIcon />,
+    },
+    {
+      id: 5,
+      title: t("calendar"),
+      url: "/calendar",
+      icon: <CalendarMonthOutlinedIcon />,
+    },
+    { id: 6, title: t("users"), url: "/users", icon: <PeopleIcon /> },
+    {
+      id: 7,
+      title: t("categories"),
+      url: "/categories",
+      icon: <CalendarMonthOutlinedIcon />,
+    },
+    {
+      id: 8,
+      title: t("profile"),
+      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+      icon: <AccountCircleIcon />,
+    },
+  ];
 
-  // Only add CategoryForm link if the user is Admin
+  const coachLinks = adminLinks.filter((link) => link.url !== "/users");
+
+  const familyLinks = commonLinks.concat([
+    {
+      id: 9,
+      title: t("profile"),
+      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+      icon: <AccountCircleIcon />,
+    },
+    {
+      id: 10,
+      title: t("schedule"),
+      url: "/schedule",
+      icon: <CalendarMonthOutlinedIcon />,
+    },
+    {
+      id: 11,
+      title: t("categories"),
+      url: "/categories",
+      icon: <CalendarMonthOutlinedIcon />,
+    },
+  ]);
+
+  const athleteLinks = commonLinks.concat([
+    {
+      id: 12,
+      title: t("profile"),
+      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+      icon: <AccountCircleIcon />,
+    },
+    {
+      id: 13,
+      title: t("schedule"),
+      url: "/schedule",
+      icon: <ScheduleIcon />,
+    },
+  ]);
+
+  // Filter links based on user role
+  let links = commonLinks;
   if (userRole === "Admin") {
-    links.push(
-      {
-        id: 7,
-        title: t("schedules"),
-        url: "/schedules",
-        icon: <EditCalendarOutlinedIcon />,
-      },
-      {
-        id: 8,
-        title: t("calendar"),
-        url: "/calendar",
-        icon: <CalendarMonthOutlinedIcon />,
-      },
-      {
-        id: 9,
-        title: t("users"),
-        url: "/users",
-        icon: <PeopleIcon />,
-      },
-      {
-        id: 10,
-        title: t("categories"),
-        url: "/categories",
-        icon: <ScheduleIcon />,
-      },
-      {
-        id: 11,
-        title: t("profile"),
-        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
-        icon: <AccountCircleIcon />,
-      }
+    links = commonLinks.concat(adminLinks);
+  } else if (userRole === "Coach") {
+    links = commonLinks.concat(coachLinks);
+  } else if (userRole === "Family") {
+    links = familyLinks;
+  } else if (userRole === "Athlete") {
+    links = athleteLinks.filter(
+      (link) =>
+        !["/categories", "/calendar", "/schedules", "/users"].includes(link.url)
     );
   }
 

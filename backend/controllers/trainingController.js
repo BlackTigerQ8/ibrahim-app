@@ -87,10 +87,14 @@ const createTraining = async (req, res) => {
       });
     }
 
-    const uploadedFile = req.file;
-    const filePath = uploadedFile ? uploadedFile.path : null;
-    const uploadedImage = req.file;
-    const imagePath = uploadedImage ? uploadedImage.path : null;
+    // const uploadedFile = req.file;
+    // const filePath = uploadedFile ? uploadedFile.path : null;
+    // const uploadedImage = req.file;
+    // const imagePath = uploadedImage ? uploadedImage.path : null;
+
+    const image = req.files?.image?.[0]?.path || null;
+    const file = req.files?.file?.[0]?.path || null;
+
     const training = await Training.create({
       name,
       description,
@@ -99,8 +103,8 @@ const createTraining = async (req, res) => {
       restBetweenSets,
       restBetweenRepeats,
       category,
-      file: filePath,
-      image: imagePath,
+      file,
+      image,
     });
 
     res.status(201).json({

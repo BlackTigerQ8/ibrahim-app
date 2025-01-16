@@ -1,5 +1,14 @@
-import React, { useEffect } from "react";
-import { Typography, Box, Button, useTheme, Alert } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Typography,
+  Box,
+  Button,
+  useTheme,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+} from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
@@ -25,6 +34,8 @@ const Users = () => {
   const { userRole } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
@@ -156,9 +167,7 @@ const Users = () => {
   ];
 
   useEffect(() => {
-    //if (status === "succeeded") {
     dispatch(fetchUsers(token));
-    //}
   }, [token]);
 
   cardio.register();
@@ -190,12 +199,17 @@ const Users = () => {
     navigate(`/profile/${rowData._id}`);
   };
 
-  const handleDelete = async (userId) => {
-    try {
-      dispatch(deleteUser(userId));
-    } catch (error) {
-      console.error("Error deleting user:", error);
+  const handleDelete = (userId) => {
+    setSelectedUserId(userId);
+    setOpenDeleteModal(true);
+  };
+
+  const handleModalClose = (confirm) => {
+    if (confirm && selectedUserId) {
+      dispatch(deleteUser(selectedUserId));
     }
+    setOpenDeleteModal(false);
+    setSelectedUserId(null);
   };
 
   return (
@@ -257,6 +271,26 @@ const Users = () => {
           }}
         />
       </Box>
+      <Dialog
+        open={openDeleteModal}
+        onClose={() => setOpenDeleteModal(false)}
+        BackdropProps={{
+          style: { backgroundColor: "rgba(0, 0, 0, 0.7)" },
+        }}
+        PaperProps={{
+          style: { boxShadow: "none" },
+        }}
+      >
+        <DialogTitle>{t("deleteUserConfirmation")}</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => handleModalClose(false)} color="inherit">
+            {t("cancel")}
+          </Button>
+          <Button onClick={() => handleModalClose(true)} color="secondary">
+            {t("confirm")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

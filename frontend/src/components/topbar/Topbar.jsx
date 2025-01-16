@@ -83,61 +83,57 @@ const Topbar = () => {
     handleCloseLanguageMenu();
   };
 
-  const links = [
+  const commonLinks = [
     { id: 1, title: t("home"), url: "/" },
-    { id: 2, title: t("aboutMe"), url: "/about" },
+    { id: 2, title: t("about"), url: "/about" },
     { id: 3, title: t("contact"), url: "/contact" },
   ];
 
-  // Only add Profile link if the user is logged in
-  if (user && userRole !== "Admin") {
-    links.push(
-      {
-        id: 4,
-        title: t("mySchedule"),
-        url: "/schedule",
-      },
-      {
-        id: 5,
-        title: t("categories"),
-        url: "/categories",
-      },
-      {
-        id: 6,
-        title: t("profile"),
-        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
-      }
-    );
-  }
+  const adminLinks = [
+    { id: 4, title: t("schedules"), url: "/schedules" },
+    { id: 5, title: t("calendar"), url: "/calendar" },
+    { id: 6, title: t("users"), url: "/users" },
+    { id: 7, title: t("categories"), url: "/categories" },
+    {
+      id: 8,
+      title: t("profile"),
+      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+    },
+  ];
 
-  // Only add CategoryForm link if the user is Admin
+  const coachLinks = adminLinks.filter((link) => link.url !== "/users");
+
+  const familyLinks = commonLinks.concat([
+    {
+      id: 9,
+      title: t("profile"),
+      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+    },
+    { id: 10, title: t("schedule"), url: "/schedule" },
+    { id: 11, title: t("categories"), url: "/categories" },
+  ]);
+
+  const athleteLinks = commonLinks.concat([
+    {
+      id: 12,
+      title: t("profile"),
+      url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
+    },
+    { id: 13, title: t("schedule"), url: "/schedule" },
+  ]);
+
+  // Filter links based on user role
+  let links = commonLinks;
   if (userRole === "Admin") {
-    links.push(
-      {
-        id: 6,
-        title: t("schedules"),
-        url: "/schedules",
-      },
-      {
-        id: 7,
-        title: t("calendar"),
-        url: "/calendar",
-      },
-      {
-        id: 8,
-        title: t("users"),
-        url: "/users",
-      },
-      {
-        id: 9,
-        title: t("categories"),
-        url: "/categories",
-      },
-      {
-        id: 10,
-        title: t("profile"),
-        url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
-      }
+    links = commonLinks.concat(adminLinks);
+  } else if (userRole === "Coach") {
+    links = commonLinks.concat(coachLinks);
+  } else if (userRole === "Family") {
+    links = familyLinks;
+  } else if (userRole === "Athlete") {
+    links = athleteLinks.filter(
+      (link) =>
+        !["/categories", "/calendar", "/schedules", "/users"].includes(link.url)
     );
   }
 
@@ -170,6 +166,7 @@ const Topbar = () => {
             src={profileImage || Avatar}
             alt={t("profileImage")}
             width={60}
+            height={60}
             style={{
               margin: ".5rem",
               borderRadius: "50%",

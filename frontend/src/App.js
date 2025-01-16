@@ -207,7 +207,7 @@ function App() {
     {
       path: "/schedules/edit/:scheduleId",
       component: <EditSchedule />,
-      requiredRole: ["Admin"],
+      requiredRole: ["Coach"],
     },
     {
       path: "/calendar",

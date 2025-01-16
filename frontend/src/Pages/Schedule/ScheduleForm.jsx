@@ -19,6 +19,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import Title from "../../components/Title";
+import { useNavigate } from "react-router-dom";
 
 const ScheduleForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -26,6 +27,7 @@ const ScheduleForm = () => {
   const colors = tokens(theme.palette.mode);
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -72,6 +74,7 @@ const ScheduleForm = () => {
         date: null,
         notes: "",
       });
+      navigate("/schedules");
       // message.success(t("scheduleCreatedSuccessfully"));
     } catch (error) {
       // message.error(t("errorCreatingSchedule"));
