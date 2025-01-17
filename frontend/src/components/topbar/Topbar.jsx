@@ -91,11 +91,11 @@ const Topbar = () => {
 
   const adminLinks = [
     { id: 4, title: t("schedules"), url: "/schedules" },
-    { id: 5, title: t("calendar"), url: "/calendar" },
-    { id: 6, title: t("users"), url: "/users" },
-    { id: 7, title: t("categories"), url: "/categories" },
+    // { id: 5, title: t("calendar"), url: "/calendar" },
+    { id: 5, title: t("users"), url: "/users" },
+    { id: 6, title: t("categories"), url: "/categories" },
     {
-      id: 8,
+      id: 7,
       title: t("profile"),
       url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
     },
@@ -105,21 +105,21 @@ const Topbar = () => {
 
   const familyLinks = commonLinks.concat([
     {
-      id: 9,
+      id: 8,
       title: t("profile"),
       url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
     },
-    { id: 10, title: t("schedule"), url: "/schedule" },
-    { id: 11, title: t("categories"), url: "/categories" },
+    { id: 9, title: t("schedule"), url: "/schedule" },
+    { id: 10, title: t("categories"), url: "/categories" },
   ]);
 
   const athleteLinks = commonLinks.concat([
     {
-      id: 12,
+      id: 11,
       title: t("profile"),
       url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
     },
-    { id: 13, title: t("schedule"), url: "/schedule" },
+    { id: 12, title: t("schedule"), url: "/schedule" },
   ]);
 
   // Filter links based on user role

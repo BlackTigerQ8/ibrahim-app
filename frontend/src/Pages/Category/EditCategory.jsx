@@ -6,6 +6,7 @@ import {
   TextField,
   useTheme,
   useMediaQuery,
+  Alert,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
@@ -162,7 +163,7 @@ const EditCategory = () => {
         height="100vh"
         fontSize="18px"
       >
-        Error: {error}
+        <Alert>Error: {error}</Alert>
       </Box>
     );
   }

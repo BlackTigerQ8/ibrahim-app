@@ -148,21 +148,21 @@ const Navbar = () => {
       url: "/schedules",
       icon: <EditCalendarOutlinedIcon />,
     },
+    // {
+    //   id: 5,
+    //   title: t("calendar"),
+    //   url: "/calendar",
+    //   icon: <CalendarMonthOutlinedIcon />,
+    // },
+    { id: 5, title: t("users"), url: "/users", icon: <PeopleIcon /> },
     {
-      id: 5,
-      title: t("calendar"),
-      url: "/calendar",
-      icon: <CalendarMonthOutlinedIcon />,
-    },
-    { id: 6, title: t("users"), url: "/users", icon: <PeopleIcon /> },
-    {
-      id: 7,
+      id: 6,
       title: t("categories"),
       url: "/categories",
       icon: <CalendarMonthOutlinedIcon />,
     },
     {
-      id: 8,
+      id: 7,
       title: t("profile"),
       url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
       icon: <AccountCircleIcon />,
@@ -173,19 +173,19 @@ const Navbar = () => {
 
   const familyLinks = commonLinks.concat([
     {
-      id: 9,
+      id: 8,
       title: t("profile"),
       url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
       icon: <AccountCircleIcon />,
     },
     {
-      id: 10,
+      id: 9,
       title: t("schedule"),
       url: "/schedule",
       icon: <CalendarMonthOutlinedIcon />,
     },
     {
-      id: 11,
+      id: 10,
       title: t("categories"),
       url: "/categories",
       icon: <CalendarMonthOutlinedIcon />,
@@ -194,13 +194,13 @@ const Navbar = () => {
 
   const athleteLinks = commonLinks.concat([
     {
-      id: 12,
+      id: 11,
       title: t("profile"),
       url: userInfo?._id ? `/profile/${userInfo._id}` : "/login",
       icon: <AccountCircleIcon />,
     },
     {
-      id: 13,
+      id: 12,
       title: t("schedule"),
       url: "/schedule",
       icon: <ScheduleIcon />,

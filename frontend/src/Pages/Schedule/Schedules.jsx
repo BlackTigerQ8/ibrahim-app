@@ -19,6 +19,7 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 
 const Schedules = () => {
   const dispatch = useDispatch();
@@ -177,17 +178,30 @@ const Schedules = () => {
           },
         }}
       >
-        {userRole === "Admin" && (
+        <Box display="flex" justifyContent="space-between" margin="20px">
+          {userRole === "Admin" && (
+            <Box display="flex" justifyContent="start" mb="20px">
+              <Button
+                onClick={() => navigate("/schedule-form")}
+                color="secondary"
+                variant="contained"
+              >
+                {t("createNewSchedule")}
+              </Button>
+            </Box>
+          )}
           <Box display="flex" justifyContent="start" mb="20px">
             <Button
-              onClick={() => navigate("/schedule-form")}
+              onClick={() => navigate("/calendar")}
               color="secondary"
               variant="contained"
             >
-              {t("createNewSchedule")}
+              <CalendarMonthOutlinedIcon sx={{ marginRight: "10px" }} />
+              {t("calendar")}
             </Button>
           </Box>
-        )}
+        </Box>
+
         <Dialog
           open={openDeleteModal}
           onClose={() => setOpenDeleteModal(false)}

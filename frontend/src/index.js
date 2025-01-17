@@ -10,7 +10,7 @@ import "./i18n";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Router>
+  <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <App />
