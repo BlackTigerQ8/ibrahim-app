@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import { registerUser } from "../../redux/userSlice";
 import { useNavigate } from "react-router-dom";
+import { fetchCoaches, fetchUsers } from "../../redux/usersSlice";
 
 const initialValues = {
   firstName: "",
@@ -49,6 +50,8 @@ const UserForm = () => {
   const { t } = useTranslation();
   const { userInfo } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const { users } = useSelector((state) => state.users); // Add this line
+  const [coaches, setCoaches] = useState([]);
 
   const userSchema = yup.object().shape({
     firstName: yup.string().required(t("firstNameIsRequired")),
@@ -73,6 +76,11 @@ const UserForm = () => {
       .string()
       .oneOf([yup.ref("password"), null], t("passwordMustMatch"))
       .required(t("confirmPasswordIsRequired")),
+    coach: yup.string().when("role", {
+      is: (role) => role === "Athlete",
+      then: () => yup.string().required(t("coachIsRequired")),
+      otherwise: () => yup.string(),
+    }),
   });
 
   const handleFormSubmit = async (values) => {
@@ -113,6 +121,18 @@ const UserForm = () => {
     };
 
     checkUser();
+  }, [dispatch, savedToken]);
+
+  useEffect(() => {
+    // Update coaches when users are fetched
+    if (users) {
+      const coachUsers = users.filter((user) => user.role === "Coach");
+      setCoaches(coachUsers);
+    }
+  }, [users]);
+
+  useEffect(() => {
+    dispatch(fetchUsers(savedToken));
   }, [dispatch, savedToken]);
 
   const commonInputStyles = {
@@ -295,6 +315,35 @@ const UserForm = () => {
                   )}
                 </Select>
               </FormControl>
+              {/* Add coach selection field that appears when role is Athlete */}
+              {values.role === "Athlete" && (
+                <FormControl
+                  fullWidth
+                  variant="filled"
+                  sx={{ gridColumn: "span 2", ...commonInputStyles }}
+                >
+                  <InputLabel htmlFor="coach">{t("coach")}</InputLabel>
+                  <Select
+                    label="Coach"
+                    value={values.coach}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    name="coach"
+                    error={!!touched.coach && !!errors.coach}
+                  >
+                    {coaches.map((coach) => (
+                      <MenuItem key={coach._id} value={coach._id}>
+                        {`${coach.firstName} ${coach.lastName}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {touched.coach && errors.coach && (
+                    <Typography variant="caption" color="error">
+                      {errors.coach}
+                    </Typography>
+                  )}
+                </FormControl>
+              )}
               <FormControl
                 fullWidth
                 sx={{ gridColumn: "span 2", ...commonInputStyles }}

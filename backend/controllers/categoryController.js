@@ -5,7 +5,10 @@ const Category = require("../models/CategoryModel");
 // @access  Private/Admin
 const getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
+    let categories;
+
+    categories = await Category.find({ createdBy: req.user._id });
+
     res.status(200).json({
       status: "Success",
       data: {
@@ -57,7 +60,6 @@ const createCategory = async (req, res) => {
 
     // Ensure all required fields are provided
     if (!name || !description) {
-      console.log("Missing required fields:", { name, description });
       return res.status(400).json({
         status: "Error",
         message: "All fields (name, description) are required",
@@ -69,6 +71,7 @@ const createCategory = async (req, res) => {
       name,
       description,
       image,
+      createdBy: req.user._id,
     });
 
     res.status(201).json({

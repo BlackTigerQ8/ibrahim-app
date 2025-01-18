@@ -7,7 +7,43 @@ const jwt = require("jsonwebtoken");
 // @access  Private/Admin
 const getAllusers = async (req, res) => {
   try {
-    const users = await User.find();
+    let query = {};
+    const { role } = req.query;
+
+    // If user is a coach, only return their assigned athletes
+    if (req.user.role === "Coach") {
+      query = {
+        $or: [
+          { _id: req.user._id }, // Include the coach themselves
+          { role: "Athlete", coach: req.user._id }, // Include their athletes
+        ],
+      };
+    } else if (req.user.role === "Admin") {
+      // If a specific role is requested (e.g., for coach selection)
+      if (req.query.role) {
+        query.role = req.query.role;
+      }
+    } else {
+      // If user is neither Admin nor Coach, return unauthorized
+      return res.status(403).json({
+        status: "Error",
+        message: "Not authorized to access user list",
+      });
+    }
+
+    // If user is neither Admin nor Coach, return unauthorized
+    if (req.user.role !== "Admin" && req.user.role !== "Coach") {
+      return res.status(403).json({
+        status: "Error",
+        message: "Not authorized to access user list",
+      });
+    }
+
+    const users = await User.find(query).populate(
+      "coach",
+      "firstName lastName _id role"
+    );
+
     res.status(200).json({
       status: "Success",
       data: {
@@ -99,6 +135,19 @@ const updateUser = async (req, res) => {
     const updateData = req.file
       ? { ...req.body, image: filePath }
       : { ...req.body };
+
+    // Handle coach field based on role
+    if (updateData.role === "Athlete") {
+      if (!updateData.coach) {
+        return res.status(400).json({
+          status: "Error",
+          message: "Coach is required for athletes",
+        });
+      }
+    } else {
+      // If role is not Athlete, remove coach field
+      updateData.coach = undefined;
+    }
 
     // Check if password is included in the request body and hash it
     if (req.body.password) {

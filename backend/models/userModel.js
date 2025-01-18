@@ -31,6 +31,13 @@ const userSchema = new mongoose.Schema({
     enum: USER_ROLES,
     required: true,
   },
+  coach: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: function () {
+      return this.role === "Athlete";
+    },
+  },
   image: {
     type: String,
   },

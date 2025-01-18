@@ -111,7 +111,7 @@ const Trainings = () => {
             {t("backToCategories")}
           </Button>
 
-          {userRole === "Admin" && (
+          {(userRole === "Admin" || userRole === "Coach") && (
             <Button
               onClick={() =>
                 navigate(`/categories/${categoryId}/trainings/training-form`)
@@ -178,7 +178,7 @@ const Trainings = () => {
                     </Typography>
                   </CardContent>
                 </CardActionArea>
-                {userRole === "Admin" && (
+                {(userRole === "Admin" || userRole === "Coach") && (
                   <>
                     <Box
                       sx={{

@@ -59,13 +59,13 @@ const Schedules = () => {
       headerName: t("Athlete"),
       flex: 1,
       renderCell: ({ row }) =>
-        `${row.athlete.firstName} ${row.athlete.lastName}`,
+        `${row.athlete?.firstName} ${row.athlete?.lastName}`,
     },
     {
       field: "category",
       headerName: t("category"),
       flex: 1,
-      renderCell: ({ row }) => row.category.name,
+      renderCell: ({ row }) => row.category?.name || t("notAvailable"),
     },
     {
       field: "training",
@@ -179,7 +179,7 @@ const Schedules = () => {
         }}
       >
         <Box display="flex" justifyContent="space-between" margin="20px">
-          {userRole === "Admin" && (
+          {(userRole === "Admin" || userRole === "Coach") && (
             <Box display="flex" justifyContent="start" mb="20px">
               <Button
                 onClick={() => navigate("/schedule-form")}

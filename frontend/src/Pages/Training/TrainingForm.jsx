@@ -33,11 +33,16 @@ const TrainingForm = () => {
   const colors = tokens(theme.palette.mode);
   const savedToken = localStorage.getItem("token");
   const user = Boolean(savedToken);
+  const { userInfo } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const { categories, status, error } = useSelector((state) => state.category);
+
+  const userCategories = categories.filter(
+    (category) => category.createdBy === userInfo._id
+  );
 
   useEffect(() => {
     if (status === "idle") {
@@ -296,8 +301,8 @@ const TrainingForm = () => {
                     name="category"
                     label={t("selectCategory")}
                   >
-                    {Array.isArray(categories) &&
-                      categories.map((category) => (
+                    {Array.isArray(userCategories) &&
+                      userCategories.map((category) => (
                         <MenuItem key={category._id} value={category._id}>
                           {category.name}
                         </MenuItem>

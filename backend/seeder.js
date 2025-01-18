@@ -196,6 +196,6 @@ const deleteAllUsers = async () => {
 };
 
 // Uncomment the relevant function call as needed
-// createAdmin();
-createFamilyUsers();
+createAdmin();
+// createFamilyUsers();
 // deleteAllUsers();

@@ -35,6 +35,20 @@ export const fetchUsers = createAsyncThunk("user/fetchUsers", async (token) => {
   }
 });
 
+export const fetchCoaches = createAsyncThunk(
+  "user/fetchCoaches",
+  async (token) => {
+    try {
+      const response = await axios.get(`${API_URL}/users?role=Coach`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message || error.message);
+    }
+  }
+);
+
 export const deleteUser = createAsyncThunk(
   "user/deleteUser",
   async (userId, { getState }) => {
@@ -126,6 +140,19 @@ const usersSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
         dispatchToast(i18next.t("updateUserRejected"), "error");
+      });
+    // fetch coaches
+    builder
+      .addCase(fetchCoaches.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchCoaches.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.coaches = action.payload.data.coaches;
+      })
+      .addCase(fetchCoaches.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
       });
   },
 });

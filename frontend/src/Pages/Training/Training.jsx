@@ -15,9 +15,10 @@ import { cardio } from "ldrs";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import { updateScheduleStatus } from "../../redux/scheduleSlice";
+import { fetchTrainings } from "../../redux/trainingSlice";
 
 const Training = () => {
-  const { trainingId } = useParams();
+  const { categoryId, trainingId } = useParams();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -41,6 +42,12 @@ const Training = () => {
   const handleStatusChange = (newStatus) => {
     dispatch(updateScheduleStatus({ id: trainingId, status: newStatus }));
   };
+
+  useEffect(() => {
+    if (categoryId) {
+      dispatch(fetchTrainings({ categoryId }));
+    }
+  }, [dispatch, categoryId]);
 
   cardio.register();
   if (status === "loading") {

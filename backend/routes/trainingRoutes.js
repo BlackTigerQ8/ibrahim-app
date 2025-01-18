@@ -14,12 +14,12 @@ const router = express.Router();
 router
   .route("/")
   .get(protect, getAllTrainings)
-  .post(protect, trainingUpload, restrictTo("Admin"), createTraining);
+  .post(protect, trainingUpload, restrictTo("Admin", "Coach"), createTraining);
 
 router
   .route("/:id")
   .get(protect, getTrainingById)
-  .patch(protect, trainingUpload, restrictTo("Admin"), updateTraining)
-  .delete(protect, restrictTo("Admin"), deleteTraining);
+  .patch(protect, trainingUpload, restrictTo("Admin", "Coach"), updateTraining)
+  .delete(protect, restrictTo("Admin", "Coach"), deleteTraining);
 
 module.exports = router;

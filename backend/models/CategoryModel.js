@@ -5,7 +5,6 @@ const categorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Category name is required"],
-    unique: true,
     trim: true,
   },
   description: {
@@ -14,6 +13,11 @@ const categorySchema = new mongoose.Schema({
   },
   image: {
     type: String,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
   createdAt: {
     type: Date,

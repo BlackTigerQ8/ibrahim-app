@@ -5,6 +5,7 @@ import {
   useNavigate,
   Navigate,
   useLocation,
+  useParams,
 } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
@@ -50,7 +51,8 @@ function App() {
   const dispatch = useDispatch();
   const location = useLocation();
 
-  // const currentUser = useSelector((state) => state.user.userInfo);
+  const currentUser = useSelector((state) => state.user.userInfo);
+
   const userRole =
     useSelector((state) => state.user.userRole) || getUserRoleFromToken();
   const savedToken = localStorage.getItem("token");
@@ -107,7 +109,10 @@ function App() {
   }
 
   // ProtectedRoute component to handle access control
-  const ProtectedRoute = ({ children, requiredRole = [] }) => {
+  const ProtectedRoute = ({ children, requiredRole = [], checkAccess }) => {
+    const params = useParams();
+    const currentUserInfo = useSelector((state) => state.user.userInfo);
+
     if (!savedToken) {
       toast.warn(t("loginRequred"), {
         position: "top-right",
@@ -140,6 +145,22 @@ function App() {
         />
       );
     }
+    if (checkAccess && !checkAccess(params, currentUserInfo)) {
+      toast.warn(t("notAuthorized"), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return (
+        <Navigate
+          to={location.state?.from || "/"}
+          replace
+          state={{ from: location.pathname }}
+        />
+      );
+    }
     return children;
   };
 
@@ -157,7 +178,7 @@ function App() {
     {
       path: "/category-form",
       component: <CategoryForm />,
-      requiredRole: ["Admin"],
+      requiredRole: ["Admin", "Coach"],
     },
     {
       path: "/categories",
@@ -172,7 +193,7 @@ function App() {
     {
       path: "/categories/edit/:categoryId",
       component: <EditCategory />,
-      requiredRole: ["Admin"],
+      requiredRole: ["Admin", "Coach"],
     },
     {
       path: "/categories/:categoryId/trainings/training-form",
@@ -192,7 +213,7 @@ function App() {
     {
       path: "/schedule-form",
       component: <ScheduleForm />,
-      requiredRole: ["Admin"],
+      requiredRole: ["Coach"],
     },
     {
       path: "/schedules",
@@ -222,7 +243,7 @@ function App() {
     {
       path: "/users",
       component: <Users />,
-      requiredRole: ["Admin"],
+      requiredRole: ["Coach"],
     },
     {
       path: "/contact",
@@ -233,6 +254,25 @@ function App() {
       path: "/profile/:id",
       component: <Profile />,
       requiredRole: ["Family", "Coach", "Athlete"],
+      checkAccess: (params, currentUserInfo) => {
+        const currentUserId = currentUserInfo?._id;
+        const profileId = params.id;
+        const userRole = getUserRoleFromToken();
+
+        if (currentUserId === profileId) {
+          return true;
+        }
+
+        if (userRole === "Coach" && currentUserId !== profileId) {
+          return false;
+        }
+
+        if (userRole === "Admin") {
+          return true;
+        }
+
+        return currentUserId === profileId;
+      },
     },
   ];
 
@@ -258,7 +298,10 @@ function App() {
                   key={index}
                   path={route.path}
                   element={
-                    <ProtectedRoute requiredRole={route.requiredRole}>
+                    <ProtectedRoute
+                      requiredRole={route.requiredRole}
+                      checkAccess={route.checkAccess}
+                    >
                       {route.component}
                     </ProtectedRoute>
                   }

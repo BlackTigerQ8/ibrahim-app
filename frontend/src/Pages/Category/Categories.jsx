@@ -61,7 +61,7 @@ const Categories = () => {
     <Container>
       <Box>
         <Title title={t("CATEGORIES")} subtitle={t("trainingCategories")} />
-        {userRole === "Admin" && (
+        {(userRole === "Admin" || userRole === "Coach") && (
           <Box display="flex" justifyContent="start" margin="20px">
             <Button
               onClick={() => navigate("/category-form")}

@@ -31,19 +31,23 @@ export default function Cards() {
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
   const { categories, status, error } = useSelector((state) => state.category);
+  const { userRole, userInfo } = useSelector((state) => state.user);
   const API_URL = process.env.REACT_APP_API_URL;
   const { id } = useParams();
   // const [categoryImage, setCategoryImage] = useState(categories?.image || "");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const { userRole } = useSelector((state) => state.user);
-  const categoryInfo = categories.find((category) => category._id === id);
 
   useEffect(() => {
-    if (status === "idle") {
+    if (status === "idle" && userInfo?._id) {
       dispatch(fetchCategories());
     }
-  }, [dispatch, status]);
+  }, [dispatch, status, userInfo]);
+
+  // Filter categories to only show those created by the current user
+  const userCategories = categories.filter(
+    (category) => category.createdBy === userInfo._id
+  );
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return PlaceholderImage;
@@ -101,99 +105,122 @@ export default function Cards() {
         margin: "2rem 0",
       }}
     >
-      {categories.map((item) => (
-        <Card
-          key={item._id}
+      {userCategories.length > 0 ? (
+        userCategories.map((item) => (
+          <Card
+            key={item._id}
+            sx={{
+              maxWidth: 345,
+              flex: "1 1 calc(100% - 2rem)",
+              "@media (min-width: 600px)": {
+                flex: "1 1 calc(50% - 2rem)",
+              },
+            }}
+          >
+            <CardActionArea
+              onClick={() => navigate(`/categories/${item._id}/trainings`)}
+            >
+              <CardMedia
+                sx={{ height: 140 }}
+                component="img"
+                crossOrigin="anonymous"
+                image={(() => {
+                  const url = getImageUrl(item.image);
+                  return url;
+                })()}
+                title={item.name}
+              />
+              <CardContent>
+                <Typography
+                  gutterBottom
+                  variant="h5"
+                  component="div"
+                  color={colors.secondary.main}
+                >
+                  {item.name}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  {item.description}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+            {(userRole === "Admin" || userRole === "Coach") && (
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "0.5rem 1rem",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    color={"secondary"}
+                    onClick={() => handleUpdate(item._id)}
+                  >
+                    {t("update")}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleDelete(item._id)}
+                  >
+                    {t("delete")}
+                  </Button>
+                </Box>
+                {/* Delete Confirmation Modal */}
+                <Dialog
+                  open={openDeleteModal}
+                  onClose={() => setOpenDeleteModal(false)}
+                  BackdropProps={{
+                    style: { backgroundColor: "rgba(0, 0, 0, 0.05)" },
+                  }}
+                  PaperProps={{
+                    style: { boxShadow: "none" },
+                  }}
+                >
+                  <DialogTitle>{t("areYouSureDeleteCategory")}</DialogTitle>
+                  <DialogActions>
+                    <Button
+                      onClick={() => handleModalClose(false)}
+                      color="inherit"
+                    >
+                      {t("cancel")}
+                    </Button>
+                    <Button
+                      onClick={() => handleModalClose(true)}
+                      color="secondary"
+                    >
+                      {t("confirm")}
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </>
+            )}
+          </Card>
+        ))
+      ) : (
+        <Box
           sx={{
-            maxWidth: 345,
-            flex: "1 1 calc(100% - 2rem)",
-            "@media (min-width: 600px)": {
-              flex: "1 1 calc(50% - 2rem)",
-            },
+            width: "100%",
+            height: "50vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          <CardActionArea
-            onClick={() => navigate(`/categories/${item._id}/trainings`)}
+          <Alert
+            severity="error"
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            <CardMedia
-              sx={{ height: 140 }}
-              component="img"
-              crossOrigin="anonymous"
-              image={(() => {
-                const url = getImageUrl(item.image);
-                return url;
-              })()}
-              title={item.name}
-            />
-            <CardContent>
-              <Typography
-                gutterBottom
-                variant="h5"
-                component="div"
-                color={colors.secondary.main}
-              >
-                {item.name}
-              </Typography>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                {item.description}
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-          {userRole === "Admin" && (
-            <>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: "0.5rem 1rem",
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  color={"secondary"}
-                  onClick={() => handleUpdate(item._id)}
-                >
-                  {t("update")}
-                </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={() => handleDelete(item._id)}
-                >
-                  {t("delete")}
-                </Button>
-              </Box>
-              {/* Delete Confirmation Modal */}
-              <Dialog
-                open={openDeleteModal}
-                onClose={() => setOpenDeleteModal(false)}
-                BackdropProps={{
-                  style: { backgroundColor: "rgba(0, 0, 0, 0.05)" },
-                }}
-                PaperProps={{
-                  style: { boxShadow: "none" },
-                }}
-              >
-                <DialogTitle>{t("areYouSureDeleteCategory")}</DialogTitle>
-                <DialogActions>
-                  <Button
-                    onClick={() => handleModalClose(false)}
-                    color="inherit"
-                  >
-                    {t("cancel")}
-                  </Button>
-                  <Button
-                    onClick={() => handleModalClose(true)}
-                    color="secondary"
-                  >
-                    {t("confirm")}
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </>
-          )}
-        </Card>
-      ))}
+            {t("noCategoriesAvailable")}
+          </Alert>
+        </Box>
+      )}
     </Box>
   );
 }

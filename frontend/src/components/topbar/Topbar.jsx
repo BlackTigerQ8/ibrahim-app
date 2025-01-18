@@ -101,7 +101,8 @@ const Topbar = () => {
     },
   ];
 
-  const coachLinks = adminLinks.filter((link) => link.url !== "/users");
+  // const coachLinks = adminLinks.filter((link) => link.url !== "/users");
+  const coachLinks = adminLinks;
 
   const familyLinks = commonLinks.concat([
     {

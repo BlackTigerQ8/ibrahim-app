@@ -21,6 +21,8 @@ import { useTranslation } from "react-i18next";
 import { tokens } from "../../theme";
 import Title from "../../components/Title";
 import Avatar from "../../assets/avatar.jpg";
+import { toast } from "react-toastify";
+import { pulsar } from "ldrs";
 
 const UserProfile = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -34,7 +36,7 @@ const UserProfile = () => {
   const { status, error } = useSelector((state) => state.user);
   const currentUser = useSelector((state) => state.user);
   const API_URL = process.env.REACT_APP_API_URL;
-  // const { dateOfBirth } = user;
+  const [coaches, setCoaches] = useState([]);
 
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
@@ -52,6 +54,7 @@ const UserProfile = () => {
     dateOfBirth: "",
     image: "",
     role: "",
+    coach: userInfo.coach?._id || userInfo.coach || "",
     password: "",
     createdAt: "",
   };
@@ -77,6 +80,19 @@ const UserProfile = () => {
     ),
   });
 
+  useEffect(() => {
+    if (users.length > 0) {
+      const coachUsers = users.filter((user) => user.role === "Coach");
+      setCoaches(coachUsers);
+    }
+  }, [users]);
+
+  // useEffect(() => {
+  //   if (token) {
+  //     dispatch(fetchUsers(token));
+  //   }
+  // }, [token, dispatch]);
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file && ["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
@@ -87,9 +103,6 @@ const UserProfile = () => {
   };
 
   const handleFormSubmit = async (values) => {
-    // if (!userInfo || !userInfo._id) return;
-    //
-
     const formData = new FormData();
 
     // Check if the profileImage is a valid File object and append it to FormData
@@ -97,21 +110,48 @@ const UserProfile = () => {
       formData.append("image", profileImage);
     }
 
+    // Always include role in the formData
+    formData.append("role", values.role);
+
+    // Handle coach field for Athletes
+    if (values.role === "Athlete") {
+      // Always include coach for Athletes, even if unchanged
+      const coachId = values.coach?._id || values.coach;
+      if (!coachId) {
+        toast.error(t("coachRequired"));
+        return;
+      }
+      formData.append("coach", coachId);
+    }
+
+    // Append other changed fields
     Object.entries(values).forEach(([key, value]) => {
-      if (value !== initialValues[key] && key !== "__v") {
+      if (
+        value !== initialValues[key] &&
+        key !== "__v" &&
+        key !== "coach" &&
+        key !== "_id" &&
+        key !== "role" // Skip role since we already added it
+      ) {
         formData.append(key, key === "email" ? value.toLowerCase() : value);
       }
     });
 
     try {
-      await dispatch(
+      const result = await dispatch(
         updateUser({
           userId: userInfo._id,
           formData,
         })
       ).unwrap();
+
+      // Refresh users data after successful update
+      if (token) {
+        await dispatch(fetchUsers(token));
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Update failed:", error);
+      toast.error(t("updateFailed"));
     }
   };
 
@@ -133,20 +173,18 @@ const UserProfile = () => {
     },
   };
 
-  if (status === "loading") {
+  pulsar.register();
+
+  if (status === "loading" || !userInfo) {
     return (
       <Box
         display="flex"
-        f
         justifyContent="center"
         alignItems="center"
         height="100vh"
       >
-        <l-pulsar
-          size="70"
-          speed="1.75"
-          color={colors.greenAccent[500]}
-        ></l-pulsar>
+        <p>Loading user data...</p>
+        <l-pulsar size="70" speed="1.75" color={colors.primary.main}></l-pulsar>
       </Box>
     );
   }
@@ -311,6 +349,44 @@ const UserProfile = () => {
                   ))}
                 </Select>
               </FormControl>
+              {/* Add coach selection field that appears when role is Athlete */}
+              {values.role === "Athlete" &&
+                currentUser?.userRole !== "Athlete" && (
+                  <FormControl
+                    fullWidth
+                    variant="filled"
+                    sx={{ gridColumn: "span 2", ...commonInputStyles }}
+                  >
+                    <InputLabel htmlFor="coach">{t("coach")}</InputLabel>
+                    <Select
+                      label="Coach"
+                      value={values.coach?._id || values.coach || ""}
+                      onChange={(e) => {
+                        handleChange({
+                          target: {
+                            name: "coach",
+                            value: e.target.value,
+                          },
+                        });
+                      }}
+                      onBlur={handleBlur}
+                      name="coach"
+                      error={!!touched.coach && !!errors.coach}
+                    >
+                      {coaches.length > 0 ? (
+                        coaches.map((coach) => (
+                          <MenuItem key={coach._id} value={coach._id}>
+                            {`${coach.firstName} ${coach.lastName}`}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled value="">
+                          {t("noCoachesAvailable")}
+                        </MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                )}
             </Box>
             <Box display="flex" justifyContent="end" mt={2}>
               <Button

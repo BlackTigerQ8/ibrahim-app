@@ -16,20 +16,20 @@ router
   .get(protect, getAllCategories)
   .post(
     protect,
-    restrictTo("Admin"),
+    restrictTo("Admin", "Coach"),
     categoryImageUpload.single("image"),
     createCategory
   );
 
 router
   .route("/:id")
-  .get(protect, restrictTo("Admin"), getCategoryById)
+  .get(protect, restrictTo("Admin", "Coach"), getCategoryById)
   .patch(
     protect,
-    restrictTo("Admin"),
+    restrictTo("Admin", "Coach"),
     categoryImageUpload.single("image"),
     updateCategory
   )
-  .delete(protect, restrictTo("Admin"), deleteCategory);
+  .delete(protect, restrictTo("Admin", "Coach"), deleteCategory);
 
 module.exports = router;

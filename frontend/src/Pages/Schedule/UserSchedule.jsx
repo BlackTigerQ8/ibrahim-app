@@ -39,7 +39,9 @@ const UserSchedule = () => {
   );
 
   const handleViewTraining = (schedule) => {
-    navigate(`/categories/${categoryId}/trainings/${trainingId}`);
+    navigate(
+      `/categories/${schedule.category._id}/trainings/${schedule.training?._id}`
+    );
   };
 
   cardio.register();

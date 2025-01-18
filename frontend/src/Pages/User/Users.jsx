@@ -30,12 +30,21 @@ const Users = () => {
   const colors = tokens(theme.palette.mode);
   const dispatch = useDispatch();
   const { users, status, error } = useSelector((state) => state.users);
-  const filteredUsers = users.filter((user) => user.role !== "Admin");
-  const { userRole } = useSelector((state) => state.user);
+  const { userRole, _id: currentUserId } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+
+  const filteredUsers = users.filter((user) => {
+    if (userRole === "Admin") {
+      return user.role !== "Admin";
+    }
+    if (userRole === "Coach") {
+      return user.role !== "Admin" && user.role !== "Coach";
+    }
+    return true;
+  });
 
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
@@ -134,36 +143,40 @@ const Users = () => {
         );
       },
     },
-    {
-      field: "actions",
-      headerName: t("actions"),
-      width: 150,
-      headerAlign: "center",
-      align: "center",
-      sortable: false,
-      filterable: false,
-      renderCell: (params) => {
-        return (
-          <Box display="flex" justifyContent="center">
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              style={{ marginRight: 8 }}
-              onClick={() => handleEdit(params.row)}
-              startIcon={<EditIcon />}
-            ></Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              onClick={() => handleDelete(params.row._id)}
-              startIcon={<DeleteIcon />}
-            ></Button>
-          </Box>
-        );
-      },
-    },
+    ...(userRole === "Admin"
+      ? [
+          {
+            field: "actions",
+            headerName: t("actions"),
+            width: 150,
+            headerAlign: "center",
+            align: "center",
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => {
+              return (
+                <Box display="flex" justifyContent="center">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    style={{ marginRight: 8 }}
+                    onClick={() => handleEdit(params.row)}
+                    startIcon={<EditIcon />}
+                  ></Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={() => handleDelete(params.row._id)}
+                    startIcon={<DeleteIcon />}
+                  ></Button>
+                </Box>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   useEffect(() => {

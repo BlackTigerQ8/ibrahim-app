@@ -31,16 +31,16 @@ const CategoryForm = () => {
   const colors = tokens(theme.palette.mode);
   const [isLoading, setIsLoading] = useState(true);
   const savedToken = localStorage.getItem("token");
-  const user = Boolean(savedToken);
+  // const user = Boolean(savedToken);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { userInfo } = useSelector((state) => state.user);
-  const { categories, status, error } = useSelector((state) => state.category);
-  const API_URL = process.env.REACT_APP_API_URL;
-  const { id } = useParams();
-  const categoryInfo = categories.find((category) => category._id === id);
-  const [categoryImage, setCategoryImage] = useState(categoryInfo?.image || "");
+  // const { userInfo } = useSelector((state) => state.user);
+  // const { categories, status, error } = useSelector((state) => state.category);
+  // const API_URL = process.env.REACT_APP_API_URL;
+  // const { id } = useParams();
+  // const categoryInfo = categories.find((category) => category._id === id);
+  // const [categoryImage, setCategoryImage] = useState(categoryInfo?.image || "");
 
   const initialValues = {
     name: "",
@@ -68,18 +68,12 @@ const CategoryForm = () => {
   });
 
   const handleFormSubmit = async (values) => {
-    console.log("Form Values before submit:", values);
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("description", values.description);
 
     if (values.image) {
       formData.append("image", values.image);
-    }
-
-    // Log FormData content for debugging
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ": " + pair[1]);
     }
 
     await dispatch(createCategory(formData));

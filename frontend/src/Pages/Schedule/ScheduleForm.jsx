@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSchedule } from "../../redux/scheduleSlice";
 import { fetchCategories } from "../../redux/categorySlice";
 import { fetchTrainings } from "../../redux/trainingSlice";
-import { Form, Input, DatePicker, message } from "antd";
+// import { Form, Input, DatePicker, message } from "antd";
 import { useTranslation } from "react-i18next";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
@@ -25,7 +25,7 @@ const ScheduleForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
