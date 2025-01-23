@@ -9,7 +9,17 @@ const getAllSchedules = async (req, res) => {
   try {
     let query = {};
 
-    if (req.user.role !== "Admin" && req.user.role !== "Coach") {
+    if (req.user.role === "Coach") {
+      // First get all athletes assigned to this coach
+      const assignedAthletes = await User.find({ coach: req.user._id }).select(
+        "_id"
+      );
+      const athleteIds = assignedAthletes.map((athlete) => athlete._id);
+
+      // Then filter schedules for these athletes
+      query.athlete = { $in: athleteIds };
+    } else if (req.user.role !== "Admin") {
+      // For athletes/family members, show only their own schedules
       query.athlete = req.user._id;
     }
 

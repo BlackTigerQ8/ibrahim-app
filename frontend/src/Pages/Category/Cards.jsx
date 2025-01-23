@@ -16,7 +16,7 @@ import {
   DialogActions,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, deleteCategory } from "../../redux/categorySlice";
 import PlaceholderImage from "../../assets/JRG-1.png";
@@ -28,26 +28,16 @@ export default function Cards() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const token =
-    useSelector((state) => state.user.token) || localStorage.getItem("token");
+
+  const API_URL = process.env.REACT_APP_API_URL;
   const { categories, status, error } = useSelector((state) => state.category);
   const { userRole, userInfo } = useSelector((state) => state.user);
-  const API_URL = process.env.REACT_APP_API_URL;
-  const { id } = useParams();
-  // const [categoryImage, setCategoryImage] = useState(categories?.image || "");
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   useEffect(() => {
-    if (status === "idle" && userInfo?._id) {
-      dispatch(fetchCategories());
-    }
-  }, [dispatch, status, userInfo]);
-
-  // Filter categories to only show those created by the current user
-  const userCategories = categories.filter(
-    (category) => category.createdBy === userInfo._id
-  );
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return PlaceholderImage;
@@ -55,7 +45,7 @@ export default function Cards() {
   };
 
   const handleUpdate = (categoryId) => {
-    navigate(`/categories/edit/${categoryId}`); // TODO: Create Edit Category Page
+    navigate(`/categories/edit/${categoryId}`);
   };
 
   const handleDelete = (categoryId) => {
@@ -105,8 +95,8 @@ export default function Cards() {
         margin: "2rem 0",
       }}
     >
-      {userCategories.length > 0 ? (
-        userCategories.map((item) => (
+      {categories.length > 0 ? (
+        categories.map((item) => (
           <Card
             key={item._id}
             sx={{

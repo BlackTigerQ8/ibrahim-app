@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import Title from "../../components/Title";
 import { useNavigate } from "react-router-dom";
+import { fetchUsers } from "../../redux/usersSlice";
 
 const ScheduleForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -30,14 +31,20 @@ const ScheduleForm = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState(null);
-
+  const token =
+    useSelector((state) => state.user.token) || localStorage.getItem("token");
+  const currentUser = useSelector((state) => state.user.userInfo);
   const categories = useSelector((state) => state.category.categories);
   const trainings = useSelector((state) => state.training.trainings);
-  const athletes = useSelector((state) =>
-    state.users.users.filter(
+  const athletes = useSelector((state) => {
+    const allUsers = state.users.users ?? [];
+    if (!currentUser) return [];
+
+    return allUsers.filter(
       (user) => user.role === "Athlete" || user.role === "Family"
-    )
-  );
+    );
+  });
+
   const [formValues, setFormValues] = useState({
     athlete: "",
     category: "",
@@ -45,6 +52,12 @@ const ScheduleForm = () => {
     date: null,
     notes: "",
   });
+
+  useEffect(() => {
+    if (token && currentUser) {
+      dispatch(fetchUsers(token));
+    }
+  }, [dispatch, token, currentUser]);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -183,8 +196,6 @@ const ScheduleForm = () => {
               ))}
             </Select>
           </FormControl>
-
-          {/* Date picker will need custom styling to match MUI */}
 
           <TextField
             fullWidth

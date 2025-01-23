@@ -46,18 +46,31 @@ const UserProfile = () => {
     if (token) dispatch(fetchUsers(token));
   }, [token]);
 
-  const initialValues = userInfo || {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    dateOfBirth: "",
-    image: "",
-    role: "",
-    coach: userInfo.coach?._id || userInfo.coach || "",
-    password: "",
-    createdAt: "",
-  };
+  const initialValues = userInfo
+    ? {
+        firstName: userInfo.firstName || "",
+        lastName: userInfo.lastName || "",
+        email: userInfo.email || "",
+        phone: userInfo.phone || "",
+        dateOfBirth: userInfo.dateOfBirth || "",
+        image: userInfo.image || "",
+        role: userInfo.role || "",
+        coach: userInfo.coach?._id || userInfo.coach || "",
+        password: "",
+        createdAt: userInfo.createdAt || "",
+      }
+    : {
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        dateOfBirth: "",
+        image: "",
+        role: "",
+        coach: "",
+        password: "",
+        createdAt: "",
+      };
 
   const calculateAge = (dateOfBirth) => {
     const dob = new Date(dateOfBirth);

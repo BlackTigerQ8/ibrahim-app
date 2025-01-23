@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSchedules } from "../redux/scheduleSlice";
 import FullCalendar from "@fullcalendar/react";
@@ -27,31 +27,44 @@ const Calendar = () => {
 
   // Get schedules from Redux store
   const { schedules, status } = useSelector((state) => state.schedule);
+  const { userRole, _id: currentUserId } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(fetchSchedules());
   }, [dispatch]);
 
+  const filteredSchedules = useMemo(() => {
+    if (userRole === "Admin") {
+      return schedules;
+    }
+    if (userRole === "Coach") {
+      return schedules.filter(
+        (schedule) => schedule.athlete?.coach === currentUserId
+      );
+    }
+    return schedules;
+  }, [schedules, userRole, currentUserId]);
+
   // Convert schedules to calendar events
   useEffect(() => {
-    if (schedules.length > 0) {
-      const events = schedules.map((schedule) => ({
+    if (filteredSchedules.length > 0) {
+      const events = filteredSchedules.map((schedule) => ({
         id: schedule._id,
-        title: `${schedule.athlete.firstName} - ${schedule.training.name}`,
+        title: `${schedule.athlete?.firstName} - ${schedule.training?.name || t("notAvailable")}`,
         start: new Date(schedule.date),
         end: new Date(new Date(schedule.date).getTime() + 60 * 60 * 1000), // Add 1 hour duration
         backgroundColor: getStatusColor(schedule.status),
         extendedProps: {
           status: schedule.status,
-          category: schedule.category.name,
-          athleteName: `${schedule.athlete.firstName} ${schedule.athlete.lastName}`,
-          trainingName: schedule.training.name,
-          notes: schedule.notes,
+          category: schedule.category?.name || t("notAvailable"),
+          athleteName: `${schedule.athlete?.firstName} ${schedule.athlete?.lastName}`,
+          trainingName: schedule.training?.name || t("notAvailable"),
+          notes: schedule?.notes,
         },
       }));
       setCurrentEvents(events);
     }
-  }, [schedules]);
+  }, [filteredSchedules, t]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -103,7 +116,8 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
         {/* CALENDAR SIDEBAR */}
         <Box
           flex="1 1 20%"
-          backgroundColor={colors.primary[400]}
+          backgroundColor={colors.primary.extraLight}
+          color={colors.neutral.light}
           p="15px"
           borderRadius="4px"
         >
@@ -113,9 +127,15 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
               <ListItem
                 key={event.id}
                 sx={{
-                  backgroundColor: event.backgroundColor || colors.primary.main,
+                  backgroundColor:
+                    event.backgroundColor || colors.primary.light,
                   margin: "10px 0",
                   borderRadius: "2px",
+                  color: colors.neutral.light,
+                  "&:hover": {
+                    backgroundColor: colors.secondary.hover,
+                    cursor: "pointer",
+                  },
                 }}
               >
                 <ListItemText

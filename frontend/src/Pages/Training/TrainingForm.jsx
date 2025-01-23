@@ -33,16 +33,17 @@ const TrainingForm = () => {
   const colors = tokens(theme.palette.mode);
   const savedToken = localStorage.getItem("token");
   const user = Boolean(savedToken);
-  const { userInfo } = useSelector((state) => state.user);
+  const { userInfo, userRole } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const { categories, status, error } = useSelector((state) => state.category);
 
-  const userCategories = categories.filter(
-    (category) => category.createdBy === userInfo._id
-  );
+  const userCategories =
+    userRole === "Admin"
+      ? categories
+      : categories.filter((category) => category.createdBy === userInfo._id);
 
   useEffect(() => {
     if (status === "idle") {

@@ -9,7 +9,7 @@ import { Box, Button, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import Cards from "./Cards";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
   // const isNonMobile = useMediaQuery("(min-width: 600px)");

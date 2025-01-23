@@ -37,16 +37,10 @@ const dispatchToast = (message, type) => {
 // Thunk action for fetching all categories
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { user } = getState();
       const response = await axiosInstance.get("/");
-      // Filter categories to only show those created by the logged-in user
-      const userCategories = response.data.data.categories.filter(
-        (category) => category.createdBy === user.userInfo._id
-      );
-
-      return userCategories;
+      return response.data.data.categories;
     } catch (error) {
       console.error("Error fetching categories:", error);
       return rejectWithValue(error.response?.data?.message || error.message);

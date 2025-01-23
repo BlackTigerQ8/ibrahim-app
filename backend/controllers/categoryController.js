@@ -5,10 +5,15 @@ const Category = require("../models/CategoryModel");
 // @access  Private/Admin
 const getAllCategories = async (req, res) => {
   try {
-    let categories;
+    let query = {};
 
-    categories = await Category.find({ createdBy: req.user._id });
+    // Only filter by createdBy if the user is a Coach
+    // Admin should see all categories
+    if (req.user.role === "Coach") {
+      query.createdBy = req.user._id;
+    }
 
+    const categories = await Category.find(query);
     res.status(200).json({
       status: "Success",
       data: {

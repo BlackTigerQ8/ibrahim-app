@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSchedules, deleteSchedule } from "../../redux/scheduleSlice";
 import {
@@ -25,12 +25,25 @@ const Schedules = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { schedules, status, error } = useSelector((state) => state.schedule);
-  const userRole = useSelector((state) => state.user.userRole);
+  const { userRole, _id: currentUserId } = useSelector((state) => state.user);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedScheduleId, setSelectedScheduleId] = useState(null);
+
+  // const filteredSchedules = useMemo(() => {
+  //   if (userRole === "Admin") {
+  //     return schedules;
+  //   }
+  //   if (userRole === "Coach") {
+  //     return schedules.filter(
+  //       (schedule) => schedule.athlete?.coach === currentUserId
+  //     );
+  //   }
+  //   // For athletes/family, they only see their own schedules (handled by backend)
+  //   return schedules;
+  // }, [schedules, userRole, currentUserId]);
 
   useEffect(() => {
     dispatch(fetchSchedules());
