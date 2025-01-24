@@ -133,30 +133,38 @@ const updateTraining = async (req, res) => {
       restBetweenSets,
       restBetweenRepeats,
       category,
+      image,
+      file,
     } = req.body;
 
-    // Validate category if provided
-    if (category) {
-      const existingCategory = await Category.findById(category);
-      if (!existingCategory) {
-        return res.status(404).json({
-          status: "Error",
-          message: "Category not found",
-        });
-      }
+    // Create update object
+    const updateData = {
+      name,
+      description,
+      numberOfRepeats,
+      numberOfSets,
+      restBetweenSets,
+      restBetweenRepeats,
+      category,
+    };
+
+    // Handle image update
+    if (req.files?.image) {
+      updateData.image = req.files.image[0].path;
+    } else if (image) {
+      updateData.image = image;
+    }
+
+    // Handle file update
+    if (req.files?.file) {
+      updateData.file = req.files.file[0].path;
+    } else if (file) {
+      updateData.file = file;
     }
 
     const updatedTraining = await Training.findByIdAndUpdate(
       req.params.id,
-      {
-        name,
-        description,
-        numberOfRepeats,
-        numberOfSets,
-        restBetweenSets,
-        restBetweenRepeats,
-        category,
-      },
+      updateData,
       { new: true, runValidators: true }
     );
 

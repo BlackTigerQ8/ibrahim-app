@@ -40,6 +40,7 @@ import ScheduleForm from "./Pages/Schedule/ScheduleForm";
 import Schedules from "./Pages/Schedule/Schedules";
 import EditSchedule from "./Pages/Schedule/EditSchedule";
 import UserSchedule from "./Pages/Schedule/UserSchedule";
+import EditTraining from "./Pages/Training/EditTraining";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -209,6 +210,11 @@ function App() {
       path: "/categories/:categoryId/trainings/:trainingId",
       component: <Training />,
       requiredRole: ["Family", "Coach", "Athlete"],
+    },
+    {
+      path: "/categories/:categoryId/trainings/edit/:trainingId",
+      component: <EditTraining />,
+      requiredRole: ["Coach"],
     },
     {
       path: "/schedule-form",

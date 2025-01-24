@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import Title from "../../components/Title";
 import { updateScheduleStatus } from "../../redux/scheduleSlice";
 import { fetchTrainings } from "../../redux/trainingSlice";
+import { PictureAsPdf } from "@mui/icons-material";
 
 const Training = () => {
   const { categoryId, trainingId } = useParams();
@@ -189,6 +190,7 @@ const Training = () => {
               <Button
                 variant="contained"
                 color="secondary"
+                startIcon={<PictureAsPdf />}
                 href={`${API_URL}/${selectedTraining.file}`}
                 target="_blank"
                 rel="noopener noreferrer"
