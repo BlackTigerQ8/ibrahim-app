@@ -69,6 +69,11 @@ const createTraining = async (req, res) => {
       category,
     } = req.body;
 
+    // Debug logs
+    console.log("Request files:", req.files);
+    console.log("Request file:", req.file);
+    console.log("Request body:", req.body);
+
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(category)) {
       return res.status(400).json({

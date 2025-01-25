@@ -54,6 +54,8 @@ const Topbar = () => {
     if (userInfo?.image) {
       const imageUrl = `${API_URL}/${userInfo.image}`;
       setProfileImage(imageUrl);
+    } else {
+      setProfileImage("");
     }
   }, [userInfo, API_URL]);
 

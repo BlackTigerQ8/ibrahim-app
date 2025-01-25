@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  IconButton,
   TextField,
   useTheme,
   useMediaQuery,
   Alert,
+  Backdrop,
+  Typography,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
@@ -29,6 +30,7 @@ const EditTraining = () => {
   const { t } = useTranslation();
   const { categoryId, trainingId } = useParams();
   const { trainings, status, error } = useSelector((state) => state.training);
+  const isLoading = status === "loading";
   const trainingInfo = trainings.find(
     (training) => training._id === trainingId
   );
@@ -87,14 +89,32 @@ const EditTraining = () => {
       "fileType",
       t("onlyImagesAllowed"),
       (value) =>
-        !value || ["image/jpeg", "image/png", "image/jpg"].includes(value.type)
+        !value ||
+        [
+          "image/jpeg",
+          "image/png",
+          "image/jpg",
+          "video/mp4",
+          "video/quicktime",
+          "video/x-msvideo",
+        ].includes(value.type)
     ),
     file: Yup.mixed(),
   });
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    if (file && ["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
+    if (
+      file &&
+      [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "video/mp4",
+        "video/quicktime",
+        "video/x-msvideo",
+      ].includes(file.type)
+    ) {
       setTrainingImage(file);
     } else {
       console.error(t("invalidImageType"));
@@ -107,6 +127,58 @@ const EditTraining = () => {
       setTrainingFile(file);
       setFilePreviewUrl(URL.createObjectURL(file));
     }
+  };
+
+  const renderMedia = () => {
+    if (!trainingImage) return null;
+
+    // Check if it's a video by file extension or mime type
+    const isVideo =
+      typeof trainingImage === "string"
+        ? trainingImage
+            .toLowerCase()
+            .match(/\.(mp4|mov|avi|_compressed\.mp4)$/i)
+        : trainingImage instanceof File &&
+          trainingImage.type.startsWith("video/");
+
+    // Create the media URL
+    const mediaUrl =
+      trainingImage instanceof File
+        ? URL.createObjectURL(trainingImage)
+        : `${API_URL}/${trainingImage}`;
+
+    return isVideo ? (
+      <video
+        src={mediaUrl}
+        autoPlay
+        loop
+        muted
+        playsInline
+        controls
+        crossOrigin="anonymous"
+        style={{
+          width: "100%",
+          height: "auto",
+          maxHeight: 300,
+          marginBottom: "16px",
+          border: `2px solid ${colors.secondary.main}`,
+          objectFit: "cover",
+        }}
+      />
+    ) : (
+      <img
+        crossOrigin="anonymous"
+        src={mediaUrl || Avatar}
+        alt={t("trainingImage")}
+        style={{
+          width: "100%",
+          height: "auto",
+          maxHeight: 300,
+          marginBottom: "16px",
+          border: `2px solid ${colors.secondary.main}`,
+        }}
+      />
+    );
   };
 
   const handleFormSubmit = async (values) => {
@@ -163,23 +235,6 @@ const EditTraining = () => {
     },
   };
 
-  if (status === "loading") {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
-        <l-pulsar
-          size="70"
-          speed="1.75"
-          color={colors.secondary.main}
-        ></l-pulsar>
-      </Box>
-    );
-  }
-
   if (trainingInfo === undefined) {
     return (
       <Box
@@ -209,6 +264,26 @@ const EditTraining = () => {
 
   return (
     <Box sx={{ margin: "0 1rem" }}>
+      <Backdrop
+        sx={{
+          color: colors.secondary.main,
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+        }}
+        open={isLoading}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          <l-cardio
+            size="50"
+            stroke="4"
+            speed="1.75"
+            color={colors.secondary.main}
+          />
+          <Typography variant="h6" color="secondary">
+            {t("updatingTraining")}
+          </Typography>
+        </Box>
+      </Backdrop>
       <Title
         title={t("editTrainingTitle")}
         subtitle={t("editTrainingSubtitle")}
@@ -217,6 +292,7 @@ const EditTraining = () => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
+        enableReinitialize
       >
         {({
           values,
@@ -227,6 +303,31 @@ const EditTraining = () => {
           handleSubmit,
         }) => (
           <form onSubmit={handleSubmit}>
+            <Backdrop
+              sx={{
+                color: colors.secondary.main,
+                zIndex: (theme) => theme.zIndex.drawer + 1,
+                backgroundColor: "rgba(0, 0, 0, 0.4)",
+              }}
+              open={isLoading}
+            >
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                gap={2}
+              >
+                <l-cardio
+                  size="50"
+                  stroke="4"
+                  speed="1.75"
+                  color={colors.secondary.main}
+                />
+                <Typography variant="h6" color="secondary">
+                  {t("updatingTraining")}
+                </Typography>
+              </Box>
+            </Backdrop>
             <Box
               display="grid"
               gap="30px"
@@ -242,24 +343,7 @@ const EditTraining = () => {
                 alignItems="center"
                 flexDirection="column"
               >
-                <img
-                  crossOrigin="anonymous"
-                  src={
-                    trainingImage
-                      ? trainingImage instanceof File
-                        ? URL.createObjectURL(trainingImage)
-                        : trainingImage
-                      : Avatar
-                  }
-                  alt={t("trainingImage")}
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    maxHeight: 300,
-                    marginBottom: "16px",
-                    border: `2px solid ${colors.secondary.main}`,
-                  }}
-                />
+                {renderMedia()}
                 <Button
                   variant="contained"
                   component="label"
@@ -270,10 +354,10 @@ const EditTraining = () => {
                     fontSize: "12px",
                   }}
                 >
-                  {t("uploadImage")}
+                  {t("uploadImageOrVideo")}
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
                     onChange={handleImageUpload}
                     hidden
                   />
@@ -418,6 +502,7 @@ const EditTraining = () => {
                 type="submit"
                 variant="contained"
                 color="secondary"
+                disabled={isLoading}
                 onClick={() => handleFormSubmit(values)}
                 sx={{
                   marginTop: "1rem",
@@ -425,7 +510,15 @@ const EditTraining = () => {
                   minWidth: isNonMobile ? "120px" : "100%",
                 }}
               >
-                {t("update")}
+                {isLoading ? (
+                  <l-cardio
+                    size="20"
+                    speed="1.75"
+                    color={colors.secondary.main}
+                  />
+                ) : (
+                  t("update")
+                )}
               </Button>
             </Box>
           </form>

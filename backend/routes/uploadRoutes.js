@@ -5,6 +5,9 @@ const router = express.Router();
 const { User } = require("../models/userModel");
 const { protect } = require("../middleware/authMiddleware");
 const iconv = require("iconv-lite");
+const ffmpeg = require("fluent-ffmpeg");
+const ffmpegInstaller = require("@ffmpeg-installer/ffmpeg");
+ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const getUploadFileName = (file) => {
   const originalName = iconv.decode(
@@ -66,7 +69,8 @@ const uploadFields = [
 const trainingImages = multer.diskStorage({
   destination: "./uploads/training-images",
   filename(req, file, cb) {
-    cb(null, getUploadFileName(file));
+    const fileName = getUploadFileName(file);
+    cb(null, fileName);
   },
 });
 
@@ -95,11 +99,11 @@ const categoryImageUpload = multer({
   },
 });
 
-// Training image upload instance
+// Training image/video upload instance with compression
 const trainingImageUpload = multer({
   storage: trainingImages,
   fileFilter: function (req, file, cb) {
-    checkImageFileType(file, cb, "training images");
+    checkImageFileType(file, cb, "training images/videos");
   },
 });
 
@@ -114,15 +118,18 @@ const trainingFileUpload = multer({
 ///// CHECK FILE TYPES /////
 // Check image file type
 function checkImageFileType(file, cb, storageType) {
-  const filetypes = /pdf|jpeg|jpg|png/;
+  const filetypes = /pdf|jpeg|jpg|png|mp4|mov|avi/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = filetypes.test(file.mimetype);
+  const mimetype =
+    /^(image\/(jpeg|jpg|png)|video\/(mp4|quicktime|x-msvideo))$/.test(
+      file.mimetype
+    );
 
   if (extname && mimetype) {
     return cb(null, true);
   } else {
     cb({
-      message: `Allowed file types for ${storageType}: pdf, jpeg, jpg, png`,
+      message: `Allowed file types for ${storageType}: pdf, jpeg, jpg, png, mp4, mov, avi`,
     });
   }
 }
@@ -143,6 +150,54 @@ function checkPdfFileType(file, cb, storageType) {
     });
   }
 }
+
+// Function to compress video
+const compressVideo = (inputPath, outputPath) => {
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputPath)
+      .videoCodec("libx264")
+      .size("720x?") // Resize to 720p width, maintain aspect ratio
+      .videoBitrate("1000k") // Reduce bitrate
+      .outputOptions(["-crf 28"]) // Compression quality (23-28 is good range)
+      .on("end", () => {
+        // Delete original file after compression
+        require("fs").unlink(inputPath, (err) => {
+          if (err) console.error("Error deleting original video:", err);
+        });
+        resolve();
+      })
+      .on("error", (err) => reject(err))
+      .save(outputPath);
+  });
+};
+
+// Create a single upload middleware
+const singleUpload = trainingImageUpload.single("image");
+
+// Wrap the upload middleware to handle video compression
+const trainingMediaUpload = (req, res, next) => {
+  trainingUpload.fields(uploadFields)(req, res, async (err) => {
+    if (err) {
+      console.error("Upload error:", err);
+      return res.status(400).json({ message: err.message });
+    }
+
+    try {
+      // Handle video compression if present
+      if (req.files?.image?.[0]?.mimetype.startsWith("video/")) {
+        const inputPath = req.files.image[0].path;
+        const outputPath = inputPath.replace(/\.[^/.]+$/, "_compressed.mp4");
+
+        await compressVideo(inputPath, outputPath);
+        req.files.image[0].path = outputPath;
+      }
+      next();
+    } catch (error) {
+      console.error("Video compression error:", error);
+      return res.status(500).json({ message: "Error processing video upload" });
+    }
+  });
+};
 
 ///// ROUTES /////
 // Route for uploading to the profile images
@@ -265,7 +320,8 @@ module.exports = {
   router,
   profileImageUpload,
   categoryImageUpload,
-  trainingImageUpload,
+  trainingImageUpload: singleUpload,
   trainingFileUpload,
+  trainingMediaUpload,
   trainingUpload: trainingUpload.fields(uploadFields),
 };

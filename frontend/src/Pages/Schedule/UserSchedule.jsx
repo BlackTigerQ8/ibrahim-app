@@ -13,9 +13,12 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import { cardio } from "ldrs";
 import { useTranslation } from "react-i18next";
-import { fetchSchedules } from "../../redux/scheduleSlice";
+import {
+  fetchSchedules,
+  updateScheduleStatus,
+} from "../../redux/scheduleSlice";
 import Title from "../../components/Title";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const UserSchedule = () => {
   const theme = useTheme();
@@ -23,8 +26,6 @@ const UserSchedule = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { categoryId } = useParams();
-  const { trainingId } = useParams();
 
   const { schedules, status, error } = useSelector((state) => state.schedule);
   const { userInfo } = useSelector((state) => state.user);
@@ -38,9 +39,22 @@ const UserSchedule = () => {
     (schedule) => schedule.athlete._id === userInfo?._id
   );
 
+  // const handleStatusUpdate = async (scheduleId, newStatus) => {
+  //   try {
+  //     await dispatch(
+  //       updateScheduleStatus({ id: scheduleId, status: newStatus })
+  //     ).unwrap();
+  //   } catch (error) {
+  //     console.error("Failed to update status:", error);
+  //   }
+  // };
+
   const handleViewTraining = (schedule) => {
     navigate(
-      `/categories/${schedule.category._id}/trainings/${schedule.training?._id}`
+      `/categories/${schedule?.category?._id}/trainings/${schedule?.training?._id}`,
+      {
+        state: { scheduleId: schedule._id, isFromSchedule: true },
+      }
     );
   };
 
@@ -65,7 +79,18 @@ const UserSchedule = () => {
   }
 
   if (status === "failed") {
-    return <Alert severity="error">{error}</Alert>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100dvh",
+        }}
+      >
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
   }
 
   const getStatusColor = (status) => {
@@ -95,9 +120,9 @@ const UserSchedule = () => {
           >
             {userSchedules.map((schedule) => (
               <Card
-                key={schedule._id}
+                key={schedule?._id}
                 sx={{
-                  backgroundColor: getStatusColor(schedule.status),
+                  // backgroundColor: getStatusColor(schedule?.status),
                   transition: "transform 0.2s",
                   "&:hover": {
                     transform: "translateY(-4px)",
@@ -116,14 +141,14 @@ const UserSchedule = () => {
                   >
                     <Box>
                       <Typography variant="h5" color={colors.neutral.white}>
-                        {schedule.training?.name}
+                        {schedule?.training?.name}
                       </Typography>
                       <Typography
                         variant="body1"
                         color={colors.neutral.light}
                         sx={{ mt: 1 }}
                       >
-                        {new Date(schedule.date).toLocaleString()}
+                        {new Date(schedule?.date).toLocaleString()}
                       </Typography>
                     </Box>
                     <Box
@@ -136,12 +161,22 @@ const UserSchedule = () => {
                       <Typography
                         variant="body1"
                         sx={{
-                          backgroundColor: colors.primary.light,
+                          backgroundColor: getStatusColor(schedule?.status),
+                          color: colors.primary.main,
                           padding: "0.5rem 1rem",
                           borderRadius: "4px",
+                          // cursor: "pointer",
                         }}
+                        // onClick={() =>
+                        //   handleStatusUpdate(
+                        //     schedule._id,
+                        //     schedule.status === "Pending"
+                        //       ? "Completed"
+                        //       : "Pending"
+                        //   )
+                        // }
                       >
-                        {t(schedule.status)}
+                        {t(schedule?.status)}
                       </Typography>
                       <Button
                         variant="contained"

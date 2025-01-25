@@ -13,7 +13,11 @@ const getAllCategories = async (req, res) => {
       query.createdBy = req.user._id;
     }
 
-    const categories = await Category.find(query);
+    const categories = await Category.find(query).populate(
+      "createdBy",
+      "firstName lastName role"
+    );
+
     res.status(200).json({
       status: "Success",
       data: {

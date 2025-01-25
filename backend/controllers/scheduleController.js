@@ -161,13 +161,10 @@ const updateScheduleStatus = async (req, res) => {
   try {
     const schedule = await Schedule.findById(req.params.id);
 
-    console.log(req.params.id);
-    console.log(schedule);
-
     if (!schedule) {
       return res.status(404).json({
         status: "Error",
-        message: "Schedule not found",
+        message: `Schedule not found with ID: ${req.params.id}`,
       });
     }
 
@@ -187,10 +184,16 @@ const updateScheduleStatus = async (req, res) => {
     schedule.status = req.body.status;
     await schedule.save();
 
+    // Fetch the populated schedule to return
+    const populatedSchedule = await Schedule.findById(schedule._id)
+      .populate("athlete", "firstName lastName")
+      .populate("category", "name")
+      .populate("training", "name description");
+
     res.status(200).json({
       status: "Success",
       data: {
-        schedule,
+        schedule: populatedSchedule,
       },
     });
   } catch (error) {

@@ -29,8 +29,8 @@ const Card = ({ item }) => {
     backgroundColor: isHovered
       ? colors.primary.extraLight
       : theme.palette.mode === "dark"
-      ? colors.primary.light
-      : colors.primary.extraLight,
+        ? colors.primary.light
+        : colors.primary.extraLight,
     borderColor: isHovered ? colors.secondary.main : "transparent",
     transition: "background-color border-color 0.3s ease",
   };

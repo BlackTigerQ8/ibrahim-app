@@ -65,8 +65,15 @@ const Trainings = () => {
     setSelectedTrainingId(null);
   };
 
-  const getImageUrl = (imagePath) => {
+  const isVideo = (imagePath) => {
+    return imagePath?.toLowerCase().match(/\.(mp4|mov|avi|_compressed\.mp4)$/i);
+  };
+
+  const getMediaUrl = (imagePath) => {
     if (!imagePath) return PlaceholderImage;
+    // If it's a video, return placeholder
+    if (isVideo(imagePath)) return PlaceholderImage;
+    // Otherwise return the image URL
     return `${API_URL}/${imagePath}`;
   };
 
@@ -156,7 +163,7 @@ const Trainings = () => {
                     component="img"
                     crossOrigin="anonymous"
                     image={(() => {
-                      const url = getImageUrl(item.image);
+                      const url = getMediaUrl(item.image);
                       return url;
                     })()}
                     title={item.name}

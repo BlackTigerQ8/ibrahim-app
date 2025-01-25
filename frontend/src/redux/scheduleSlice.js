@@ -152,6 +152,7 @@ const scheduleSlice = createSlice({
         if (index !== -1) {
           state.schedules[index].status = action.payload.status;
         }
+        dispatchToast(i18next.t("updateScheduleStatusSuccess"), "success");
       });
   },
 });

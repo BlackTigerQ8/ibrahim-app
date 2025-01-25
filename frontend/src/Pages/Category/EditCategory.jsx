@@ -84,7 +84,7 @@ const EditCategory = () => {
 
     // Add all values except _id and __v
     Object.entries(values).forEach(([key, value]) => {
-      if (key !== "_id" && key !== "__v") {
+      if (key !== "_id" && key !== "__v" && key !== "createdBy") {
         formData.append(key, value);
       }
     });

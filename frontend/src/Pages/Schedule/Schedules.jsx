@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogTitle,
   DialogActions,
+  useMediaQuery,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
@@ -24,6 +25,7 @@ import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined
 const Schedules = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const isNonMobile = useMediaQuery("(min-width: 600px)");
   const { schedules, status, error } = useSelector((state) => state.schedule);
   const { userRole, _id: currentUserId } = useSelector((state) => state.user);
   const theme = useTheme();
@@ -31,19 +33,6 @@ const Schedules = () => {
   const navigate = useNavigate();
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedScheduleId, setSelectedScheduleId] = useState(null);
-
-  // const filteredSchedules = useMemo(() => {
-  //   if (userRole === "Admin") {
-  //     return schedules;
-  //   }
-  //   if (userRole === "Coach") {
-  //     return schedules.filter(
-  //       (schedule) => schedule.athlete?.coach === currentUserId
-  //     );
-  //   }
-  //   // For athletes/family, they only see their own schedules (handled by backend)
-  //   return schedules;
-  // }, [schedules, userRole, currentUserId]);
 
   useEffect(() => {
     dispatch(fetchSchedules());
@@ -71,6 +60,8 @@ const Schedules = () => {
       field: "athlete",
       headerName: t("Athlete"),
       flex: 1,
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ row }) =>
         `${row.athlete?.firstName} ${row.athlete?.lastName}`,
     },
@@ -78,33 +69,47 @@ const Schedules = () => {
       field: "category",
       headerName: t("category"),
       flex: 1,
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ row }) => row.category?.name || t("notAvailable"),
     },
     {
       field: "training",
       headerName: t("training"),
       flex: 1,
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ row }) => row.training?.name || t("notAvailable"),
     },
     {
       field: "date",
       headerName: t("date"),
       flex: 1,
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ value }) => moment(value).format("YYYY-MM-DD"),
     },
     {
       field: "status",
       headerName: t("status"),
       flex: 1,
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ value }) => (
         <Typography
           style={{
+            borderRadius: "4px",
+            border: `1px solid ${colors.status.default}`,
+            padding: "4px",
+            width: "auto",
+            margin: "0 auto",
+            textAlign: "center",
             color:
               value === "Completed"
-                ? "green"
+                ? colors.status.success
                 : value === "Pending"
-                  ? "gold"
-                  : "red",
+                  ? colors.status.default
+                  : colors.status.error,
           }}
         >
           {value}
@@ -115,6 +120,8 @@ const Schedules = () => {
       field: "actions",
       headerName: t("actions"),
       width: 150,
+      headerAlign: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: (params) => (
         <Box display="flex" justifyContent="center">
           {(userRole === "Admin" || userRole === "Coach") && (
@@ -169,45 +176,62 @@ const Schedules = () => {
     <Box m="20px">
       <Title title={t("schedules")} subtitle={t("manageSchedules")} />
       <Box
-        mt="40px"
         height="75vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: `${colors.primary.default} !important`,
+              color: colors.primary.main,
+              fontWeight: "bold",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "none",
+              backgroundColor: colors.primary.default,
+              color: colors.secondary.main,
+            },
+            "& .MuiDataGrid-virtualScroller": {
+              backgroundColor: colors.primary.tableBackground,
+            },
+            "& .MuiDataGrid-cell": {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+            },
           },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.primary.extraLight,
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary.extraLight,
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.primary.darkLight,
+          "& .super-app-theme--header": {
+            backgroundColor: `${colors.primary.default} !important`,
+            color: colors.secondary.main,
+            fontWeight: "bold",
           },
         }}
       >
-        <Box display="flex" justifyContent="space-between" margin="20px">
+        <Box
+          display="flex"
+          flexDirection={isNonMobile ? "row" : "column"}
+          justifyContent="space-between"
+          margin="20px"
+          gap={2} // Added gap between buttons
+        >
           {(userRole === "Admin" || userRole === "Coach") && (
-            <Box display="flex" justifyContent="start" mb="20px">
+            <Box>
               <Button
                 onClick={() => navigate("/schedule-form")}
                 color="secondary"
                 variant="contained"
+                fullWidth={!isNonMobile}
               >
                 {t("createNewSchedule")}
               </Button>
             </Box>
           )}
-          <Box display="flex" justifyContent="start" mb="20px">
+          <Box>
             <Button
               onClick={() => navigate("/calendar")}
               color="secondary"
               variant="contained"
+              fullWidth={!isNonMobile}
             >
               <CalendarMonthOutlinedIcon sx={{ marginRight: "10px" }} />
               {t("calendar")}

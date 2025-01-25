@@ -51,8 +51,11 @@ const Calendar = () => {
       const events = filteredSchedules.map((schedule) => ({
         id: schedule._id,
         title: `${schedule.athlete?.firstName} - ${schedule.training?.name || t("notAvailable")}`,
-        start: new Date(schedule.date),
-        end: new Date(new Date(schedule.date).getTime() + 60 * 60 * 1000), // Add 1 hour duration
+        // start: new Date(schedule.date),
+        // end: new Date(new Date(schedule.date).getTime() + 60 * 60 * 1000), // Add 1 hour duration
+        start: schedule.date,
+        end: schedule.date,
+        allDay: true,
         backgroundColor: getStatusColor(schedule.status),
         extendedProps: {
           status: schedule.status,
@@ -127,14 +130,13 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
               <ListItem
                 key={event.id}
                 sx={{
-                  backgroundColor:
-                    event.backgroundColor || colors.primary.light,
+                  backgroundColor: colors.primary.light,
                   margin: "10px 0",
                   borderRadius: "2px",
-                  color: colors.neutral.light,
+                  color: colors.secondary.main,
                   "&:hover": {
-                    backgroundColor: colors.secondary.hover,
-                    cursor: "pointer",
+                    backgroundColor: colors.secondary.main,
+                    color: colors.neutral.white,
                   },
                 }}
               >
@@ -146,8 +148,8 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
                         year: "numeric",
                         month: "short",
                         day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
+                        // hour: "2-digit",
+                        // minute: "2-digit",
                       })}
                     </Typography>
                   }
@@ -181,14 +183,103 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
             eventClick={handleEventClick}
             eventContent={(eventInfo) => (
               <Box>
-                <Typography variant="body2" style={{ fontSize: "0.8em" }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: ".8em",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    color: colors.secondary.dark,
+                    borderRadius: "2px",
+                    padding: "5px",
+                    "&:hover": {
+                      color: colors.secondary.dark,
+                    },
+                  }}
+                >
                   {eventInfo.event.extendedProps.athleteName}
                 </Typography>
-                <Typography variant="body2" style={{ fontSize: "0.8em" }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: ".8em",
+                    color: colors.secondary.dark,
+                    borderRadius: "2px",
+                    padding: "5px",
+                    textAlign: "center",
+                  }}
+                >
                   {eventInfo.event.extendedProps.trainingName}
                 </Typography>
               </Box>
             )}
+            eventClassNames="calendar-event"
+            eventDidMount={(info) => {
+              info.el.style.transition = "background-color 0.3s";
+            }}
+            listDayFormat={{
+              month: "long",
+              day: "2-digit",
+              year: "numeric",
+            }}
+            listDaySideFormat={false}
+            cssClass="custom-calendar"
+            viewDidMount={(view) => {
+              if (view.view.type === "listMonth") {
+                const style = document.createElement("style");
+                style.innerHTML = `
+                  .fc-list-day-cushion {
+                    background-color: ${colors.primary.extraLight} !important;
+                    color: ${colors.neutral.light} !important;
+                  }
+                  .fc-list-event:hover td {
+                    background-color: ${colors.primary.default} !important;
+                    color: ${colors.neutral.text} !important;
+                    cursor: pointer;
+                  }
+                  .fc-list-event:hover .fc-list-event-title,
+                  .fc-list-event:hover .fc-list-event-time,
+                  .fc-list-event:hover .fc-list-event-title a {
+                    color: ${colors.neutral.text} !important;
+                  }
+                `;
+                document.head.appendChild(style);
+              }
+              if (view.view.type === "dayGridMonth") {
+                const style = document.createElement("style");
+                style.innerHTML = `
+                /* Popup styles */
+                  .fc-popover {
+                    background-color: ${colors.primary.extraLight} !important;
+                    border-color: ${colors.primary.main} !important;
+                  }
+                  .fc-popover-header {
+                    background-color: ${colors.primary.main} !important;
+                    color: ${colors.secondary.main} !important;
+                  }
+                  .fc-popover-body {
+                    color: ${colors.neutral.light} !important;
+                  }
+                  .fc-popover .fc-event {
+                    background-color: ${colors.primary.light} !important;
+                    border-color: ${colors.primary.main} !important;
+                    margin: 2px 0 !important;
+                    padding: 2px !important;
+                  }
+                  .fc-popover .fc-event:hover {
+                    background-color: ${colors.primary.main} !important;
+                    color: ${colors.secondary.main} !important;
+                  }
+                  .fc-popover .fc-event-title {
+                    color: ${colors.neutral.text} !important;
+                  }
+                  .fc-popover .fc-event-time {
+                    color: ${colors.neutral.text} !important;
+                  }
+                `;
+                document.head.appendChild(style);
+              }
+            }}
           />
         </Box>
       </Box>

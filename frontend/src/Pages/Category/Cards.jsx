@@ -132,6 +132,23 @@ export default function Cards() {
                 <Typography variant="body2" sx={{ color: "text.secondary" }}>
                   {item.description}
                 </Typography>
+                {userRole === "Admin" && item.createdBy && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "text.secondary",
+                      mt: 1,
+                      fontStyle: "italic",
+                    }}
+                  >
+                    {t("createdBy")}: {item.createdBy.firstName}{" "}
+                    {item.createdBy.lastName}
+                    <span style={{ color: colors.secondary.light }}>
+                      {item.createdBy.role === "Admin" && ` (${t("admin")})`}
+                      {item.createdBy.role === "Coach" && ` (${t("coach")})`}
+                    </span>
+                  </Typography>
+                )}
               </CardContent>
             </CardActionArea>
             {(userRole === "Admin" || userRole === "Coach") && (

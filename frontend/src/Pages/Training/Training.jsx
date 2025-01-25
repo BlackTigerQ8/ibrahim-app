@@ -24,6 +24,9 @@ const Training = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const scheduleId = location.state?.scheduleId;
+  const isFromSchedule = location.state?.isFromSchedule;
   const API_URL = process.env.REACT_APP_API_URL;
   const colors = tokens(theme.palette.mode);
   const { trainings, status, error } = useSelector((state) => state.training);
@@ -31,17 +34,94 @@ const Training = () => {
     (training) => training._id === trainingId
   );
   const userRole = useSelector((state) => state.user.userRole);
+  const scheduleStatus = useSelector(
+    (state) =>
+      state.schedule.schedules.find((s) => s._id === scheduleId)?.status
+  );
 
   const canChangeStatus = () => {
-    return ["Family", "Athlete"].includes(userRole);
+    // For Family role, only show buttons if they came from UserSchedule page
+    if (userRole === "Family") {
+      return (
+        scheduleId &&
+        scheduleStatus &&
+        !["Completed", "Cancelled"].includes(scheduleStatus) &&
+        isFromSchedule === true
+      ); // Explicitly check for true
+    }
+    return (
+      userRole === "Athlete" &&
+      !["Completed", "Cancelled"].includes(scheduleStatus)
+    );
+  };
+
+  const handleStatusChange = (newStatus) => {
+    if (!scheduleId) {
+      console.error("No scheduleId available");
+      return;
+    }
+
+    dispatch(
+      updateScheduleStatus({
+        id: scheduleId,
+        status: newStatus,
+      })
+    );
   };
 
   const getImageUrl = (imagePath) => {
     return `${API_URL}/${imagePath}`;
   };
 
-  const handleStatusChange = (newStatus) => {
-    dispatch(updateScheduleStatus({ id: trainingId, status: newStatus }));
+  const renderMedia = () => {
+    if (!selectedTraining?.image) {
+      return (
+        <Typography variant="h3" color="textSecondary">
+          {t("mediaPlaceholder")}
+        </Typography>
+      );
+    }
+
+    const mediaUrl = getImageUrl(selectedTraining.image);
+    const isVideo = selectedTraining.image
+      ?.toLowerCase()
+      .match(/\.(mp4|mov|avi|_compressed\.mp4)$/i);
+
+    if (!mediaUrl) return null;
+
+    return isVideo ? (
+      <video
+        src={mediaUrl}
+        autoPlay
+        loop
+        muted
+        playsInline
+        controls
+        crossOrigin="anonymous"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          position: "absolute",
+          top: 0,
+          left: 0,
+        }}
+      />
+    ) : (
+      <img
+        src={mediaUrl}
+        alt={selectedTraining.name}
+        crossOrigin="anonymous"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          position: "absolute",
+          top: 0,
+          left: 0,
+        }}
+      />
+    );
   };
 
   useEffect(() => {
@@ -70,7 +150,18 @@ const Training = () => {
     );
   }
   if (status === "failed") {
-    return <Alert severity="error">{error}</Alert>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100dvh",
+        }}
+      >
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
   }
 
   return (
@@ -101,25 +192,7 @@ const Training = () => {
           position: "relative",
         }}
       >
-        {selectedTraining?.image ? (
-          <img
-            src={getImageUrl(selectedTraining?.image)}
-            alt={selectedTraining.name}
-            crossOrigin="anonymous"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              position: "absolute",
-              top: 0,
-              left: 0,
-            }}
-          />
-        ) : (
-          <Typography variant="h3" color="textSecondary">
-            {t("mediaPlaceholder")}
-          </Typography>
-        )}
+        {renderMedia()}
       </Paper>
       <Box
         sx={{

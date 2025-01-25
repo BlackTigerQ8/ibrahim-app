@@ -56,6 +56,7 @@ const Users = () => {
       headerAlign: "center",
       flex: 0.75,
       cellClassName: "name-column--cell",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ row: { firstName, lastName } }) => {
         return (
           <Box
@@ -77,6 +78,7 @@ const Users = () => {
       flex: 0.5,
       headerAlign: "center",
       align: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ row: { dateOfBirth } }) => {
         const calculateAge = (dob) => {
           const birthDate = new Date(dob);
@@ -104,12 +106,14 @@ const Users = () => {
       headerName: t("email"),
       flex: 1,
       headerAlign: "center",
+      headerClassName: "super-app-theme--header",
     },
     {
       field: "phone",
       headerAlign: "center",
       headerName: t("phone"),
       flex: 1,
+      headerClassName: "super-app-theme--header",
     },
     {
       field: "role",
@@ -117,6 +121,7 @@ const Users = () => {
       flex: 1,
       headerAlign: "center",
       align: "center",
+      headerClassName: "super-app-theme--header",
       renderCell: ({ row: { role } }) => {
         return (
           <Box
@@ -153,6 +158,7 @@ const Users = () => {
             align: "center",
             sortable: false,
             filterable: false,
+            headerClassName: "super-app-theme--header",
             renderCell: (params) => {
               return (
                 <Box display="flex" justifyContent="center">
@@ -229,28 +235,34 @@ const Users = () => {
     <Box m="20px">
       <Title title={t("users")} subtitle={t("manageUsers")} />
       <Box
-        mt="40px"
         height="75vh"
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: `${colors.primary.default} !important`,
+              color: colors.primary.main,
+              fontWeight: "bold",
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "none",
+              backgroundColor: colors.primary.default,
+              color: colors.secondary.main,
+            },
+            "& .MuiDataGrid-virtualScroller": {
+              backgroundColor: colors.primary.extraLight,
+            },
+            "& .MuiDataGrid-cell": {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+            },
           },
-          "& .MuiDataGrid-cell": {
-            borderBottom: "none",
-          },
-          "& .name-column--cell": {
-            color: colors.neutral.main,
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: colors.primary.extraLight,
-            borderBottom: "none",
-          },
-          "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: colors.primary.extraLight,
-          },
-          "& .MuiDataGrid-footerContainer": {
-            borderTop: "none",
-            backgroundColor: colors.primary.darkLight,
+          "& .super-app-theme--header": {
+            backgroundColor: `${colors.primary.default} !important`,
+            color: colors.secondary.main,
+            fontWeight: "bold",
           },
         }}
       >
@@ -270,18 +282,6 @@ const Users = () => {
           columns={columns}
           getRowId={(row) => row._id}
           components={{ Toolbar: GridToolbar }}
-          sx={{
-            "& .MuiDataGrid-cell": {
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "8px",
-            },
-            "& .MuiDataGrid-columnHeaders": {
-              textAlign: "center",
-              backgroundColor: colors.secondary.main,
-            },
-          }}
         />
       </Box>
       <Dialog

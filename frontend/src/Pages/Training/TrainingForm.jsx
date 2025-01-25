@@ -6,6 +6,7 @@ import { cardio } from "ldrs";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Alert,
+  Backdrop,
   Box,
   Button,
   Container,
@@ -39,7 +40,10 @@ const TrainingForm = () => {
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const { categories, status, error } = useSelector((state) => state.category);
-
+  const { status: trainingStatus, error: trainingError } = useSelector(
+    (state) => state.training
+  );
+  const isLoading = trainingStatus === "loading";
   const userCategories =
     userRole === "Admin"
       ? categories
@@ -49,7 +53,6 @@ const TrainingForm = () => {
     if (status === "idle") {
       dispatch(fetchCategories());
     }
-    console.log("categories:", categories);
   }, [dispatch, status]);
 
   const initialValues = {
@@ -88,14 +91,19 @@ const TrainingForm = () => {
     }),
     image: yup.mixed().test("fileType", t("onlyImageAllowed"), (value) => {
       if (!value) return true;
-      const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+      const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/jpg",
+        "video/mp4",
+        "video/quicktime", // For .mov files
+        "video/x-msvideo", // For .avi files
+      ];
       return allowedTypes.includes(value.type);
     }),
   });
 
   const handleFormSubmit = async (values) => {
-    console.log("Category ID during form submission:", values.category); // Check category here
-
     try {
       const formData = new FormData();
       // Add all training data to FormData
@@ -162,6 +170,31 @@ const TrainingForm = () => {
   return (
     <>
       <Container>
+        <Backdrop
+          sx={{
+            color: colors.secondary.main,
+            zIndex: (theme) => theme.zIndex.modal + 1,
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+          }}
+          open={isLoading}
+        >
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap={2}
+          >
+            <l-cardio
+              size="50"
+              stroke="4"
+              speed="1.75"
+              color={colors.secondary.main}
+            />
+            <Typography variant="h6" color="secondary">
+              {t("creatingTraining")}
+            </Typography>
+          </Box>
+        </Backdrop>
         <Box>
           <Title
             title={t("trainingFormTitle")}
@@ -357,7 +390,7 @@ const TrainingForm = () => {
                   sx={{ gridColumn: "span 2", ...commonInputStyles }}
                 >
                   <InputLabel shrink htmlFor="image">
-                    {t("uploadImage")}
+                    {t("uploadImageOrVideo")}
                   </InputLabel>
                   <Input
                     id="image"
@@ -368,6 +401,9 @@ const TrainingForm = () => {
                       setFieldValue("image", event.currentTarget.files[0]);
                     }}
                     error={!!touched.image && !!errors.image}
+                    inputProps={{
+                      accept: "image/*,video/*",
+                    }}
                   />
                   <ErrorMessage
                     name="image"
@@ -379,9 +415,28 @@ const TrainingForm = () => {
                   />
                 </FormControl>
               </Box>
-              <Box display="flex" justifyContent="end" mt="20px">
-                <Button type="submit" color="secondary" variant="contained">
-                  {t("createNewTraining")}
+              <Box display="flex" justifyContent="end" mt={2}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                  disabled={isLoading}
+                  onClick={() => handleFormSubmit(values)}
+                  sx={{
+                    marginTop: "1rem",
+                    fontSize: "12px",
+                    minWidth: isNonMobile ? "120px" : "100%",
+                  }}
+                >
+                  {isLoading ? (
+                    <l-cardio
+                      size="20"
+                      speed="1.75"
+                      color={colors.secondary.main}
+                    />
+                  ) : (
+                    t("update")
+                  )}
                 </Button>
               </Box>
             </form>

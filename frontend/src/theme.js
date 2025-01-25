@@ -6,51 +6,60 @@ export const tokens = (mode) => ({
   ...(mode === "dark"
     ? {
         primary: {
-          main: "#111317",
-          light: "#1f2125",
-          extraLight: "#35373b",
+          main: "#111317", // dark background for primary
+          light: "#1f2125", // slightly lighter dark for contrast
+          darkLight: "#35373b", // a medium dark gray for accents
+          extraLight: "#35373b", // a softer dark for hover states
+          default: "#1f2125",
+          tableBackground: "#35373b",
         },
         secondary: {
-          main: "#f9ac54",
-          dark: "#d79447",
-          hover: "#d79447",
+          main: "#f9ac54", // gold-yellow primary secondary color
+          dark: "#d79447", // darker shade of gold for hover states
+          hover: "#d79447", // hover state for secondary elements
+          light: "#ffc988", // a soft yellow for lighter backgrounds or highlights
         },
         neutral: {
-          light: "#d1d5db",
-          white: "#ffffff",
+          light: "#d1d5db", // light neutral color for text
+          white: "#ffffff", // white for text and backgrounds
+          text: "#ffffff",
         },
         background: {
-          default: "#111317",
+          default: "#111317", // dark background for the entire page
         },
         status: {
-          success: "#4caf50", // green for completed
-          error: "#f44336", // red for cancelled
-          default: "#1f2125", // using primary.light for pending/default
+          success: "#4caf50", // green for completed tasks
+          error: "#f44336", // red for error or cancelled states
+          default: "#d3d3d3", // default state, dark primary color
         },
       }
     : {
         primary: {
-          main: "#ffffff",
-          light: "#f1f1f1",
-          darkLight: "#4e4e4e",
-          extraLight: "#e9e9e9",
+          main: "#ffffff", // white for light mode background
+          light: "#f1f1f1", // very light gray for subtle background elements
+          darkLight: "#4e4e4e", // a softer dark gray for accents
+          extraLight: "#d3d3d3", // light background color for hover or borders
+          default: "#a9a9a9",
+          tableBackground: "#f1f1f1",
         },
         secondary: {
-          main: "#111317",
-          dark: "#1f2125",
-          hover: "#d79447",
+          main: "#111317", // dark gray for secondary elements
+          dark: "#1f2125", // slightly darker gray for hover states
+          hover: "#d79447", // gold-yellow hover effect for secondary
+          light: "#ffc988", // a pale yellow to keep things bright
         },
         neutral: {
-          light: "#111317",
-          white: "#ffffff",
+          light: "#111317", // very dark neutral for light mode text
+          white: "#000000", // white for text and backgrounds
+          text: "#000000",
         },
         background: {
-          default: "#f1f1f1",
+          default: "#f1f1f1", // light background for the entire page
         },
         status: {
-          success: "#4caf50", // green for completed
-          error: "#f44336", // red for cancelled
-          default: "#f1f1f1", // using primary.light for pending/default
+          success: "#4caf50", // green for completed tasks
+          error: "#f44336", // red for error or cancelled states
+          default: "#bebebe", // default state, light background color
         },
       }),
 });
