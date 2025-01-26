@@ -190,15 +190,20 @@ const UserProfile = () => {
 
   if (status === "loading" || !userInfo) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
       >
-        <p>Loading user data...</p>
-        <l-pulsar size="70" speed="1.75" color={colors.primary.main}></l-pulsar>
-      </Box>
+        <l-cardio
+          size="70"
+          speed="1.75"
+          color={colors.secondary.main}
+        ></l-cardio>
+      </div>
     );
   }
 
@@ -267,6 +272,7 @@ const UserProfile = () => {
                     marginBottom: "16px",
                     borderRadius: "50%",
                     border: `2px solid ${colors.secondary.main}`,
+                    objectFit: "cover",
                   }}
                 />
 

@@ -96,6 +96,9 @@ const userSlice = createSlice({
       state.userInfo = action.payload;
       state.userRole = action.payload.user.role;
     },
+    updateUserInfo(state, action) {
+      state.userInfo = action.payload;
+    },
     logoutUser(state) {
       state.userInfo = null;
       state.userRole = "";

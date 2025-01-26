@@ -148,7 +148,11 @@ const UserSchedule = () => {
                         color={colors.neutral.light}
                         sx={{ mt: 1 }}
                       >
-                        {new Date(schedule?.date).toLocaleString()}
+                        {new Date(schedule?.date).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
                       </Typography>
                     </Box>
                     <Box

@@ -130,13 +130,13 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
               <ListItem
                 key={event.id}
                 sx={{
-                  backgroundColor: colors.primary.light,
+                  backgroundColor: getStatusColor(event.extendedProps.status),
                   margin: "10px 0",
                   borderRadius: "2px",
-                  color: colors.secondary.main,
+                  color: "#000",
                   "&:hover": {
-                    backgroundColor: colors.secondary.main,
-                    color: colors.neutral.white,
+                    backgroundColor: colors.primary.main,
+                    color: colors.neutral.text,
                   },
                 }}
               >
@@ -172,7 +172,7 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
             headerToolbar={{
               left: "prev,next today",
               center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+              right: "dayGridMonth,listMonth",
             }}
             initialView="dayGridMonth"
             editable={false}
@@ -186,15 +186,10 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
                 <Typography
                   variant="body2"
                   sx={{
-                    fontSize: ".8em",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    color: colors.secondary.dark,
+                    fontSize: "1em",
+                    color: colors.neutral.text,
                     borderRadius: "2px",
-                    padding: "5px",
-                    "&:hover": {
-                      color: colors.secondary.dark,
-                    },
+                    // textAlign: "center",
                   }}
                 >
                   {eventInfo.event.extendedProps.athleteName}
@@ -203,10 +198,9 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
                   variant="body2"
                   sx={{
                     fontSize: ".8em",
-                    color: colors.secondary.dark,
+                    color: colors.neutral.text,
                     borderRadius: "2px",
-                    padding: "5px",
-                    textAlign: "center",
+                    // textAlign: "center",
                   }}
                 >
                   {eventInfo.event.extendedProps.trainingName}
@@ -215,7 +209,32 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
             )}
             eventClassNames="calendar-event"
             eventDidMount={(info) => {
-              info.el.style.transition = "background-color 0.3s";
+              if (
+                info.view.type === "dayGridMonth" ||
+                info.el.closest(".fc-popover")
+              ) {
+                const statusColor = getStatusColor(
+                  info.event.extendedProps.status
+                );
+                info.el.style.setProperty("--fc-event-bg-color", statusColor);
+                info.el.style.setProperty(
+                  "--fc-event-border-color",
+                  statusColor
+                );
+                info.el.style.backgroundColor = statusColor;
+                info.el.style.borderColor = statusColor;
+                info.el.style.transition = "background-color 0.3s";
+                info.el.style.cursor = "pointer";
+                info.el.addEventListener("mouseenter", () => {
+                  info.el.style.filter = "brightness(85%)";
+                  info.el.style.transform = "scale(1.02)";
+                });
+
+                info.el.addEventListener("mouseleave", () => {
+                  info.el.style.filter = "brightness(100%)";
+                  info.el.style.transform = "scale(1)";
+                });
+              }
             }}
             listDayFormat={{
               month: "long",
@@ -261,20 +280,21 @@ ${event.extendedProps.notes ? `${t("notes")}: ${event.extendedProps.notes}` : ""
                     color: ${colors.neutral.light} !important;
                   }
                   .fc-popover .fc-event {
-                    background-color: ${colors.primary.light} !important;
-                    border-color: ${colors.primary.main} !important;
                     margin: 2px 0 !important;
                     padding: 2px !important;
                   }
                   .fc-popover .fc-event:hover {
-                    background-color: ${colors.primary.main} !important;
-                    color: ${colors.secondary.main} !important;
+                    filter: brightness(90%) !important;
                   }
                   .fc-popover .fc-event-title {
                     color: ${colors.neutral.text} !important;
                   }
                   .fc-popover .fc-event-time {
                     color: ${colors.neutral.text} !important;
+                  }
+                  .fc-more-popover .fc-event {
+                    background-color: var(--fc-event-bg-color) !important;
+                    border-color: var(--fc-event-border-color) !important;
                   }
                 `;
                 document.head.appendChild(style);

@@ -275,6 +275,7 @@ const Navbar = () => {
                   marginBottom: "16px",
                   borderRadius: "50%",
                   border: `2px solid ${colors.secondary.main}`,
+                  objectFit: "cover",
                 }}
               />
               <Typography

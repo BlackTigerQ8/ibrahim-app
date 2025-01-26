@@ -55,6 +55,17 @@ const Schedules = () => {
     setSelectedScheduleId(null);
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Completed":
+        return colors.status.success;
+      case "Cancelled":
+        return colors.status.error;
+      default:
+        return colors.status.default;
+    }
+  };
+
   const columns = [
     {
       field: "athlete",
@@ -99,17 +110,12 @@ const Schedules = () => {
         <Typography
           style={{
             borderRadius: "4px",
-            border: `1px solid ${colors.status.default}`,
+            border: `1px solid ${getStatusColor(value)}`,
             padding: "4px",
-            width: "auto",
+            width: "100%",
             margin: "0 auto",
             textAlign: "center",
-            color:
-              value === "Completed"
-                ? colors.status.success
-                : value === "Pending"
-                  ? colors.status.default
-                  : colors.status.error,
+            color: getStatusColor(value),
           }}
         >
           {value}
