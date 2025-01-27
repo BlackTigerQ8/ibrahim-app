@@ -10,6 +10,8 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  Backdrop,
+  Typography,
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
@@ -37,6 +39,8 @@ const UserProfile = () => {
   const currentUser = useSelector((state) => state.user);
   const API_URL = process.env.REACT_APP_API_URL;
   const [coaches, setCoaches] = useState([]);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const isLoading = status === "loading";
 
   const token =
     useSelector((state) => state.user.token) || localStorage.getItem("token");
@@ -116,6 +120,7 @@ const UserProfile = () => {
   };
 
   const handleFormSubmit = async (values) => {
+    setIsUpdating(true);
     const formData = new FormData();
 
     // Check if the profileImage is a valid File object and append it to FormData
@@ -136,6 +141,9 @@ const UserProfile = () => {
       }
       formData.append("coach", coachId);
     }
+
+    // Check if email is being updated
+    const isEmailUpdated = values.email !== initialValues.email;
 
     // Append other changed fields
     Object.entries(values).forEach(([key, value]) => {
@@ -158,6 +166,17 @@ const UserProfile = () => {
         })
       ).unwrap();
 
+      // Show appropriate success message
+      if (isEmailUpdated) {
+        toast.success(t("verifyEmail"), {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
+      }
+
       // Refresh users data after successful update
       if (token) {
         await dispatch(fetchUsers(token));
@@ -165,6 +184,8 @@ const UserProfile = () => {
     } catch (error) {
       console.error("Update failed:", error);
       toast.error(t("updateFailed"));
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -188,7 +209,7 @@ const UserProfile = () => {
 
   pulsar.register();
 
-  if (status === "loading" || !userInfo) {
+  if (isLoading || !userInfo) {
     return (
       <div
         style={{
@@ -223,6 +244,26 @@ const UserProfile = () => {
 
   return (
     <Box sx={{ margin: "0 1rem" }}>
+      <Backdrop
+        sx={{
+          color: colors.secondary.main,
+          zIndex: (theme) => theme.zIndex.modal + 1,
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+        }}
+        open={isUpdating}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          <l-cardio
+            size="50"
+            stroke="4"
+            speed="1.75"
+            color={colors.secondary.main}
+          />
+          <Typography variant="h6" color="secondary">
+            {t("updatingProfile")}
+          </Typography>
+        </Box>
+      </Backdrop>
       <Title
         title={t("userProfileTitle")}
         subtitle={t("userProfileSubtitle")}

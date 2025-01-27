@@ -7,6 +7,8 @@ const {
   deleteUser,
   loginUser,
   logoutUser,
+  verifyEmail,
+  contactMessage,
 } = require("../controllers/userController");
 const { protect, restrictTo } = require("../middleware/authMiddleware");
 const { profileImageUpload } = require("./uploadRoutes");
@@ -15,7 +17,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(protect, restrictTo("Admin", "Coach"), getAllusers)
+  .get(protect, getAllusers)
   .post(
     protect,
     restrictTo("Admin"),
@@ -31,5 +33,9 @@ router
 
 router.post("/login", loginUser);
 router.post("/logout", protect, logoutUser);
+
+router.get("/verify-email/:token", verifyEmail);
+
+router.post("/contact", contactMessage);
 
 module.exports = router;

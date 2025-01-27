@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogTitle,
   DialogActions,
+  Tooltip,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
@@ -18,6 +19,8 @@ import DirectionsRunOutlinedIcon from "@mui/icons-material/DirectionsRunOutlined
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useNavigate } from "react-router-dom";
 import Title from "../../components/Title";
 import { useSelector, useDispatch } from "react-redux";
@@ -107,6 +110,35 @@ const Users = () => {
       flex: 1,
       headerAlign: "center",
       headerClassName: "super-app-theme--header",
+      align: "left",
+      renderCell: (params) => {
+        return (
+          <Box
+            display="flex"
+            alignItems="center"
+            gap="8px"
+            justifyContent="flex-start"
+            sx={{
+              width: "100%",
+              paddingLeft: "16px",
+              ".MuiDataGrid-cell": {
+                justifyContent: "flex-start",
+              },
+            }}
+          >
+            {params.row.isEmailVerified ? (
+              <Tooltip title={t("emailVerified")} arrow>
+                <VerifiedIcon sx={{ color: colors.status.success }} />
+              </Tooltip>
+            ) : (
+              <Tooltip title={t("emailNotVerified")} arrow>
+                <ErrorOutlineIcon sx={{ color: colors.status.error }} />
+              </Tooltip>
+            )}
+            {params.row.email}
+          </Box>
+        );
+      },
     },
     {
       field: "phone",

@@ -16,6 +16,7 @@ import {
   Select,
   TextField,
   Typography,
+  Backdrop,
 } from "@mui/material";
 import { ErrorMessage, Formik } from "formik";
 import * as yup from "yup";
@@ -37,8 +38,7 @@ const initialValues = {
   confirmPassword: "",
 };
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
+const phoneRegExp = /^(?=([0-9\-\+])*?[0-9]{8,9}$)[\d\-\+]+$/;
 
 const UserForm = () => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
@@ -52,6 +52,7 @@ const UserForm = () => {
   const navigate = useNavigate();
   const { users } = useSelector((state) => state.users); // Add this line
   const [coaches, setCoaches] = useState([]);
+  const [isCreating, setIsCreating] = useState(false);
 
   const userSchema = yup.object().shape({
     firstName: yup.string().required(t("firstNameIsRequired")),
@@ -60,6 +61,11 @@ const UserForm = () => {
     phone: yup
       .string()
       .matches(phoneRegExp, t("invalidPhoneNumber"))
+      .test("digit-count", t("phoneNumberLength"), (value) => {
+        if (!value) return false;
+        const digitCount = value.replace(/\D/g, "").length; // Count only digits
+        return digitCount >= 8 && digitCount <= 9;
+      })
       .required(t("phoneIsRequired")),
     dateOfBirth: yup.string().required(t("dateOfBirthIsRequired")),
     role: yup.string().required(t("roleIsRequired")),
@@ -84,6 +90,7 @@ const UserForm = () => {
   });
 
   const handleFormSubmit = async (values) => {
+    setIsCreating(true);
     try {
       // Create FormData object to handle file upload
       const formData = new FormData();
@@ -106,6 +113,8 @@ const UserForm = () => {
       }
     } catch (error) {
       console.error("Registration failed:", error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -175,6 +184,26 @@ const UserForm = () => {
 
   return (
     <Container>
+      <Backdrop
+        sx={{
+          color: colors.secondary.main,
+          zIndex: (theme) => theme.zIndex.modal + 1,
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+        }}
+        open={isCreating}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          <l-cardio
+            size="50"
+            stroke="4"
+            speed="1.75"
+            color={colors.secondary.main}
+          />
+          <Typography variant="h6" color="secondary">
+            {t("creatingUser")}
+          </Typography>
+        </Box>
+      </Backdrop>
       <Box>
         <Title title={t("userFormTitle")} subtitle={t("userFormSubtitle")} />
       </Box>

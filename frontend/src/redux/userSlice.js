@@ -88,6 +88,18 @@ export const profileImage = createAsyncThunk(
   }
 );
 
+export const submitContactForm = createAsyncThunk(
+  "user/submitContactForm",
+  async (formData) => {
+    try {
+      const response = await axios.post(`${API_URL}/users/contact`, formData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -149,6 +161,18 @@ const userSlice = createSlice({
       .addCase(profileImage.rejected, (state) => {
         state.status = "failed";
         dispatchToast(i18next.t("profileImageRejected"), "error");
+      })
+      .addCase(submitContactForm.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(submitContactForm.fulfilled, (state) => {
+        state.status = "succeeded";
+        dispatchToast(i18next.t("messageSent"), "success");
+      })
+      .addCase(submitContactForm.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+        dispatchToast(i18next.t("messageError"), "error");
       });
   },
 });

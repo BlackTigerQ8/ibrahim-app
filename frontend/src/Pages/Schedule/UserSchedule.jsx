@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   CardContent,
   Alert,
   Button,
+  Backdrop,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
@@ -30,6 +31,8 @@ const UserSchedule = () => {
   const { schedules, status, error } = useSelector((state) => state.schedule);
   const { userInfo } = useSelector((state) => state.user);
 
+  const [isUpdating, setIsUpdating] = useState(false);
+
   useEffect(() => {
     dispatch(fetchSchedules());
   }, [dispatch]);
@@ -39,15 +42,18 @@ const UserSchedule = () => {
     (schedule) => schedule.athlete._id === userInfo?._id
   );
 
-  // const handleStatusUpdate = async (scheduleId, newStatus) => {
-  //   try {
-  //     await dispatch(
-  //       updateScheduleStatus({ id: scheduleId, status: newStatus })
-  //     ).unwrap();
-  //   } catch (error) {
-  //     console.error("Failed to update status:", error);
-  //   }
-  // };
+  const handleStatusUpdate = async (scheduleId, newStatus) => {
+    try {
+      setIsUpdating(true);
+      await dispatch(
+        updateScheduleStatus({ id: scheduleId, status: newStatus })
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const handleViewTraining = (schedule) => {
     navigate(
@@ -106,6 +112,26 @@ const UserSchedule = () => {
 
   return (
     <Container>
+      <Backdrop
+        sx={{
+          color: colors.secondary.main,
+          zIndex: (theme) => theme.zIndex.modal + 1,
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+        }}
+        open={isUpdating}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          <l-cardio
+            size="50"
+            stroke="4"
+            speed="1.75"
+            color={colors.secondary.main}
+          />
+          <Typography variant="h6" color="secondary">
+            {t("updatingStatus")}
+          </Typography>
+        </Box>
+      </Backdrop>
       <Box>
         <Title title={t("MY_SCHEDULE")} subtitle={t("yourTrainingSchedule")} />
 
@@ -169,16 +195,16 @@ const UserSchedule = () => {
                           color: colors.primary.main,
                           padding: "0.5rem 1rem",
                           borderRadius: "4px",
-                          // cursor: "pointer",
+                          cursor: "pointer",
                         }}
-                        // onClick={() =>
-                        //   handleStatusUpdate(
-                        //     schedule._id,
-                        //     schedule.status === "Pending"
-                        //       ? "Completed"
-                        //       : "Pending"
-                        //   )
-                        // }
+                        onClick={() =>
+                          handleStatusUpdate(
+                            schedule._id,
+                            schedule.status === "Pending"
+                              ? "Completed"
+                              : "Pending"
+                          )
+                        }
                       >
                         {t(schedule?.status)}
                       </Typography>

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const USER_ROLES = ["Admin", "Family", "Coach", "Athlete"];
 
@@ -18,6 +19,12 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: [true, "Email is required for future login"],
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
   phone: {
     type: Number,
     required: [true, "Phone number is required"],
@@ -79,5 +86,19 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
+
+// Method to generate verification token
+userSchema.methods.createEmailVerificationToken = function () {
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  this.emailVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+
+  this.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+  return verificationToken;
+};
 
 module.exports = { User: mongoose.model("User", userSchema), USER_ROLES };

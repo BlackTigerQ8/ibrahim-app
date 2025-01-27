@@ -1,6 +1,11 @@
 const { User } = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const {
+  sendVerificationEmail,
+  sendContactFormEmail,
+} = require("../emailService");
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -23,6 +28,9 @@ const getAllusers = async (req, res) => {
       if (req.query.role) {
         query.role = req.query.role;
       }
+    } else if (req.user.role === "Athlete" || req.user.role === "Family") {
+      // Allow Athletes and Family members to see only their own profile
+      query = { _id: req.user._id };
     } else {
       // If user is neither Admin nor Coach, return unauthorized
       return res.status(403).json({
@@ -32,12 +40,12 @@ const getAllusers = async (req, res) => {
     }
 
     // If user is neither Admin nor Coach, return unauthorized
-    if (req.user.role !== "Admin" && req.user.role !== "Coach") {
-      return res.status(403).json({
-        status: "Error",
-        message: "Not authorized to access user list",
-      });
-    }
+    // if (req.user.role !== "Admin" && req.user.role !== "Coach") {
+    //   return res.status(403).json({
+    //     status: "Error",
+    //     message: "Not authorized to access user list",
+    //   });
+    // }
 
     const users = await User.find(query).populate(
       "coach",
@@ -101,6 +109,22 @@ const createUser = async (req, res) => {
     const uploadedFile = req.file;
     const filePath = uploadedFile ? uploadedFile.path : null;
     const newUser = await User.create({ ...req.body, image: filePath });
+
+    // Generate verification token
+    const verificationToken = newUser.createEmailVerificationToken();
+    await newUser.save({ validateBeforeSave: false });
+
+    // Create verification URL with explicit frontend URL
+    if (!process.env.FRONTEND_URL) {
+      console.error("FRONTEND_URL is not defined in environment variables");
+    }
+
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+    console.log("Verification URL:", verificationUrl); // For debugging
+
+    // Send verification email
+    await sendVerificationEmail(newUser.email, verificationUrl);
+
     res.status(201).json({
       status: "Success",
       data: {
@@ -108,6 +132,45 @@ const createUser = async (req, res) => {
       },
     });
   } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
+// Verification endpoint
+const verifyEmail = async (req, res) => {
+  try {
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await User.findOne({
+      emailVerificationToken: hashedToken,
+      emailVerificationExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: "Error",
+        message: "Token is invalid or has expired",
+      });
+    }
+
+    // Update user verification status
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: "Success",
+      message: "Email verified successfully",
+    });
+  } catch (error) {
+    console.error("Verification error:", error);
     res.status(500).json({
       status: "Error",
       message: error.message,
@@ -154,6 +217,29 @@ const updateUser = async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
       updateData.password = hashedPassword;
+    }
+
+    // Get the current user data
+    const currentUser = await User.findById(req.params.id);
+
+    // Check if email is being updated
+    if (updateData.email && updateData.email !== currentUser.email) {
+      // Set email verification status to false
+      updateData.isEmailVerified = false;
+
+      // Generate new verification token
+      const verificationToken = crypto.randomBytes(32).toString("hex");
+      updateData.emailVerificationToken = crypto
+        .createHash("sha256")
+        .update(verificationToken)
+        .digest("hex");
+      updateData.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+      // Create verification URL
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verificationToken}`;
+
+      // Send verification email
+      await sendVerificationEmail(updateData.email, verificationUrl);
     }
 
     const user = await User.findByIdAndUpdate(req.params.id, updateData, {
@@ -224,7 +310,15 @@ const loginUser = async (req, res) => {
     const userObj = user.toObject();
 
     // Destructure the necessary properties
-    const { firstName, lastName, email: userEmail, _id, role, image } = userObj;
+    const {
+      firstName,
+      lastName,
+      email: userEmail,
+      _id,
+      role,
+      image,
+      phone,
+    } = userObj;
 
     // Create token
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET, {
@@ -235,7 +329,15 @@ const loginUser = async (req, res) => {
       status: "Success",
       token,
       data: {
-        user: { firstName, lastName, email: userEmail, _id, role, image },
+        user: {
+          firstName,
+          lastName,
+          email: userEmail,
+          _id,
+          role,
+          image,
+          phone,
+        },
       },
     });
   } catch (error) {
@@ -259,6 +361,43 @@ const logoutUser = (req, res) => {
     .json({ status: "Success", message: "Logged out successfully" });
 };
 
+// @desc    Handle contact form submission
+// @route   POST /api/users/contact
+// @access  Public
+const contactMessage = async (req, res) => {
+  try {
+    const { firstName, lastName, email, phone, message } = req.body;
+
+    // Basic validation
+    if (!firstName || !lastName || !email || !phone || !message) {
+      return res.status(400).json({
+        status: "Error",
+        message: "All fields are required",
+      });
+    }
+
+    // Send email
+    await sendContactFormEmail({
+      firstName,
+      lastName,
+      email,
+      phone,
+      message,
+    });
+
+    // Send success response
+    res.status(200).json({
+      status: "Success",
+      message: "Message sent successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Error",
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllusers,
   getUser,
@@ -267,4 +406,6 @@ module.exports = {
   deleteUser,
   loginUser,
   logoutUser,
+  verifyEmail,
+  contactMessage,
 };

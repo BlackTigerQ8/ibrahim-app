@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,6 +8,7 @@ import {
   Alert,
   Typography,
   Button,
+  Backdrop,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
@@ -39,6 +40,8 @@ const Training = () => {
       state.schedule.schedules.find((s) => s._id === scheduleId)?.status
   );
 
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const canChangeStatus = () => {
     // For Family role, only show buttons if they came from UserSchedule page
     if (userRole === "Family") {
@@ -55,18 +58,25 @@ const Training = () => {
     );
   };
 
-  const handleStatusChange = (newStatus) => {
+  const handleStatusChange = async (newStatus) => {
     if (!scheduleId) {
       console.error("No scheduleId available");
       return;
     }
 
-    dispatch(
-      updateScheduleStatus({
-        id: scheduleId,
-        status: newStatus,
-      })
-    );
+    try {
+      setIsUpdating(true);
+      await dispatch(
+        updateScheduleStatus({
+          id: scheduleId,
+          status: newStatus,
+        })
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const getImageUrl = (imagePath) => {
@@ -166,6 +176,26 @@ const Training = () => {
 
   return (
     <Container>
+      <Backdrop
+        sx={{
+          color: colors.secondary.main,
+          zIndex: (theme) => theme.zIndex.modal + 1,
+          backgroundColor: "rgba(0, 0, 0, 0.4)",
+        }}
+        open={isUpdating}
+      >
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          <l-cardio
+            size="50"
+            stroke="4"
+            speed="1.75"
+            color={colors.secondary.main}
+          />
+          <Typography variant="h6" color="secondary">
+            {t("updatingStatus")}
+          </Typography>
+        </Box>
+      </Backdrop>
       <Title title={selectedTraining?.name} subtitle={t("trainingDetails")} />
       <Box display="flex" justifyContent="start" margin="20px">
         <Button

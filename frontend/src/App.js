@@ -10,7 +10,7 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { ThemeProvider } from "@mui/material/styles";
 import { useMode, ColorModeContext } from "./theme";
-import { CssBaseline, useMediaQuery } from "@mui/material";
+import { Box, CssBaseline, useMediaQuery } from "@mui/material";
 import { tokens } from "./theme";
 import { I18nextProvider, useTranslation } from "react-i18next";
 import { getUserRoleFromToken } from "./getUserRoleFromToken";
@@ -41,6 +41,8 @@ import Schedules from "./Pages/Schedule/Schedules";
 import EditSchedule from "./Pages/Schedule/EditSchedule";
 import UserSchedule from "./Pages/Schedule/UserSchedule";
 import EditTraining from "./Pages/Training/EditTraining";
+import VerifyEmail from "./components/VerifyEmail";
+import Footer from "./components/footer/Footer";
 
 function App() {
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -173,6 +175,7 @@ function App() {
   const publicRoutes = [
     { path: "/", component: <Home /> },
     { path: "/about", component: <About /> },
+    { path: "/verify-email/:token", component: <VerifyEmail /> },
   ];
 
   const protectedRoutes = [
@@ -287,37 +290,46 @@ function App() {
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          {isDesktop ? <Topbar /> : <Navbar />}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            {isDesktop ? <Topbar /> : <Navbar />}
 
-          <main id="page-content" style={{ filter: "none" }}>
-            <Routes>
-              {publicRoutes.map((route, index) => (
-                <Route
-                  key={index}
-                  path={route.path}
-                  element={<PublicRoute>{route.component}</PublicRoute>}
-                />
-              ))}
+            <main id="page-content" style={{ filter: "none", flex: 1 }}>
+              <Routes>
+                {publicRoutes.map((route, index) => (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    element={<PublicRoute>{route.component}</PublicRoute>}
+                  />
+                ))}
 
-              {protectedRoutes.map((route, index) => (
-                <Route
-                  key={index}
-                  path={route.path}
-                  element={
-                    <ProtectedRoute
-                      requiredRole={route.requiredRole}
-                      checkAccess={route.checkAccess}
-                    >
-                      {route.component}
-                    </ProtectedRoute>
-                  }
-                />
-              ))}
-              <Route path="/login" element={<Login />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <ToastContainer />
+                {protectedRoutes.map((route, index) => (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    element={
+                      <ProtectedRoute
+                        requiredRole={route.requiredRole}
+                        checkAccess={route.checkAccess}
+                      >
+                        {route.component}
+                      </ProtectedRoute>
+                    }
+                  />
+                ))}
+                <Route path="/login" element={<Login />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+            <ToastContainer />
+          </Box>
         </ThemeProvider>
       </ColorModeContext.Provider>
     </I18nextProvider>
