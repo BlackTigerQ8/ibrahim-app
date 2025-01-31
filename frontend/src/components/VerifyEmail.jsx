@@ -33,34 +33,36 @@ const VerifyEmail = () => {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/users/verify-email/${token}`
-        );
+        // Log the verification URL
+        const verificationUrl = `${process.env.REACT_APP_API_URL}/users/verify-email/${token}`;
+        console.log("Attempting verification at:", verificationUrl);
+
+        const response = await axios.get(verificationUrl, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Verification response:", response);
 
         if (response.data.status === "Success") {
           setStatus("success");
-          toast.success(t("emailVerificationSuccess"), {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-          });
+          toast.success(t("emailVerificationSuccess"));
           setTimeout(() => {
             navigate("/login");
           }, 3000);
         } else {
           setStatus("error");
-          toast.error(t("emailVerificationFailed"), {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-          });
+          toast.error(t("emailVerificationFailed"));
         }
       } catch (error) {
-        console.error("Verification error:", error);
+        console.error("Verification error details:", {
+          message: error.message,
+          response: error.response,
+          config: error.config,
+        });
+
         setStatus("error");
         toast.error(
           error.response?.data?.message || t("emailVerificationFailed")
@@ -68,7 +70,12 @@ const VerifyEmail = () => {
       }
     };
 
-    verifyEmail();
+    if (token) {
+      verifyEmail();
+    } else {
+      console.error("No token provided");
+      setStatus("error");
+    }
   }, [token, navigate, t]);
 
   const shakeKeyframes = `
