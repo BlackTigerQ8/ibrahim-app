@@ -1,28 +1,20 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_APP_PASSWORD,
   },
-  debug: true, // Enable debug logs
 });
 
 // Add verification check
 transporter.verify((error, success) => {
   if (error) {
-    console.error("SMTP connection error:", error);
-    console.log("Email configuration:", {
-      host: "smtp.gmail.com",
-      port: 587,
-      user: process.env.EMAIL_USER,
-      hasPassword: !!process.env.EMAIL_APP_PASSWORD,
-    });
+    console.error("SMTP Verification Error:", error);
+    console.error("Full error details:", JSON.stringify(error, null, 2));
   } else {
-    console.log("Server is ready to take our messages");
+    console.log("Server is ready");
   }
 });
 
@@ -58,8 +50,12 @@ const sendOTPEmail = async (email, otp) => {
 
 const sendVerificationEmail = async (email, verificationUrl) => {
   try {
-    console.log("Attempting to send verification email to:", email);
-    console.log("Verification URL:", verificationUrl);
+    console.log("Starting email send process...");
+    console.log("Email configuration:", {
+      from: process.env.EMAIL_USER,
+      to: email,
+      verificationUrl: verificationUrl,
+    });
 
     const mailOptions = {
       from: {
@@ -68,6 +64,7 @@ const sendVerificationEmail = async (email, verificationUrl) => {
       },
       to: email,
       subject: "Email Verification",
+      text: `Please verify your email by clicking this link: ${verificationUrl}`,
       html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h1 style="color: #2c3e50; text-align: center;">Verify Your Email</h1>
@@ -90,19 +87,20 @@ const sendVerificationEmail = async (email, verificationUrl) => {
         `,
     };
 
+    console.log("Attempting to send email...");
     const info = await transporter.sendMail(mailOptions);
-    console.log("Verification email sent successfully");
+
+    console.log("Email sent successfully!");
     console.log("Message ID:", info.messageId);
-    console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+    console.log("Full response:", JSON.stringify(info, null, 2));
+
     return true;
   } catch (error) {
-    console.error("Failed to send verification email:");
-    console.error("Error name:", error.name);
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
-    if (error.response) {
-      console.error("SMTP Response:", error.response);
-    }
+    console.error("Email Send Error:");
+    console.error("Name:", error.name);
+    console.error("Message:", error.message);
+    console.error("Stack:", error.stack);
+    console.error("Full error details:", JSON.stringify(error, null, 2));
     return false;
   }
 };
