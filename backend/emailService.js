@@ -1,7 +1,9 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_APP_PASSWORD,
@@ -14,6 +16,8 @@ transporter.verify((error, success) => {
   if (error) {
     console.error("SMTP connection error:", error);
     console.log("Email configuration:", {
+      host: "smtp.gmail.com",
+      port: 587,
       user: process.env.EMAIL_USER,
       hasPassword: !!process.env.EMAIL_APP_PASSWORD,
     });
@@ -54,6 +58,9 @@ const sendOTPEmail = async (email, otp) => {
 
 const sendVerificationEmail = async (email, verificationUrl) => {
   try {
+    console.log("Attempting to send verification email to:", email);
+    console.log("Verification URL:", verificationUrl);
+
     const mailOptions = {
       from: {
         name: "Kuwait Fitness",
@@ -84,10 +91,18 @@ const sendVerificationEmail = async (email, verificationUrl) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Verification email sent: %s", info.messageId);
+    console.log("Verification email sent successfully");
+    console.log("Message ID:", info.messageId);
+    console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
     return true;
   } catch (error) {
-    console.error("Send verification email error:", error);
+    console.error("Failed to send verification email:");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    if (error.response) {
+      console.error("SMTP Response:", error.response);
+    }
     return false;
   }
 };

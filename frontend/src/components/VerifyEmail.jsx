@@ -35,7 +35,10 @@ const VerifyEmail = () => {
       try {
         // Log the verification URL
         const verificationUrl = `${process.env.REACT_APP_API_URL}/users/verify-email/${token}`;
-        console.log("Attempting verification at:", verificationUrl);
+        console.log("Environment:", {
+          REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+          verificationUrl,
+        });
 
         const response = await axios.get(verificationUrl, {
           headers: {
